@@ -1,0 +1,26 @@
+#
+# Copyright (c) TESOBE Ltd. 2016.
+#
+
+build
+target
+
+*.class
+*.iml
+*.jar
+*.war
+*.ear
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+.DS_Store
+.gradle
+.idea
+
+gradle
+gradlew*
+hs_err_pid*
+
+!gradle-wrapper.jar

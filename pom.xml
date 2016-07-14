@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) TESOBE Ltd. 2016. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+    http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.openbankproject.obp</groupId>
+  <artifactId>obp</artifactId>
+  <version>2.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>The Open Banking Project</name>
+
+  <description>
+    The Open Bank Project is an open source API and App store for banks that
+    empowers financial institutions to securely and rapidly enhance their
+    digital offerings using an ecosystem of 3rd party applications and services.
+  </description>
+
+  <organization>
+    <name>Tesobe</name>
+    <url>http://tesobe.com/</url>
+  </organization>
+
+  <inceptionYear>2012</inceptionYear>
+
+  <url>https://github.com/OpenBankProject/OBP-JVM</url>
+
+  <modules>
+    <module>obp-spec</module>
+    <module>obp-ri</module>
+  </modules>
+
+  <properties>
+    <obp.version>${project.version}</obp.version>
+  </properties>
+
+</project>
