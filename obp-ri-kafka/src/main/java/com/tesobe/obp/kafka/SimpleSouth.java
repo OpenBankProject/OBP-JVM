@@ -9,6 +9,9 @@ package com.tesobe.obp.kafka;
 import com.tesobe.obp.transport.Message;
 import com.tesobe.obp.transport.spi.Receiver;
 
+/**
+ * @since 2016.0
+ */
 @SuppressWarnings("WeakerAccess") public class SimpleSouth
   extends SimpleTransport
 {

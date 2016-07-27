@@ -5,8 +5,16 @@ import com.tesobe.obp.transport.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
 import java.util.UUID;
 
+import static java.util.Objects.isNull;
+
+/**
+ * Compatible to mid 2016 OBP-API.
+ *
+ * @since 2016.0
+ */
 @SuppressWarnings("WeakerAccess") public class LegacyApi implements Connector
 {
   public LegacyApi(Transport.Version v, Encoder e, Decoder d, Sender s)
@@ -15,6 +23,18 @@ import java.util.UUID;
     encoder = e;
     sender = s;
     version = v;
+  }
+
+  @Override
+  public Optional<Account> getPrivateAccount(String userId, String bankId,
+    String accountId) throws InterruptedException
+  {
+    String request = encoder.getPrivateAccount(userId, bankId, accountId).toString();
+    String response = sender.send(new Message("id", request));
+
+    log.trace("{} {}", request, response);
+
+    return decoder.account(response);
   }
 
   @Override public Iterable<Bank> getPublicBanks() throws InterruptedException
@@ -30,6 +50,11 @@ import java.util.UUID;
   @Override public Iterable<Bank> getPrivateBanks(String userId)
     throws InterruptedException
   {
+    if(isNull(userId))
+    {
+      return decoder.banks();
+    }
+
     String id = UUID.randomUUID().toString();
     String request = encoder.getPrivateBanks(userId).toString();
     String response = sender.send(new Message(id, request));

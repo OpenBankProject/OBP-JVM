@@ -14,9 +14,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
+import static java.util.Objects.nonNull;
+
+/**
+ * Internal JSON decoder. Only called by trusted code.
+ *
+ * @since 2016.0
+ */
 @SuppressWarnings("WeakerAccess") public class Decoder
   implements com.tesobe.obp.transport.spi.Decoder
 {
@@ -38,12 +47,10 @@ import java.util.List;
       {
         assert arguments != null;
 
-        return arguments.optString("userId", null);
+        return arguments.optString("username", null);
       }
 
       /**
-       * Legacy api: only one key.
-       *
        * @return null if absent or without value
        */
       @Override public String name()
@@ -61,7 +68,7 @@ import java.util.List;
       String name;
 
       {
-        Iterator<String> keys = json.keys();
+        Iterator<String> keys = json.keys(); // Legacy api: only one key
 
         name = keys.hasNext() ? keys.next() : null;
         arguments = json.opt(name) instanceof JSONObject ? json
@@ -70,27 +77,63 @@ import java.util.List;
     };
   }
 
+  @Override public Optional<Connector.Account> account(String response)
+  {
+    if(nonNull(response))
+    {
+      JSONObject a = new JSONObject(response);
+
+      // @formatter:off
+      return Optional.of(new Connector.Account(
+        a.optString("id"),
+        a.optString("bank"),
+        a.optString("label"),
+        a.optString("number"),
+        a.optString("type"),
+        a.optString("currency"),
+        a.optString("amount"),
+        a.optString("iban")));
+      // @formatter:on
+    }
+
+    return Optional.empty();
+  }
+
   @Override public Iterable<Connector.Bank> banks(String response)
   {
     List<Connector.Bank> result = new ArrayList<>();
 
-    if(response != null)
+    if(nonNull(response))
     {
       JSONArray array = new JSONArray(response);
 
-      for(Object a : array)
+      for(Object bank : array)
       {
-        if(a instanceof JSONObject)
+        if(bank instanceof JSONObject)
         {
-          JSONObject b = (JSONObject)a;
+          JSONObject b = (JSONObject)bank;
 
-          result.add(
-            new Connector.Bank(b.optString("id", null), b.optString("name", null)));
+          // @formatter:off
+          result.add(new Connector.Bank(
+            b.optString("id", null),
+            b.optString("short_name", null),
+            b.optString("full_name", null),
+            b.optString("logo", null),
+            b.optString("website", null)));
+          // @formatter:on
         }
       }
     }
 
     return result;
+  }
+
+  /**
+   * @return en empty iterable
+   */
+  @Override public Iterable<Connector.Bank> banks()
+  {
+    return Collections.emptyList();
   }
 
   @Override public String toString()

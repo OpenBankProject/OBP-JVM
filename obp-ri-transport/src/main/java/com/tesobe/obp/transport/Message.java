@@ -6,6 +6,11 @@
  */
 package com.tesobe.obp.transport;
 
+/**
+ * Lightweight, trusting packet for the transport layer to use.
+ *
+ * @since 2016.0
+ */
 @SuppressWarnings("WeakerAccess") public class Message
 {
   public Message(String id, String payload)

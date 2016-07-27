@@ -6,7 +6,18 @@
  */
 package com.tesobe.obp.transport;
 
+/**
+ * @since 2016.0
+ */
 @SuppressWarnings("WeakerAccess") public interface Sender
 {
+  /**
+   * @param request may be null
+   *
+   * @return response may be null
+   *
+   * @throws InterruptedException network
+   * @since 2016.0
+   */
   String send(Message request) throws InterruptedException;
 }

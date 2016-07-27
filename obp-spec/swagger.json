@@ -1,0 +1,2386 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Open Bank Project API",
+    "description": "An Open Source API for Banks. (c) TESOBE Ltd. 2011 - 2016. Licensed under the AGPL and commercial licences.",
+    "contact": {
+      "name": "TESOBE Ltd. / Open Bank Project",
+      "url": "https://openbankproject.com"
+    },
+    "version": "v2.0.0"
+  },
+  "host": "socgen-k-api.openbankproject.com",
+  "basePath": "/obp/v2.0.0",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "paths": {
+    "/accounts": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get all Accounts at all Banks.",
+        "description": "<p>Get all accounts at all banks the User has access to (Authenticated + Anonymous access). Returns the list of accounts at that the user has access to at all banks. For each account the API returns the account ID and the available views.</p><p>If the user is not authenticated via OAuth, the list will contain only the accounts providing public views. If the user is authenticated, the list will contain non-public accounts to which the user has access, in addition to all public accounts.</p><p>Authentication is Optional</p>",
+        "operationId": "2_0_0-allAccountsAllBanks",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/accounts/public": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get Public Accounts at all Banks.",
+        "description": "<p>Get public accounts at all banks (Anonymous access). Returns accounts that contain at least one public view (a view where is_public is true) For each account the API returns the ID and the available views.</p><p>Authentication is Mandatory</p>",
+        "operationId": "2_0_0-publicAccountsAllBanks",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks": {
+      "get": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Get Banks",
+        "description": "<p>Get banks on this API instance Returns a list of banks supported on this server:</p><ul>  <li>ID used as parameter in URLs</li>  <li>Short and full name of bank</li>  <li>Logo URL</li>  <li>Website</li></ul>",
+        "operationId": "1_2_1-allBanks",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/BanksJSON"
+            }
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID": {
+      "get": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Get Bank",
+        "description": "<p>Get the bank specified by BANK_ID Returns information about a single bank specified by BANK_ID including:</p><ul>  <li>Short and full name of bank</li>  <li>Logo URL</li>  <li>Website</li></ul>",
+        "operationId": "1_2_1-bankById",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/BankJSON"
+            }
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get Accounts at one Bank (Public and Private).",
+        "description": "<p>Get accounts at one bank that the user has access to (Authenticated + Anonymous access). Returns the list of accounts at BANK_ID that the user has access to. For each account the API returns the account ID and the available views.</p><p>If the user is not authenticated, the list will contain only the accounts providing public views.</p>",
+        "operationId": "2_0_0-allAccountsAtOneBank",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID": {
+      "post": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Update Account Label.",
+        "description": "<p>Update the label for the account. The label is how the account is known to the account owner e.g. 'My savings account' </p>",
+        "operationId": "1_2_1-updateAccountLabel",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/account": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get Account by Id (Full)",
+        "description": "<p>Information returned about an account specified by ACCOUNT_ID as moderated by the view (VIEW_ID):</p><ul>  <li>Number</li>  <li>Owners</li>  <li>Type</li>  <li>Balance</li>  <li>IBAN</li>  <li>Available views (sorted by short_name)</li></ul><p>More details about the data moderation by the view <a href=\"#1_2_1-getViewsForBankAccount\">here</a>.</p><p>PSD2 Context: PSD2 requires customers to have access to their account information via third party applications. This call provides balance and other account information via delegated authenticaiton using OAuth.</p><p>OAuth authentication is required if the 'is_public' field in view (VIEW_ID) is not set to <code>true</code>.</p>",
+        "operationId": "2_0_0-accountById",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/other_accounts": {
+      "get": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Get counterparties of one account.",
+        "description": "<p>Returns data about all the other bank accounts that have shared at least one transaction with the ACCOUNT_ID at BANK_ID. Authentication is Optional Authentication is required if the view VIEW_ID is not public.</p>",
+        "operationId": "1_2_1-getCounterpartiesForBankAccount",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/other_accounts/OTHER_ACCOUNT_ID": {
+      "get": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Get counterparty by id.",
+        "description": "<p>Returns data about one other counterparty (bank account) (OTHER_ACCOUNT_ID) that had shared at least one transaction with ACCOUNT_ID at BANK_ID. Authentication is Optional Authentication is required if the view is not public.</p>",
+        "operationId": "1_2_1-getCounterpartyByIdForBankAccount",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/other_accounts/OTHER_ACCOUNT_ID/metadata": {
+      "get": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Get Counterparty Metadata.",
+        "description": "<p>Get metadata of one counterparty (other account). Returns only the metadata about one other bank account (OTHER_ACCOUNT_ID) that had shared at least one transaction with ACCOUNT_ID at BANK_ID.</p><p>Authentication via OAuth is required if the view is not public.</p>",
+        "operationId": "1_2_1-getCounterpartyMetadata",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/other_accounts/OTHER_ACCOUNT_ID/metadata/corporate_location": {
+      "delete": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Delete Counterparty Corporate Location.",
+        "description": "<p>Delete corporate location of other bank account. Delete the geolocation of the counterparty's registered address</p>",
+        "operationId": "1_2_1-deleteCounterpartyCorporateLocation",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Add Corporate Location to Counterparty",
+        "description": "<p>Add the geolocation of the counterparty's registered address</p>",
+        "operationId": "1_2_1-addCounterpartyCorporateLocation",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Update Counterparty Corporate Location",
+        "description": "<p>Update the geolocation of the counterparty's registered address</p>",
+        "operationId": "1_2_1-updateCounterpartyCorporateLocation",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/other_accounts/OTHER_ACCOUNT_ID/metadata/image_url": {
+      "delete": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Delete Counterparty Image URL",
+        "description": "<p>Delete image url of other bank account.</p>",
+        "operationId": "1_2_1-deleteCounterpartyImageUrl",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Add image url to other bank account.",
+        "description": "<p>Add a url that points to the logo of the counterparty</p>",
+        "operationId": "1_2_1-addCounterpartyImageUrl",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Update Counterparty Image Url",
+        "description": "<p>Update the url that points to the logo of the counterparty</p>",
+        "operationId": "1_2_1-updateCounterpartyImageUrl",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/other_accounts/OTHER_ACCOUNT_ID/metadata/more_info": {
+      "delete": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Delete more info of other bank account.",
+        "description": "",
+        "operationId": "1_2_1-deleteCounterpartyMoreInfo",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Add Counterparty More Info",
+        "description": "<p>Add a description of the counter party from the perpestive of the account e.g. My dentist.</p>",
+        "operationId": "1_2_1-addCounterpartyMoreInfo",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Update Counterparty More Info",
+        "description": "<p>Update the more info description of the counter party from the perpestive of the account e.g. My dentist.</p>",
+        "operationId": "1_2_1-updateCounterpartyMoreInfo",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/other_accounts/OTHER_ACCOUNT_ID/metadata/open_corporates_url": {
+      "delete": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Delete Counterparty Open Corporates URL",
+        "description": "<p>Delete open corporate url of other bank account.</p>",
+        "operationId": "1_2_1-deleteCounterpartyOpenCorporatesUrl",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Add Open Corporates URL to Counterparty",
+        "description": "<p>Add open corporates url to other bank account.</p>",
+        "operationId": "1_2_1-addCounterpartyOpenCorporatesUrl",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Update Open Corporates Url of Counterparty",
+        "description": "<p>Update open corporate url of other bank account.</p>",
+        "operationId": "1_2_1-updateCounterpartyOpenCorporatesUrl",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/other_accounts/OTHER_ACCOUNT_ID/metadata/physical_location": {
+      "delete": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Delete Counterparty Physical Location.",
+        "description": "<p>Delete physical location of other bank account.</p>",
+        "operationId": "1_2_1-deleteCounterpartyPhysicalLocation",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Add physical location to other bank account.",
+        "description": "<p>Add geocoordinates of the counterparty's main location</p>",
+        "operationId": "1_2_1-addCounterpartyPhysicalLocation",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Update Counterparty Physical Location",
+        "description": "<p>Update geocoordinates of the counterparty's main location</p>",
+        "operationId": "1_2_1-updateCounterpartyPhysicalLocation",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/other_accounts/OTHER_ACCOUNT_ID/metadata/url": {
+      "delete": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Delete url of other bank account.",
+        "description": "",
+        "operationId": "1_2_1-deleteCounterpartyUrl",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Add url to other bank account.",
+        "description": "<p>A url which represents the counterparty (home page url etc.)</p>",
+        "operationId": "1_2_1-addCounterpartyUrl",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Update url of other bank account.",
+        "description": "<p>A url which represents the counterparty (home page url etc.)</p>",
+        "operationId": "1_2_1-updateCounterpartyUrl",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/other_accounts/OTHER_ACCOUNT_ID/private_alias": {
+      "delete": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Delete Counterparty Private Alias",
+        "description": "<p>Deletes the private alias of the other account OTHER_ACCOUNT_ID.</p><p>Authentication is Optional Authentication is required if the view is not public.</p>",
+        "operationId": "1_2_1-deleteCounterpartyPrivateAlias",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Get Counterparty Private Alias",
+        "description": "<p>Returns the private alias of the other account OTHER_ACCOUNT_ID.</p><p>Authentication is Optional Authentication is required if the view is not public.</p>",
+        "operationId": "1_2_1-getCounterpartyPrivateAlias",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Create Counterparty Private Alias",
+        "description": "<p>Creates a private alias for the other account OTHER_ACCOUNT_ID.</p><p>Authentication is Optional Authentication is required if the view is not public.</p>",
+        "operationId": "1_2_1-addCounterpartyPrivateAlias",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Update Counterparty Private Alias",
+        "description": "<p>Updates the private alias of the counterparty (AKA other account) OTHER_ACCOUNT_ID.</p><p>Authentication is Optional Authentication is required if the view is not public.</p>",
+        "operationId": "1_2_1-updateCounterpartyPrivateAlias",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/other_accounts/OTHER_ACCOUNT_ID/public_alias": {
+      "delete": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Delete Counterparty Public Alias",
+        "description": "<p>Deletes the public alias of the other account OTHER_ACCOUNT_ID.</p><p>Authentication is Optional Authentication is required if the view is not public.</p>",
+        "operationId": "1_2_1-deleteCounterpartyPublicAlias",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Get public alias of other bank account.",
+        "description": "<p>Returns the public alias of the other account OTHER_ACCOUNT_ID. Authentication is Optional OAuth authentication is required if the view is not public.</p>",
+        "operationId": "1_2_1-getCounterpartyPublicAlias",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Add public alias to other bank account.",
+        "description": "<p>Creates the public alias for the other account OTHER_ACCOUNT_ID.</p><p>Authentication is Optional Authentication is required if the view is not public.</p><p>Note: Public aliases are automatically generated for new 'other accounts / counterparties', so this call should only be used if the public alias was deleted.</p><p>The VIEW_ID parameter should be a view the caller is permitted to access to and that has permission to create public aliases.</p>",
+        "operationId": "1_2_1-addCounterpartyPublicAlias",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Update public alias of other bank account.",
+        "description": "<p>Updates the public alias of the other account / counterparty OTHER_ACCOUNT_ID.</p><p>Authentication is Optional Authentication is required if the view is not public.</p>",
+        "operationId": "1_2_1-updateCounterpartyPublicAlias",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/transaction-request-types": {
+      "get": {
+        "tags": [
+          "1_4_0"
+        ],
+        "summary": "Get Transaction Request Types for Account",
+        "description": "<p>Returns the Transation Request Types that the account specified by ACCOUNT_ID and view specified by VIEW_ID has access to.</p><p>These are the ways this API Server can create a Transaction via a Transaction Request (as opposed to Transaction Types which include external types too e.g. for Transactions created by core banking etc.)</p><p>A Transaction Request Type internally determines:</p><ul>  <li>the required Transaction Request 'body' i.e. fields that define the 'what' and 'to' of a Transaction Request,</li>  <li>the type of security challenge that may be be raised before the Transaction Request proceeds, and</li>  <li>the threshold of that challenge.</li></ul><p>For instance in a 'SANDBOX_TAN' Transaction Request, for amounts over 1000 currency units, the user must supply a positive integer to complete the Transaction Request and create a Transaction.</p><p>This approach aims to provide only one endpoint for initiating transactions, and one that handles challenges, whilst still allowing flexibility with the payload and internal logic.</p>",
+        "operationId": "1_4_0-getTransactionRequestTypes",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/transaction-request-types/TRANSACTION_REQUEST_TYPE/transaction-requests": {
+      "post": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Create Transaction Request.",
+        "description": "<p>Initiate a Payment via a Transaction Request.</p><p>This is the preferred method to create a payment and supersedes makePayment in 1.2.1.</p><p>PSD2 Context: Third party access access to payments is a core tenent of PSD2.</p><p>This call satisfies that requirement from several perspectives:</p><p>1) A transaction can be initiated by a third party application.</p><p>2) The customer is informed of the charge that will incurred.</p><p>3) The call uses delegated authentication (OAuth)</p><p>See <a href=\"https://github.com/OpenBankProject/Hello-OBP-DirectLogin-Python/blob/master/hello_payments.py\">this python code</a> for a complete example of this flow.</p><p>In sandbox mode, if the amount is less than 100 (any currency), the transaction request will create a transaction without a challenge, else a challenge will need to be answered.</p><p>You can transfer between different currency accounts. (new in 2.0.0). The currency in body must match the sending account.</p><p>Currently TRANSACTION_REQUEST_TYPE must be set to SANDBOX_TAN</p><p>The following static FX rates are available in sandbox mode:</p><p>{  \"GBP\":{  \"AED\":5.22,  \"INR\":94.66,  \"JPY\":154.47,  \"USD\":1.42,  \"EUR\":1.26  },  \"AED\":{  \"GBP\":0.19,  \"INR\":18.15,  \"JPY\":29.61,  \"USD\":0.27,  \"EUR\":0.24  },  \"INR\":{  \"GBP\":0.011,  \"AED\":0.055,  \"JPY\":1.63,  \"USD\":0.015,  \"EUR\":0.013  },  \"JPY\":{  \"GBP\":0.0065,  \"AED\":0.034,  \"INR\":0.61,  \"USD\":0.0092,  \"EUR\":0.0081  },  \"USD\":{  \"GBP\":0.7,  \"AED\":3.67,  \"INR\":66.65,  \"JPY\":108.77,  \"EUR\":0.89  },  \"EUR\":{  \"GBP\":0.79,  \"AED\":4.14,  \"INR\":75.2,  \"JPY\":122.71,  \"USD\":1.13  } }</p><p>The payer is set in the URL. Money comes out of the BANK_ID and ACCOUNT_ID specified in the URL</p><p>The payee is set in the request body. Money goes into the BANK_ID and ACCOUNT_IDO specified in the request body.</p><p>Authentication is Mandatory</p>",
+        "operationId": "2_0_0-createTransactionRequest",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/transaction-request-types/TRANSACTION_REQUEST_TYPE/transaction-requests/TRANSACTION_REQUEST_ID/challenge": {
+      "post": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Answer Transaction Request Challenge.",
+        "description": "<p>In Sandbox mode, any string that can be converted to a positive integer will be accepted as an answer.</p>",
+        "operationId": "2_0_0-answerTransactionRequestChallenge",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/transaction-requests": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get Transaction Requests.",
+        "description": "<p>Returns transaction requests for account specified by ACCOUNT_ID at bank specified by BANK_ID.</p><p>The VIEW_ID specified must be 'owner' and the user must have access to this view.</p><p>Version 2.0.0 now returns charge information.</p><p>Transaction Requests serve to initiate transactions that may or may not proceed. They contain information including:</p><ul>  <li>Transaction Request Id</li>  <li>Type</li>  <li>Status (INITIATED, COMPLETED)</li>  <li>Challenge (in order to confirm the request)</li>  <li>From Bank / Account</li>  <li>Body including To Account, Currency, Value, Description and other initiation information. (Could potentialy include a list of future transactions.)</li>  <li>Related Transactions</li></ul><p>PSD2 Context: PSD2 requires transparency of charges to the customer. This endpoint provides the charge that would be applied if the Transaction Request proceeds - and a record of that charge there after. The customer can proceed with the Transaction by answering the security challenge.</p>",
+        "operationId": "2_0_0-getTransactionRequests",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/transactions": {
+      "get": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Get Transactions for Account (Full)",
+        "description": "<p>Returns transactions list of the account specified by ACCOUNT_ID and <a href=\"#1_2_1-getViewsForBankAccount\">moderated</a> by the view (VIEW_ID).</p><p>Authentication via OAuth is required if the view is not public.</p><p>Possible custom headers for pagination:</p><ul>  <li>obp_sort_by=CRITERIA ==&gt; default value: \"completed\" field</li>  <li>obp_sort_direction=ASC/DESC ==&gt; default value: DESC</li>  <li>obp_limit=NUMBER ==&gt; default value: 50</li>  <li>obp_offset=NUMBER ==&gt; default value: 0</li>  <li>obp_from_date=DATE =&gt; default value: date of the oldest transaction registered (format below)</li>  <li>obp_to_date=DATE =&gt; default value: date of the newest transaction registered (format below)</li></ul><p><strong>Date format parameter</strong>: \"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'\" (2014-07-01T00:00:00.000Z) ==&gt; time zone is UTC.</p>",
+        "operationId": "1_2_1-getTransactionsForBankAccount",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Make Payment.",
+        "description": "<p>This is an experimental call, currently only implemented in the OBP sandbox instance up to version 1.3.0. It is very minimal and was superseded by Transaction Requests in version 1.4.0.</p><p>This will only work if account to pay exists at the bank specified in the json, and if that account has the same currency as that of the payee.</p><p>There are no checks for 'sufficient funds' at the moment, so it is possible to go into unlimited overdraft.</p>",
+        "operationId": "1_2_1-makePayment",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/transactions/TRANSACTION_ID/metadata/comments": {
+      "get": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Get comments.",
+        "description": "<p>Returns the transaction TRANSACTION_ID comments made on a <a href=\"#1_2_1-getViewsForBankAccount\">view</a> (VIEW_ID).</p><p>Authentication via OAuth is required if the view is not public.</p>",
+        "operationId": "1_2_1-getCommentsForViewOnTransaction",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Add comment.",
+        "description": "<p>Posts a comment about a transaction TRANSACTION_ID on a <a href=\"#1_2_1-getViewsForBankAccount\">view</a> VIEW_ID.</p><p>${authenticationRequiredMessage(false)}</p><p>Authentication is required since the comment is linked with the user.</p>",
+        "operationId": "1_2_1-addCommentForViewOnTransaction",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/transactions/TRANSACTION_ID/metadata/comments/COMMENT_ID": {
+      "delete": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Delete comment.",
+        "description": "<p>Delete the comment COMMENT_ID about the transaction TRANSACTION_ID made on <a href=\"#1_2_1-getViewsForBankAccount\">view</a>.</p><p>Authentication via OAuth is required. The user must either have owner privileges for this account, or must be the user that posted the comment.</p>",
+        "operationId": "1_2_1-deleteCommentForViewOnTransaction",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/transactions/TRANSACTION_ID/metadata/images": {
+      "get": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Get images.",
+        "description": "<p>Returns the transaction TRANSACTION_ID images made on a <a href=\"#1_2_1-getViewsForBankAccount\">view</a> (VIEW_ID).</p><p>Authentication via OAuth is required if the view is not public.</p>",
+        "operationId": "1_2_1-getImagesForViewOnTransaction",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Add an image.",
+        "description": "<p>Posts an image about a transaction TRANSACTION_ID on a <a href=\"#1_2_1-getViewsForBankAccount\">view</a> VIEW_ID.</p><p>Authentication is Mandatory</p><p>The image is linked with the user.</p>",
+        "operationId": "1_2_1-addImageForViewOnTransaction",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/transactions/TRANSACTION_ID/metadata/images/IMAGE_ID": {
+      "delete": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Delete an image",
+        "description": "<p>Deletes the image IMAGE_ID about the transaction TRANSACTION_ID made on <a href=\"#1_2_1-getViewsForBankAccount\">view</a>.</p><p>Authentication via OAuth is required. The user must either have owner privileges for this account, or must be the user that posted the image.</p>",
+        "operationId": "1_2_1-deleteImageForViewOnTransaction",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/transactions/TRANSACTION_ID/metadata/narrative": {
+      "delete": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Delete narrative.",
+        "description": "<p>Deletes the description of the transaction TRANSACTION_ID.</p><p>Authentication via OAuth is required if the view is not public.</p>",
+        "operationId": "1_2_1-deleteTransactionNarrative",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Get narrative.",
+        "description": "<p>Returns the account owner description of the transaction <a href=\"#1_2_1-getViewsForBankAccount\">moderated</a> by the view.</p><p>Authentication via OAuth is required if the view is not public.</p>",
+        "operationId": "1_2_1-getTransactionNarrative",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Add narrative.",
+        "description": "<p>Creates a description of the transaction TRANSACTION_ID.</p><p>Authentication via OAuth is required if the view is not public.</p>",
+        "operationId": "1_2_1-addTransactionNarrative",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Update narrative.",
+        "description": "<p>Updates the description of the transaction TRANSACTION_ID.</p><p>Authentication via OAuth is required if the view is not public.</p>",
+        "operationId": "1_2_1-updateTransactionNarrative",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/transactions/TRANSACTION_ID/metadata/tags": {
+      "get": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Get tags.",
+        "description": "<p>Returns the transaction TRANSACTION_ID tags made on a <a href=\"#1_2_1-getViewsForBankAccount\">view</a> (VIEW_ID).</p><p>Authentication via OAuth is required if the view is not public.</p>",
+        "operationId": "1_2_1-getTagsForViewOnTransaction",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Add a tag.",
+        "description": "<p>Posts a tag about a transaction TRANSACTION_ID on a <a href=\"#1_2_1-getViewsForBankAccount\">view</a> VIEW_ID.</p><p>Authentication is Mandatory</p><p>Authentication is required as the tag is linked with the user.</p>",
+        "operationId": "1_2_1-addTagForViewOnTransaction",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/transactions/TRANSACTION_ID/metadata/tags/TAG_ID": {
+      "delete": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Delete a tag.",
+        "description": "<p>Deletes the tag TAG_ID about the transaction TRANSACTION_ID made on <a href=\"#1_2_1-getViewsForBankAccount\">view</a>.</p><p>Authentication via OAuth is required. The user must either have owner privileges for this account, or must be the user that posted the tag.</p>",
+        "operationId": "1_2_1-deleteTagForViewOnTransaction",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/transactions/TRANSACTION_ID/metadata/where": {
+      "delete": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Delete where tag.",
+        "description": "<p>Deletes the where tag of the transaction TRANSACTION_ID made on <a href=\"#1_2_1-getViewsForBankAccount\">view</a>.</p><p>Authentication is Mandatory</p><p>The user must either have owner privileges for this account, or must be the user that posted the geo tag.</p>",
+        "operationId": "1_2_1-deleteWhereTagForViewOnTransaction",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Get where tag.",
+        "description": "<p>Returns the \"where\" Geo tag added to the transaction TRANSACTION_ID made on a <a href=\"#1_2_1-getViewsForBankAccount\">view</a> (VIEW_ID). It represents the location where the transaction has been initiated.</p><p>Authentication via OAuth is required if the view is not public.</p>",
+        "operationId": "1_2_1-getWhereTagForViewOnTransaction",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Add where tag.",
+        "description": "<p>Creates a \"where\" Geo tag on a transaction TRANSACTION_ID in a <a href=\"#1_2_1-getViewsForBankAccount\">view</a>.</p><p>Authentication is Mandatory</p><p>The geo tag is linked with the user.</p>",
+        "operationId": "1_2_1-addWhereTagForViewOnTransaction",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Update where tag.",
+        "description": "<p>Updates the \"where\" Geo tag on a transaction TRANSACTION_ID in a <a href=\"#1_2_1-getViewsForBankAccount\">view</a>.</p><p>Authentication is Mandatory</p><p>The geo tag is linked with the user.</p>",
+        "operationId": "1_2_1-updateWhereTagForViewOnTransaction",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/transactions/TRANSACTION_ID/other_account": {
+      "get": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Get Counterparty of Transaction",
+        "description": "<p>Get other account of a transaction. Returns details of the other party involved in the transaction, moderated by the <a href=\"#1_2_1-getViewsForBankAccount\">view</a> (VIEW_ID).</p><p>Authentication via OAuth is required if the view is not public.</p>",
+        "operationId": "1_2_1-getCounterpartyForTransaction",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/VIEW_ID/transactions/TRANSACTION_ID/transaction": {
+      "get": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Get transaction by id.",
+        "description": "<p>Returns one transaction specified by TRANSACTION_ID of the account ACCOUNT_ID and <a href=\"#1_2_1-getViewsForBankAccount\">moderated</a> by the view (VIEW_ID).</p><p>Authentication via OAuth is required if the view is not public.</p>",
+        "operationId": "1_2_1-getTransactionByIdForBankAccount",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/permissions": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get access.",
+        "description": "<p>Returns the list of the permissions at BANK_ID for account ACCOUNT_ID, with each time a pair composed of the user and the views that he has access to.</p><p>OAuth authentication is required and the user needs to have access to the owner view.</p>",
+        "operationId": "2_0_0-getPermissionsForBankAccount",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/permissions/PROVIDER_ID/USER_ID": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get access for specific user.",
+        "description": "<p>Returns the list of the views at BANK_ID for account ACCOUNT_ID that a USER_ID at their provider PROVIDER_ID has access to. All url parameters must be <a href=\"http://en.wikipedia.org/wiki/Percent-encoding\">%-encoded</a>, which is often especially relevant for USER_ID and PROVIDER_ID.</p><p>OAuth authentication is required and the user needs to have access to the owner view.</p>",
+        "operationId": "2_0_0-getPermissionForUserForBankAccount",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/permissions/PROVIDER_ID/USER_ID/views": {
+      "delete": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Revoke access to all Views on Account",
+        "description": "<p>Revokes the user USER_ID at their provider PROVIDER_ID access to all the views at BANK_ID for account ACCOUNT_ID.</p><p>OAuth authentication is required and the user needs to have access to the owner view.</p>",
+        "operationId": "1_2_1-removePermissionForUserForBankAccountForAllViews",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Grant User access to a list of views.",
+        "description": "<p>Grants the user USER_ID at their provider PROVIDER_ID access to a list of views at BANK_ID for account ACCOUNT_ID.</p><p>All url parameters must be <a href=\"http://en.wikipedia.org/wiki/Percent-encoding\">%-encoded</a>, which is often especially relevant for USER_ID and PROVIDER_ID.</p><p>OAuth authentication is required and the user needs to have access to the owner view.</p>",
+        "operationId": "1_2_1-addPermissionForUserForBankAccountForMultipleViews",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/permissions/PROVIDER_ID/USER_ID/views/VIEW_ID": {
+      "delete": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Revoke access to one View.",
+        "description": "<p>Revokes the user USER_ID at their provider PROVIDER_ID access to the view VIEW_ID at BANK_ID for account ACCOUNT_ID.</p><p>Revoking a user access to a public view will return an error message.</p><p>OAuth authentication is required and the user needs to have access to the owner view.</p>",
+        "operationId": "1_2_1-removePermissionForUserForBankAccountForOneView",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Grant User access to View.",
+        "description": "<p>Grants the user USER_ID at their provider PROVIDER_ID access to the view VIEW_ID at BANK_ID for account ACCOUNT_ID. All url parameters must be <a href=\"http://en.wikipedia.org/wiki/Percent-encoding\">%-encoded</a>, which is often especially relevant for USER_ID and PROVIDER_ID.</p><p>OAuth authentication is required and the user needs to have access to the owner view.</p><p>Granting access to a public view will return an error message, as the user already has access.</p>",
+        "operationId": "1_2_1-addPermissionForUserForBankAccountForOneView",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/views": {
+      "get": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Get Views for Account.",
+        "description": "<h1>Views</h1><p>Views in Open Bank Project provide a mechanism for fine grained access control and delegation to Accounts and Transactions. Account holders use the 'owner' view by default. Delegated access is made through other views for example 'accountants', 'share-holders' or 'tagging-application'. Views can be created via the API and each view has a list of entitlements.</p><p>Views on accounts and transactions filter the underlying data to redact certain fields for certain users. For instance the balance on an account may be hidden from the public. The way to know what is possible on a view is determined in the following JSON.</p><p><strong>Data:</strong> When a view moderates a set of data, some fields my contain the value <code>null</code> rather than the original value. This indicates either that the user is not allowed to see the original data or the field is empty.</p><p>There is currently one exception to this rule; the 'holder' field in the JSON contains always a value which is either an alias or the real name - indicated by the 'is_alias' field.</p><p><strong>Action:</strong> When a user performs an action like trying to post a comment (with POST API call), if he is not allowed, the body response will contain an error message.</p><p><strong>Metadata:</strong> Transaction metadata (like images, tags, comments, etc.) will appears <em>ONLY</em> on the view where they have been created e.g. comments posted to the public view only appear on the public view.</p><p>The other account metadata fields (like image_URL, more_info, etc.) are unique through all the views. Example, if a user edits the 'more_info' field in the 'team' view, then the view 'authorities' will show the new value (if it is allowed to do it).</p><h1>All</h1><p><em>Optional</em></p><p>Returns the list of the views created for account ACCOUNT_ID at BANK_ID.</p><p>OAuth authentication is required and the user needs to have access to the owner view.</p>",
+        "operationId": "1_2_1-getViewsForBankAccount",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Create View.",
+        "description": "<h1>Create a view on bank account</h1><p>OAuth authentication is required and the user needs to have access to the owner view.  The 'alias' field in the JSON can take one of three values:</p><ul>  <li><em>public</em>: to use the public alias if there is one specified for the other account.</li>  <li><em>private</em>: to use the public alias if there is one specified for the other account.</li>  <li>  <p><em>''(empty string)</em>: to use no alias; the view shows the real name of the other account.</p></li></ul><p>The 'hide_metadata_if_alias_used' field in the JSON can take boolean values. If it is set to <code>true</code> and there is an alias on the other account then the other accounts' metadata (like more_info, url, image_url, open_corporates_url, etc.) will be hidden. Otherwise the metadata will be shown.</p><p>The 'allowed_actions' field is a list containing the name of the actions allowed on this view, all the actions contained will be set to <code>true</code> on the view creation, the rest will be set to <code>false</code>.</p>",
+        "operationId": "1_2_1-createViewForBankAccount",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/ACCOUNT_ID/views/VIEW_ID": {
+      "delete": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Delete View",
+        "description": "<p>Deletes the view specified by VIEW_ID on the bank account specified by ACCOUNT_ID at bank BANK_ID.</p>",
+        "operationId": "1_2_1-deleteViewForBankAccount",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "Update View.",
+        "description": "<p>Update an existing view on a bank account</p><p>OAuth authentication is required and the user needs to have access to the owner view.</p><p>The json sent is the same as during view creation (above), with one difference: the 'name' field of a view is not editable (it is only set when a view is created)</p>",
+        "operationId": "1_2_1-updateViewForBankAccount",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/NEW_ACCOUNT_ID": {
+      "put": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Create Account",
+        "description": "<p>Create Account at bank specified by BANK_ID with Id specified by NEW_ACCOUNT_ID.</p><p>The User can create an Account for themself or an Account for another User if they have CanCreateAccount role.</p><p>If USER_ID is not specified the account will be owned by the logged in User.</p><p>Note: Type is currently ignored and the Amount must be zero. You can update the account label with another call (see 1_2_1-updateAccountLabel)</p>",
+        "operationId": "2_0_0-createAccount",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/accounts/public": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get Accounts at Bank (Public)",
+        "description": "<p>Returns a list of the public accounts (Anonymous access) at BANK_ID. For each account the API returns the ID and the available views.</p><p>Authentication via OAuth is not required.</p>",
+        "operationId": "2_0_0-publicAccountsAtOneBank",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/atms": {
+      "get": {
+        "tags": [
+          "1_4_0"
+        ],
+        "summary": "Get Bank ATMS",
+        "description": "<p>Returns information about ATMs for a single bank specified by BANK_ID including:</p><ul>  <li>Address</li>  <li>Geo Location</li>  <li>License the data under this endpoint is released under</li></ul><p>Authentication is Optional</p>",
+        "operationId": "1_4_0-getAtms",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/branches": {
+      "get": {
+        "tags": [
+          "1_4_0"
+        ],
+        "summary": "Get Bank Branches",
+        "description": "<p>Returns information about branches for a single bank specified by BANK_ID including:</p><ul>  <li>Name</li>  <li>Address</li>  <li>Geo Location</li>  <li>License the data under this endpoint is released under</li></ul><p>Authentication is Optional</p>",
+        "operationId": "1_4_0-getBranches",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/cards": {
+      "get": {
+        "tags": [
+          "1_3_0"
+        ],
+        "summary": "Get cards for the specified bank",
+        "description": "",
+        "operationId": "1_3_0-getCardsForBank",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/crm-events": {
+      "get": {
+        "tags": [
+          "1_4_0"
+        ],
+        "summary": "Get CRM Events for the logged in user",
+        "description": "",
+        "operationId": "1_4_0-getCrmEvents",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/customer": {
+      "get": {
+        "tags": [
+          "1_4_0"
+        ],
+        "summary": "Get customer for logged in user",
+        "description": "<p>Information about the currently authenticated user.</p><p>Authentication via OAuth is required.</p>",
+        "operationId": "1_4_0-getCustomer",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/customer/CUSTOMER_ID/messages": {
+      "post": {
+        "tags": [
+          "1_4_0"
+        ],
+        "summary": "Add Customer Message.",
+        "description": "<p>Add a message for the customer specified by CUSTOMER_ID</p>",
+        "operationId": "1_4_0-addCustomerMessage",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/customer/messages": {
+      "get": {
+        "tags": [
+          "1_4_0"
+        ],
+        "summary": "Get Customer Messages (current)",
+        "description": "<p>Get messages for the logged in customer Messages sent to the currently authenticated user.</p><p>Authentication via OAuth is required.</p>",
+        "operationId": "1_4_0-getCustomerMessages",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/customers": {
+      "post": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Create Customer.",
+        "description": "<p>Add a customer linked to the user specified by user_id The Customer resource stores the customer number, legal name, email, phone number, their date of birth, relationship status, education attained, a url for a profile image, KYC status etc. This call may require additional permissions/role in the future. For now the authenticated user can create at most one linked customer. Dates need to be in the format 2013-01-21T23:08:00Z Authentication is Mandatory</p>",
+        "operationId": "2_0_0-createCustomer",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/customers/CUSTOMER_ID/kyc_check": {
+      "post": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Add KYC Check",
+        "description": "<p>Add a KYC check for the customer specified by CUSTOMER_ID. KYC Checks store details of checks on a customer made by the KYC team, their comments and a satisfied status.</p>",
+        "operationId": "2_0_0-addKycCheck",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/customers/CUSTOMER_ID/kyc_documents": {
+      "post": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Add KYC Document.",
+        "description": "<p>Add a KYC document for the customer specified by CUSTOMER_ID. KYC Documents contain the document type (e.g. passport), place of issue, expiry etc. </p>",
+        "operationId": "2_0_0-addKycDocument",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/customers/CUSTOMER_ID/kyc_media": {
+      "post": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Add KYC Media.",
+        "description": "<p>Add some KYC media for the customer specified by CUSTOMER_ID. KYC Media resources relate to KYC Documents and KYC Checks and contain media urls for scans of passports, utility bills etc.</p>",
+        "operationId": "2_0_0-addKycMedia",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/customers/CUSTOMER_ID/kyc_statuses": {
+      "post": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Add KYC Status",
+        "description": "<p>Add a kyc_status for the customer specified by CUSTOMER_ID. KYC Status is a timeline of the KYC status of the customer</p>",
+        "operationId": "2_0_0-addKycStatus",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/customers/CUSTOMER_ID/social_media_handles": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get social media handles for a customer",
+        "description": "<p>Get social media handles for a customer.</p><p>Authentication is Mandatory</p>",
+        "operationId": "2_0_0-getSocialMedia",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Add Social Media Handle",
+        "description": "<p>Add a social media handle for the customer specified by CUSTOMER_ID.</p>",
+        "operationId": "2_0_0-addSocialMediaHandle",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/meetings": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get Meetings",
+        "description": "<p>Meetings contain meta data about, and are used to facilitate, video conferences / chats etc.</p><p>The actual conference/chats are handled by external services.</p><p>Login is required.</p><p>This call is <strong>experimental</strong> and will require further authorisation in the future.</p>",
+        "operationId": "2_0_0-getMeetings",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Create Meeting (video conference/call)",
+        "description": "<p>Create Meeting: Initiate a video conference/call with the bank.</p><p>The Meetings resource contains meta data about video/other conference sessions, not the video/audio/chat itself.</p><p>The actual conferencing is handled by external providers. Currently OBP supports tokbox video conferences (WIP).</p><p>This is not a recomendation of tokbox per se.</p><p>provider_id determines the provider of the meeting / video chat service. MUST be url friendly (no spaces).</p><p>purpose_id explains the purpose of the chat. onboarding | mortgage | complaint etc. MUST be url friendly (no spaces).</p><p>Login is required.</p><p>This call is <strong>experimental</strong>. Currently staff_user_id is not set. Further calls will be needed to correctly set this.</p>",
+        "operationId": "2_0_0-createMeeting",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/meetings/MEETING_ID": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get Meeting",
+        "description": "<p>Get Meeting specified by BANK_ID / MEETING_ID Meetings contain meta data about, and are used to facilitate, video conferences / chats etc.</p><p>The actual conference/chats are handled by external services.</p><p>Login is required.</p><p>This call is <strong>experimental</strong> and will require further authorisation in the future.</p>",
+        "operationId": "2_0_0-getMeeting",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/products": {
+      "get": {
+        "tags": [
+          "1_4_0"
+        ],
+        "summary": "Get Bank Products",
+        "description": "<p>Returns information about the financial products offered by a bank specified by BANK_ID including:</p><ul>  <li>Name</li>  <li>Code</li>  <li>Category</li>  <li>Family</li>  <li>Super Family</li>  <li>More info URL</li>  <li>Description</li>  <li>Terms and Conditions</li>  <li>License the data under this endpoint is released under Authentication is Optional</li></ul>",
+        "operationId": "1_4_0-getProducts",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/BANK_ID/transaction-types": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get transaction-types offered by the bank",
+        "description": "<p>Get Transaction Types for the bank specified by BANK_ID:</p><p>Lists the possible Transaction Types available at the bank (as opposed to Transaction Request Types which are the possible ways Transactions can be created by this API Server).</p><ul>  <li>id : Unique transaction type id across the API instance. SHOULD be a UUID. MUST be unique.</li>  <li>bank_id : The bank that supports this TransactionType</li>  <li>short_code : A short code (SHOULD have no-spaces) which MUST be unique across the bank. May be stored with Transactions to link here</li>  <li>summary : A succinct summary</li>  <li>description : A longer description</li>  <li>charge : The charge to the customer for each one of these</li></ul><p>Authentication is Optional</p>",
+        "operationId": "2_0_0-getTransactionTypes",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/banks/user_customer_links": {
+      "post": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Create user customer link.",
+        "description": "<p>Link a customer and an user This call may require additional permissions/role in the future. For now the authenticated user can create at most one linked customer. Authentication is Mandatory</p>",
+        "operationId": "2_0_0-createUserCustomerLinks",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/cards": {
+      "get": {
+        "tags": [
+          "1_3_0"
+        ],
+        "summary": "Get cards for the current user",
+        "description": "<p>Returns data about all the physical cards a user has been issued. These could be debit cards, credit cards, etc.</p>",
+        "operationId": "1_3_0-getCards",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/customers/CUSTOMER_ID/kyc_checks": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get KYC Checks for current Customer",
+        "description": "<p>Get KYC checks for the logged in customer Messages sent to the currently authenticated user.</p><p>Authentication is Mandatory</p>",
+        "operationId": "2_0_0-getKycChecks",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/customers/CUSTOMER_ID/kyc_documents": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get KYC Documents for Customer",
+        "description": "<p>Get KYC (know your customer) documents for a customer Get a list of documents that affirm the identity of the customer Passport, driving licence etc. Authentication is Optional</p>",
+        "operationId": "2_0_0-getKycDocuments",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/customers/CUSTOMER_ID/kyc_media": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get KYC Media for a customer",
+        "description": "<p>Get KYC media (scans, pictures, videos) that affirms the identity of the customer.</p><p>Authentication is Mandatory</p>",
+        "operationId": "2_0_0-getKycMedia",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/customers/CUSTOMER_ID/kyc_statuses": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get the KYC statuses for a customer",
+        "description": "<p>Get the KYC statuses for a customer over time</p><p>Authentication is Mandatory</p>",
+        "operationId": "2_0_0-getKycStatuses",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/entitlements": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get all Entitlements",
+        "description": "<p>Login is required.</p>",
+        "operationId": "2_0_0-getAllEntitlements",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/my/accounts": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get Accounts at all Banks (Private)",
+        "description": "<p>Get private accounts at all banks (Authenticated access) Returns the list of accounts containing private views for the user at all banks. For each account the API returns the ID and the available views.</p><p>Authentication is Mandatory</p>",
+        "operationId": "2_0_0-privateAccountsAllBanks",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/my/banks/BANK_ID/accounts": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get Accounts at Bank (Private)",
+        "description": "<p>Get private accounts at one bank (Authenticated access). Returns the list of accounts containing private views for the user at BANK_ID. For each account the API returns the ID and the available views.</p><p>Authentication via OAuth is required.</p>",
+        "operationId": "2_0_0-privateAccountsAtOneBank",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/my/banks/BANK_ID/accounts/ACCOUNT_ID/account": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get Account by Id (Core)",
+        "description": "<p>Information returned about the account specified by ACCOUNT_ID:</p><ul>  <li>Number</li>  <li>Owners</li>  <li>Type</li>  <li>Balance</li>  <li>IBAN</li></ul><p>This call returns the owner view and requires access to that view.</p><p>OAuth authentication is required</p>",
+        "operationId": "2_0_0-coreAccountById",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/my/banks/BANK_ID/accounts/ACCOUNT_ID/transactions": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get Transactions for Account (Core)",
+        "description": "<p>Returns transactions list (Core info) of the account specified by ACCOUNT_ID.</p><p>Authentication is required.</p><p>Possible custom headers for pagination:</p><ul>  <li>obp_sort_by=CRITERIA ==&gt; default value: \"completed\" field</li>  <li>obp_sort_direction=ASC/DESC ==&gt; default value: DESC</li>  <li>obp_limit=NUMBER ==&gt; default value: 50</li>  <li>obp_offset=NUMBER ==&gt; default value: 0</li>  <li>obp_from_date=DATE =&gt; default value: date of the oldest transaction registered (format below)</li>  <li>obp_to_date=DATE =&gt; default value: date of the newest transaction registered (format below)</li></ul><p><strong>Date format parameter</strong>: \"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'\" (2014-07-01T00:00:00.000Z) ==&gt; time zone is UTC.</p>",
+        "operationId": "2_0_0-getCoreTransactionsForBankAccount",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/root": {
+      "get": {
+        "tags": [
+          "1_2_1"
+        ],
+        "summary": "The root of the API",
+        "description": "<p>Returns information about:</p><ul>  <li>API version</li>  <li>Hosted by information</li>  <li>Git Commit</li></ul>",
+        "operationId": "1_2_1-root",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/search/metrics": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Search API Metrics via Elasticsearch.",
+        "description": "<p>Search the API calls made to this API instance via Elastic Search.</p><p>Login is required.</p><p>CanSearchMetrics entitlement is required to search metrics data.</p><p>parameters:</p><p>esType - elasticsearch type</p><p>simple query:</p><p>q - plain_text_query</p><p>df - default field to search</p><p>sort - field to sort on</p><p>size - number of hits returned, default 10</p><p>from - show hits starting from</p><p>json query:</p><p>source - JSON_query_(URL-escaped)</p><p>example usage:</p><p>/search/metrics/q=findThis</p><p>or:</p><p>/search/metrics/source={\"query\":{\"query_string\":{\"query\":\"findThis\"}}}</p><p>Note!!</p><p>The whole JSON query string MUST be URL-encoded:</p><ul>  <li>For { use %7B</li>  <li>For } use %7D</li>  <li>For : use %3A</li>  <li>For \" use %22</li></ul><p>etc..</p><p>Only q, source and esType are passed to Elastic</p><p>Elastic simple query: https://www.elastic.co/guide/en/elasticsearch/reference/current/search-uri-request.html</p><p>Elastic JSON query: https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html</p>",
+        "operationId": "2_0_0-elasticSearchMetrics",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/search/warehouse": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Search Warehouse Data Via Elasticsearch",
+        "description": "<p>Search warehouse data via Elastic Search.</p><p>Login is required.</p><p>CanSearchWarehouse entitlement is required to search warehouse data!</p><p>Send your email, name, project name and user_id to the admins to get access.</p><p>Elastic (search) is used in the background. See links below for syntax.</p><p>parameters:</p><p>esType - elasticsearch type</p><p>simple query:</p><p>q - plain_text_query</p><p>df - default field to search</p><p>sort - field to sort on</p><p>size - number of hits returned, default 10</p><p>from - show hits starting from</p><p>json query:</p><p>source - JSON_query_(URL-escaped)</p><p>Example usage:</p><p>GET /search/warehouse/q=findThis</p><p>or:</p><p>GET /search/warehouse/source={\"query\":{\"query_string\":{\"query\":\"findThis\"}}}</p><p>Note!!</p><p>The whole JSON query string MUST be URL-encoded:</p><ul>  <li>For { use %7B</li>  <li>For } use %7D</li>  <li>For : use %3A</li>  <li>For \" use %22</li></ul><p>etc..</p><p>Only q, source and esType are passed to Elastic</p><p>Elastic simple query: https://www.elastic.co/guide/en/elasticsearch/reference/current/search-uri-request.html</p><p>Elastic JSON query: https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html</p><p>You can specify the esType thus: /search/warehouse/esType=type&amp;q=a</p>",
+        "operationId": "2_0_0-elasticSearchWarehouse",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Create User.",
+        "description": "<p>Creates OBP user.  No authorisation (currently) required.</p><p>Mimics current webform to Register.</p><p>Requires username(email) and password.</p><p>Returns 409 error if username not unique.</p><p>May require validation of email address.</p>",
+        "operationId": "2_0_0-createUser",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users/USER_EMAIL": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get User by Email Address",
+        "description": "<p>Get the user by email address</p><p>Login is required. CanGetAnyUser entitlement is required,</p>",
+        "operationId": "2_0_0-getUser",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users/USER_ID/entitlement/ENTITLEMENT_ID": {
+      "delete": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Delete Entitlement",
+        "description": "<p>Delete Entitlement specified by ENTITLEMENT_ID for an user specified by USER_ID</p><p>Authentication is required and the user needs to be a Super Admin. Super Admins are listed in the Props file.</p>",
+        "operationId": "2_0_0-deleteEntitlement",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users/USER_ID/entitlements": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get Entitlements specified by USER_ID",
+        "description": "<p>Login is required.</p>",
+        "operationId": "2_0_0-getEntitlements",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Add Entitlement for a User.",
+        "description": "<p>Create Entitlement. Grant Role to User.</p><p>Entitlements are used to grant System or Bank level roles to Users. (For Account level privileges, see Views)</p><p>For a System level Role (.e.g CanGetAnyUser), set bank_id to an empty string i.e. \"bank_id\":\"\"</p><p>For a Bank level Role (e.g. CanCreateAccount), set bank_id to a valid value e.g. \"bank_id\":\"my-bank-id\"</p><p>Authentication is required and the user needs to be a Super Admin. Super Admins are listed in the Props file.</p>",
+        "operationId": "2_0_0-addEntitlement",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users/current": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get User (Current)",
+        "description": "<p>Get the logged in user</p><p>Login is required.</p>",
+        "operationId": "2_0_0-getCurrentUser",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users/current/customers": {
+      "get": {
+        "tags": [
+          "2_0_0"
+        ],
+        "summary": "Get all customers for logged in user",
+        "description": "<p>Information about the currently authenticated user.</p><p>Authentication via OAuth is required.</p>",
+        "operationId": "2_0_0-getCustomers",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Error": {
+      "type": "object",
+      "required": [
+        "code",
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "BanksJSON": {
+      "required": [
+        "banks"
+      ],
+      "properties": {
+        "banks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BankJSON"
+          }
+        }
+      }
+    },
+    "BankJSON": {
+      "required": [
+        "id",
+        "short_name",
+        "full_name",
+        "logo",
+        "website"
+      ],
+      "properties": {
+        "website": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "logo": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "short_name": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

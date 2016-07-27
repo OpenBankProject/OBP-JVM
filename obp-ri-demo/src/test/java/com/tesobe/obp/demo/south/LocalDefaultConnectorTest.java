@@ -4,34 +4,25 @@
  * Use of this source code is governed by a GNU AFFERO license
  * that can be found in the LICENSE file.
  */
-package com.tesobe.obp.demo;
+package com.tesobe.obp.demo.south;
 
-import com.tesobe.obp.demo.data.Banks;
-import com.tesobe.obp.transport.Connector;
-import com.tesobe.obp.transport.Message;
-import com.tesobe.obp.transport.Transport;
-import com.tesobe.obp.transport.spi.Decoder;
-import com.tesobe.obp.transport.spi.Encoder;
+import com.tesobe.obp.demo.data.Users;
+import com.tesobe.obp.transport.*;
 import com.tesobe.obp.transport.spi.LegacyResponder;
-import org.junit.Before;
-import org.junit.Test;
+import org.hamcrest.core.Is;
+import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.SynchronousQueue;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import java.util.concurrent.*;
 
 /**
  * Run a synchronous and an asynchronous version of the default API with the
  * default encoding and the transport in memory.
+ *
+ * @since 2016.0
  */
 @SuppressWarnings("WeakerAccess") public class LocalDefaultConnectorTest
 {
@@ -41,22 +32,7 @@ import static org.junit.Assert.assertThat;
   @Before public void setup()
   {
     factory = Transport.defaultFactory().orElseThrow(RuntimeException::new);
-    responder = new LegacyResponder(factory.decoder(), factory.encoder())
-    {
-      @Override
-      protected String getPrivateBanks(String packet, Decoder.Request r,
-        Encoder e)
-      {
-        Connector.Bank bank = Banks.PRIVATE_BANKS.get(r.userId());
-
-        return e.banks(bank);
-      }
-
-      @Override protected String getPublicBanks(String packet, Encoder e)
-      {
-        return e.banks(Banks.ALL_BANKS);
-      }
-    };
+    responder = new DemoResponder(factory.decoder(), factory.encoder());
   }
 
   @Test public void synchronous() throws InterruptedException
@@ -64,15 +40,14 @@ import static org.junit.Assert.assertThat;
     Connector connector = factory
       .connector(request -> responder.respond(request));
 
-    String userId = "charles.swann@example.org";
     List<Connector.Bank> publicBanks = new ArrayList<>();
     List<Connector.Bank> privateBanks = new ArrayList<>();
 
     connector.getPublicBanks().forEach(publicBanks::add);
-    connector.getPrivateBanks(userId).forEach(privateBanks::add);
+    connector.getPrivateBanks(Users.charles).forEach(privateBanks::add);
 
-    assertThat(publicBanks.size(), is(2));
-    assertThat(privateBanks.size(), is(1));
+    Assert.assertThat(publicBanks.size(), Is.is(2));
+    Assert.assertThat(privateBanks.size(), Is.is(1));
   }
 
   @Test public void asynchronous() throws InterruptedException
@@ -107,8 +82,8 @@ import static org.junit.Assert.assertThat;
     connector.getPublicBanks().forEach(publicBanks::add);
     connector.getPrivateBanks(userId).forEach(privateBanks::add);
 
-    assertThat(publicBanks.size(), is(2));
-    assertThat(privateBanks.size(), is(1));
+    Assert.assertThat(publicBanks.size(), Is.is(2));
+    Assert.assertThat(privateBanks.size(), Is.is(1));
 
     service.shutdown();
   }

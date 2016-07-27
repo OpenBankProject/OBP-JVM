@@ -18,6 +18,8 @@ public class Json
    * @param key may , or may not be present
    *
    * @return null if key is absent
+   *
+   * @since 2016.0
    */
   public static JSONObject getJSONObject(JSONObject o, String key)
   {
@@ -30,6 +32,7 @@ public class Json
       return null;
     }
   }
+
   /**
    * No Exception thrown.
    *

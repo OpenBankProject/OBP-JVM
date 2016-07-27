@@ -16,7 +16,13 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 import static java.util.Collections.singletonMap;
+import static java.util.Objects.nonNull;
 
+/**
+ * Internal JSON encoder. Only called by trusted code.
+ *
+ * @since 2016.0
+ */
 @SuppressWarnings("WeakerAccess") public class Encoder
   implements com.tesobe.obp.transport.spi.Encoder
 {
@@ -32,29 +38,77 @@ import static java.util.Collections.singletonMap;
 
   @Override public Request getPrivateBanks(String userId)
   {
-    return getPublicBanks().user(userId);
+    return request("getBanks").arguments("username", userId);
   }
 
-  protected Request request(String name)
+  @Override public Request getPrivateAccount(String userId, String bankId,
+    String accountId)
+  {
+    return request("getBankAccount")
+      .arguments("username", userId, "bankId", bankId, "accountId", accountId);
+  }
+
+  protected RequestBuilder request(String name)
   {
     return new RequestBuilder(name);
   }
 
+  @Override public String account()
+  {
+    return JSONObject.NULL.toString();
+  }
+
+  @Override public String account(Connector.Account a)
+  {
+    if(nonNull(a))
+    {
+      // @formatter:off
+      JSONObject account = new JSONObject()
+        .put("id", a.id)
+        .put("bank", a.bank)
+        .put("label", a.label)
+        .put("number", a.number)
+        .put("type", a.type)
+        .put("balance", new JSONObject()
+          .put("currency", a.currency)
+          .put("amount", a.amount))
+        .put("IBAN", a.iban)
+        .put("owners", new JSONArray()) // todo ?
+        .put("generate_public_view", false)
+        .put("generate_accountants_view", true)
+        .put("generate_auditors_view", true);
+      // @formatter:on
+
+      return account.toString();
+    }
+
+    return JSONObject.NULL.toString();
+  }
+
   protected Object bank(Connector.Bank b)
   {
-    JSONObject bank = new JSONObject();
+    if(nonNull(b))
+    {
+      // @formatter:off
+      JSONObject bank = new JSONObject()
+        .put("id", b.id)
+        .put("short_name", b.name)
+        .put("full_name", b.fullName)
+        .put("logo", b.logo)
+        .put("website", b.url);
+      // @formatter:on
 
-    bank.put("id", b.id);
-    bank.put("name", b.name);
+      return bank;
+    }
 
-    return bank;
+    return JSONObject.NULL;
   }
 
   @Override public String banks(Connector.Bank... banks)
   {
     JSONArray result = new JSONArray();
 
-    if(banks != null)
+    if(nonNull(banks))
     {
       for(Connector.Bank b : banks)
       {
@@ -69,7 +123,7 @@ import static java.util.Collections.singletonMap;
   {
     JSONArray result = new JSONArray();
 
-    if(banks != null)
+    if(nonNull(banks))
     {
       banks.forEach(bank -> put(result, bank));
     }
@@ -79,11 +133,9 @@ import static java.util.Collections.singletonMap;
 
   protected void put(JSONArray result, Connector.Bank b)
   {
-    if(b == null)
-    {
-      log.warn("A bank is null!");
-    }
-    else
+    assert nonNull(result);
+
+    if(nonNull(b))
     {
       result.put(bank(b));
     }
@@ -117,9 +169,12 @@ import static java.util.Collections.singletonMap;
       return request.toString();
     }
 
-    @Override public Request user(String id)
+    public Request arguments(String... kv)
     {
-      arguments.put("userId", id);
+      for(int i = 0; i < kv.length - 1; i += 2)
+      {
+        arguments.put(kv[i], kv[i + 1]);
+      }
 
       if(request.opt(name) == JSONObject.NULL)
       {
@@ -134,3 +189,61 @@ import static java.util.Collections.singletonMap;
     final JSONObject request = new JSONObject();
   }
 }
+/*
+          // @formatter:off
+          result.add(new Connector.Bank(
+            b.optString("id", null),
+            b.optString("short_name", null),
+            b.optString("full_name", null),
+            b.optString("logo", null),
+            b.optString("website", null)));
+          // @formatter:on
+
+    public JSONObject toJson()
+    {
+      // @formatter:off
+    return new JSONObject()
+      .put("id", id)
+      .put("bank", bank)
+      .put("label", label)
+      .put("number", number)
+      .put("type", type)
+      .put("balance", new JSONObject().put("currency", currency).put
+      ("amount", amount))
+      .put("IBAN", iban)
+      .put("owners", new JSONArray()) // todo ?
+      .put("generate_public_view", false)
+      .put("generate_accountants_view", true)
+      .put("generate_auditors_view", true);
+    // @formatter:on
+    }
+
+    @Override public String toString()
+    {
+      return "Account{" + "id='" + id + '\'' + ", bank='" + bank + '\''
+             + ", label='" + label + '\'' + ", number='" + number + '\''
+             + ", type='" + type + '\'' + ", currency='" + currency + '\''
+             + ", amount='" + amount + '\'' + ", iban='" + iban + '\'' + '}';
+    }
+
+    public JSONObject toJson(String owner)
+    {
+      // @formatter:off
+    return new JSONObject()
+      .put("id", id)
+      .put("bank", bank)
+      .put("label", label)
+      .put("number", number)
+      .put("type", type)
+      .put("balance", new JSONObject().put("currency", currency).put
+      ("amount", amount))
+      .put("IBAN", iban)
+      .put("owners", new JSONArray().put(owner)) // todo fix!
+      .put("generate_public_view", false)
+      .put("generate_accountants_view", true)
+      .put("generate_auditors_view", true);
+    // @formatter:on
+    }
+
+
+ */

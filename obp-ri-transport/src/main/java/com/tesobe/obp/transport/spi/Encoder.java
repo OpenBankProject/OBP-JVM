@@ -11,20 +11,30 @@ import com.tesobe.obp.transport.Connector;
 import java.util.List;
 
 /**
- * todo harden: ..., length cutoff?
+ * @since 2016.0
  */
 public interface Encoder
 {
   Request getPublicBanks();
+
+  Request getPrivateAccount(String userId, String bankId, String accountId);
+
   Request getPrivateBanks(String userId);
 
   String banks(Connector.Bank... banks);
+
   String banks(List<Connector.Bank> banks);
+
+  String account(Connector.Account account);
+
+  /**
+   *
+   * @return empty result for {@link #getPrivateAccount}.
+   */
+  String account();
 
   interface Request
   {
     String toString();
-
-    Request user(String id);
   }
 }

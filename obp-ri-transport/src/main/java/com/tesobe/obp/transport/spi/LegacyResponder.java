@@ -14,6 +14,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
+import static java.util.Objects.nonNull;
+
+/**
+ * @since 2016.0
+ */
 @SuppressWarnings("WeakerAccess") public abstract class LegacyResponder
   implements Receiver
 {
@@ -25,19 +30,24 @@ import java.util.function.BiFunction;
     decoder = d;
     encoder = e;
 
+    api.put("getBankAccount", this::getPrivateAccount);
     api.put("getBanks", this::getBanks);
   }
 
   @Override public String respond(Message request)
   {
-    Decoder.Request decoded = decoder.request(request.payload);
-    String name = decoded.name();
-    BiFunction<Decoder.Request, Encoder, String> call = api.get(name);
     String result = null;
 
-    if(call != null)
+    if(nonNull(request))
     {
-      result = call.apply(decoded, encoder);
+      Decoder.Request decoded = decoder.request(request.payload);
+      String name = decoded.name();
+      BiFunction<Decoder.Request, Encoder, String> call = api.get(name);
+
+      if(nonNull(call))
+      {
+        result = call.apply(decoded, encoder);
+      }
     }
 
     log.trace("{} \u2192 {}", request, result);
@@ -45,8 +55,14 @@ import java.util.function.BiFunction;
     return result;
   }
 
+  protected abstract String getPrivateAccount(Decoder.Request request,
+    Encoder e);
+
   protected String getBanks(Decoder.Request request, Encoder e)
   {
+    assert nonNull(request);
+    assert nonNull(e);
+
     return request.hasArguments()
            ? getPrivateBanks(request.raw(), request, e)
            : getPublicBanks(request.raw(), e);

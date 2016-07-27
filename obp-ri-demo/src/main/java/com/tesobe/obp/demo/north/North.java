@@ -4,8 +4,15 @@
  * Use of this source code is governed by a GNU AFFERO license
  * that can be found in the LICENSE file.
  */
-package com.tesobe.obp.demo;
+package com.tesobe.obp.demo.north;
 
-public class TransportDemo
+/**
+ * @since 2016.0
+ */
+public class North
 {
+  public static void main(String[] arguments)
+  {
+
+  }
 }

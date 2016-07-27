@@ -10,16 +10,28 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
-import com.tesobe.obp.transport.*;
+import com.tesobe.obp.transport.Connector;
+import com.tesobe.obp.transport.Message;
+import com.tesobe.obp.transport.Transport;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
 
-import static java.util.concurrent.TimeUnit.*;
+import static com.tesobe.obp.transport.spi.MockResponder.charles;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Asynchronous, in memory speed test:
@@ -36,6 +48,7 @@ import static java.util.concurrent.TimeUnit.*;
  * 22:05:43.343 1.000.000 asynchronous in memory api calls: min 0 sec 35.975
  * </pre>
  */
+@Ignore("Takes a few minutes on old hardware")
 @SuppressWarnings({"WeakerAccess", "Convert2MethodRef"}) public class SpeedTest
 {
   /**
@@ -44,32 +57,18 @@ import static java.util.concurrent.TimeUnit.*;
   @Before public void setup()
   {
     factory = Transport.defaultFactory().orElseThrow(RuntimeException::new);
-    responder = new LegacyResponder(factory.decoder(), factory.encoder())
-    {
-      @Override
-      protected String getPrivateBanks(String packet, Decoder.Request r,
-        Encoder e)
-      {
-        return e.banks(
-          new Connector.Bank("CRESGIGI", "CREDIT SUISSE (GIBRALTAR) LTD"));
-      }
-
-      @Override protected String getPublicBanks(String packet, Encoder e)
-      {
-        return e.banks(Collections.emptyList());
-      }
-    };
+    responder = new MockResponder(factory.decoder(), factory.encoder());
   }
 
   /**
    * Turn of logging. Will throw if logging framework is not logback.
-   * You should then add code to switch of your loggers...
+   * You should then add code to switch off your loggers...
    */
   @Before public void logging()
   {
     if(!(LoggerFactory.getILoggerFactory() instanceof LoggerContext))
     {
-      throw new RuntimeException("Please add code to switch of logging!");
+      throw new RuntimeException("Please add code to switch off logging!");
     }
 
     LoggerContext context = (LoggerContext)LoggerFactory.getILoggerFactory();
@@ -124,8 +123,7 @@ import static java.util.concurrent.TimeUnit.*;
       for(List<Connector.Bank> banks = new ArrayList<>();
           banks.size() < 1_000_000; )
       {
-        connector.getPrivateBanks("charles.swann@example.org")
-          .forEach(banks::add);
+        connector.getPrivateBanks(charles).forEach(banks::add);
       }
 
       long duration = System.nanoTime() - start;
@@ -143,7 +141,8 @@ import static java.util.concurrent.TimeUnit.*;
   }
 
   Transport.Factory factory;
-  LegacyResponder responder;
+  private Connector connector;
+  private MockResponder responder;
 
   static final Logger log = LoggerFactory.getLogger(SpeedTest.class);
 }

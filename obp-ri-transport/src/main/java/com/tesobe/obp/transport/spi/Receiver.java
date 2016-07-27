@@ -8,6 +8,9 @@ package com.tesobe.obp.transport.spi;
 
 import com.tesobe.obp.transport.Message;
 
+/**
+ * @since 2016.0
+ */
 @SuppressWarnings("WeakerAccess") public interface Receiver
 {
   String respond(Message request);

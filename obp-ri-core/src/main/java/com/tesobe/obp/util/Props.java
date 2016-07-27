@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * @since 2016.0
+ */
 public class Props
 {
   public Props(String path) throws IOException

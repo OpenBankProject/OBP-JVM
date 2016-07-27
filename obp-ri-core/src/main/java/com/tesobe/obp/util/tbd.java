@@ -7,9 +7,11 @@
 package com.tesobe.obp.util;
 
 /**
- * To be done. {@code throw tbd();} is set as Intellij's default for new messages with a return value.
+ * To be done. {@code throw tbd();} is set as Intellij's default for new
+ * messages with a return value.
  *
  * @author ub@kassapo.com
+ * @since 2016.0
  */
 public class tbd extends RuntimeException
 {
@@ -33,8 +35,10 @@ public class tbd extends RuntimeException
     super("Not implemented yet!", cause);
   }
 
-  protected tbd(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace)
+  protected tbd(String message, Throwable cause, boolean enableSuppression,
+    boolean writableStackTrace)
   {
-    super("Not implemented yet: " + message, cause, enableSuppression, writableStackTrace);
+    super("Not implemented yet: " + message, cause, enableSuppression,
+      writableStackTrace);
   }
 }

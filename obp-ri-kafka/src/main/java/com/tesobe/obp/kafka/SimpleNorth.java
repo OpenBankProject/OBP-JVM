@@ -6,9 +6,11 @@
  */
 package com.tesobe.obp.kafka;
 
-import org.slf4j.MDC;
-
-public class SimpleNorth extends SimpleTransport
+/**
+ * @since 2016.0
+ */
+@SuppressWarnings("WeakerAccess") public class SimpleNorth
+  extends SimpleTransport
 {
   public SimpleNorth(String producerTopic, String consumerTopic)
   {

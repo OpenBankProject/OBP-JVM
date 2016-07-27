@@ -6,18 +6,22 @@
  */
 package com.tesobe.obp.transport;
 
-import com.tesobe.obp.transport.spi.*;
+import com.tesobe.obp.transport.spi.MockResponder;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 
+import static com.tesobe.obp.transport.spi.MockResponder.*;
+import static java.util.Objects.deepEquals;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Check for changes in public signatures.
+ *
+ * @since 2016.0
  */
 public class ConnectorSignatureTest
 {
@@ -26,8 +30,19 @@ public class ConnectorSignatureTest
     Transport.Factory factory = Transport.defaultFactory()
       .orElseThrow(RuntimeException::new);
 
-    connector = factory.connector(request -> receiver.respond(request));
-    receiver = new Receiver(factory.decoder(), factory.encoder());
+    connector = factory.connector(request -> responder.respond(request));
+    responder = new MockResponder(factory.decoder(), factory.encoder());
+  }
+
+  @Test public void getPrivateAccount() throws Exception
+  {
+//    ArrayList<Connector.Account> accounts = new ArrayList<>();
+
+    Connector.Account account = connector
+      .getPrivateAccount(charles, CRESGIGI.id, "CRESGIGI-1")
+      .orElseThrow(RuntimeException::new);
+
+    assertTrue(deepEquals(account, charles_CRESGIGI_1));
   }
 
   @Test public void getPublicBanks() throws Exception
@@ -36,40 +51,20 @@ public class ConnectorSignatureTest
 
     connector.getPublicBanks().forEach(banks::add);
 
-    assertThat(banks.size(), is(1));
+    assertThat(banks.size(), is(2));
   }
 
   @Test public void getPrivateBanks() throws Exception
   {
     ArrayList<Connector.Bank> banks = new ArrayList<>();
 
-    connector.getPrivateBanks("charles.swann@example.org").forEach(banks::add);
+    connector.getPrivateBanks(charles).forEach(banks::add); // 1
+    connector.getPrivateBanks(hacker).forEach(banks::add); // 0
+    connector.getPrivateBanks(null).forEach(banks::add); // 0
 
     assertThat(banks.size(), is(1));
   }
 
   private Connector connector;
-  private Receiver receiver;
-
-  private class Receiver extends LegacyResponder
-  {
-    Receiver(Decoder d, Encoder e)
-    {
-      super(d, e);
-    }
-
-    @Override
-    protected String getPrivateBanks(String packet, Decoder.Request request,
-      Encoder e)
-    {
-      assertThat(request.userId(), notNullValue());
-
-      return e.banks(new Connector.Bank("bank", request.userId()));
-    }
-
-    @Override protected String getPublicBanks(String packet, Encoder e)
-    {
-      return e.banks(new Connector.Bank("bank", "public"));
-    }
-  }
+  private MockResponder responder;
 }

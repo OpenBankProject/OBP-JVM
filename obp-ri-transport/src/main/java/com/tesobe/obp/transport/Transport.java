@@ -15,15 +15,26 @@ import static com.tesobe.obp.transport.Transport.Version.legacy;
 
 /**
  * Transport manages the different versions of the transport api.
+ *
+ * @since 2016.0
  */
 @SuppressWarnings("WeakerAccess") public abstract class Transport
 {
+  /**
+   * @return version.legacy, encoding JSON
+   * @since 2016.0
+   */
   public static Optional<Factory> defaultFactory()
   {
     return Optional.of(new Factory()
     {
       @Override public Connector connector(Sender s)
       {
+        if(s == null)
+        {
+          throw new IllegalArgumentException("Sender is required!");
+        }
+
         return Transport.api(legacy, encoder(), decoder(), s);
       }
 
@@ -56,6 +67,12 @@ import static com.tesobe.obp.transport.Transport.Version.legacy;
 
   public interface Factory
   {
+    /**
+     * @param s not null
+     * @return Connector
+     * @throw RuntimeException is sender is null
+     * @since 2016.0
+     */
     Connector connector(Sender s);
 
     Decoder decoder();

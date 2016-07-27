@@ -8,16 +8,13 @@ package com.tesobe.obp.kafka;
 
 import com.tesobe.obp.transport.Connector;
 import com.tesobe.obp.transport.Transport;
-import com.tesobe.obp.transport.spi.Decoder;
-import com.tesobe.obp.transport.spi.Encoder;
-import com.tesobe.obp.transport.spi.LegacyResponder;
+import com.tesobe.obp.transport.spi.MockResponder;
 import com.tesobe.obp.transport.spi.Receiver;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.LockSupport;
 
@@ -68,29 +65,9 @@ import static org.junit.Assert.assertThat;
   {
     public static void main(String[] ignored)
     {
-      Connector.Bank publicBank = new Connector.Bank("CRESGIGI",
-        "CREDIT SUISSE (GIBRALTAR) LTD");
-
       factory = Transport.defaultFactory().orElseThrow(RuntimeException::new);
-      Receiver responder = new LegacyResponder(factory.decoder(),
-        factory.encoder())
-      {
-        @Override
-        protected String getPrivateBanks(String packet, Decoder.Request r,
-          Encoder e)
-        {
-          log.trace(packet);
-
-          return e.banks(Collections.emptyList());
-        }
-
-        @Override protected String getPublicBanks(String packet, Encoder e)
-        {
-          log.trace(packet);
-
-          return e.banks(publicBank);
-        }
-      };
+      Receiver responder = new MockResponder(factory.decoder(),
+        factory.encoder());
 
       SimpleSouth south = new SimpleSouth("Request", "Response", responder);
 

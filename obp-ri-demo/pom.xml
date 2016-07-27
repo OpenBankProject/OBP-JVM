@@ -24,6 +24,15 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>obp-ri-transport</artifactId>
     </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.tesobe.obp</groupId>
+      <artifactId>obp-ri-kafka</artifactId>
+      <version>2016.0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
 </project>
