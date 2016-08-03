@@ -38,15 +38,26 @@
       <name>GNU Affero General Public License (AGPL)</name>
       <url>http://www.gnu.org/licenses/agpl-3.0.html</url>
     </license>
-
     <license>
       <name>Proprietary licence issued by TESOBE LTD. upon request</name>
       <url>www.tesobe.com</url>
     </license>
   </licenses>
 
+  <developers>
+    <developer>
+      <name>Ulrich Becker</name>
+      <email>ub@kassapo.com</email>
+      <organization>TESOBE LTD.</organization>
+      <organizationUrl>http://www.tesobe.com</organizationUrl>
+    </developer>
+  </developers>
+
   <scm>
     <connection>scm:git:https://github.com/OpenBankProject/OBP-JVM</connection>
+    <developerConnection>scm:git:https://github.com/OpenBankProject/OBP-JVM</developerConnection>
+    <url>https://github.com/OpenBankProject/OBP-JVM</url>
+    <tag>next</tag>
   </scm>
 
   <distributionManagement>
@@ -54,6 +65,12 @@
       <id>local-repository</id>
       <url>file:///local</url>
     </repository>
+<!--
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+-->
   </distributionManagement>
 
   <modules>
@@ -74,6 +91,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <timestamp>${maven.build.timestamp}</timestamp>
     <obp.version>${project.version}</obp.version>
+    <gpg.executable>gpg2</gpg.executable>
   </properties>
 
   <build>
@@ -148,6 +166,31 @@
               </goals>
             </execution>
           </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>1.6</version>
+          <executions>
+            <execution>
+              <id>sign-artifacts</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>sign</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.10.4</version>
+          <configuration>
+            <doctitle>${project.name} ${project.version}</doctitle>
+            <windowtitle>${project.name} ${project.version}</windowtitle>
+            <testDoctitle>Tests ${project.name} ${project.version}</testDoctitle>
+            <testWindowtitle>Tests ${project.name} ${project.version}</testWindowtitle>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -233,6 +276,17 @@
           <artifactId>versions-maven-plugin</artifactId>
           <version>2.2</version>
         </plugin>
+        <plugin>
+          <groupId>org.sonatype.plugins</groupId>
+          <artifactId>nexus-staging-maven-plugin</artifactId>
+          <version>1.6.7</version>
+          <extensions>true</extensions>
+          <configuration>
+            <serverId>ossrh</serverId>
+            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+            <autoReleaseAfterClose>false</autoReleaseAfterClose>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -258,10 +312,16 @@
         <artifactId>maven-failsafe-plugin</artifactId>
       </plugin>
       <plugin>
+        <artifactId>maven-gpg-plugin</artifactId>
+      </plugin>
+      <plugin>
         <artifactId>maven-install-plugin</artifactId>
       </plugin>
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
       </plugin>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
@@ -271,6 +331,10 @@
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

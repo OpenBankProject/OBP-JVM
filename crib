@@ -8,18 +8,31 @@ Dependencies
 
 Release
 
+  http://central.sonatype.org/pages/apache-maven.html
+
   git clone | git checkout -b
   cd obp-ri; mvn versions:set -DnewVersion=2016.0-ALPHA1; cd ..
   mvn versions:set -DnewVersion=2.0-ALPHA1
   mvn deploy -DskipITs -DaltDeploymentRepository=test::default::file://local
   find local
   mvn deploy -DskipITs
+  mvn nexus-staging:release | mvn nexus-staging:drop
+
   mvn scm:tag
   cd obp-ri; mvn scm:tag; cd ..
   git push --tags
 
   At top level
   mvn versions:commit | mvn versions:revert
+
+Signing
+
+  http://central.sonatype.org/pages/working-with-pgp-signatures.html
+  https://github.com/sonatype/nexus-maven-plugins/tree/master/staging/maven-plugin
+
+  brew install gpg2
+  gpg2 --list-keys
+  gpg2 --keyserver hkp://pool.sks-keyservers.net --send-keys <id>
 
 Git
 
@@ -45,3 +58,13 @@ Git
   git diff-tree --name-only -r HEAD^^..HEAD
   git log --stat HEAD^..HEAD
 
+
+Open API Initiative
+
+  https://github.com/OAI/OpenAPI-Specification
+
+  brew install node.js
+  git clone https://github.com/swagger-api/swagger-editor.git
+  cd swagger-editor
+  npm install
+  npm start
