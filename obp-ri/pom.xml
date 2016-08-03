@@ -4,6 +4,7 @@
   ~
   ~ Use of this source code is governed by a GNU AFFERO license
   ~ that can be found in the LICENSE file.
+  ~
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -30,7 +31,6 @@
     <module>../obp-ri-core</module>
     <module>../obp-ri-demo</module>
     <module>../obp-ri-kafka</module>
-    <module>../obp-ri-rest</module>
     <module>../obp-ri-transport</module>
   </modules>
 
@@ -40,7 +40,7 @@
     <json.version>20160212</json.version>
     <junit.version>4.12</junit.version>
     <kafka.version>0.10.0.0</kafka.version>
-    <logback.version>1.0.13</logback.version>
+    <logback.version>1.1.7</logback.version>
     <rest-assured.version>3.0.0</rest-assured.version>
     <slf4j.version>1.7.21</slf4j.version>
   </properties>

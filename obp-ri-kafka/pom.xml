@@ -4,6 +4,7 @@
   ~
   ~ Use of this source code is governed by a GNU AFFERO license
   ~ that can be found in the LICENSE file.
+  ~
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

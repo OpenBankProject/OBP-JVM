@@ -3,6 +3,7 @@
  *
  * Use of this source code is governed by a GNU AFFERO license
  * that can be found in the LICENSE file.
+ *
  */
 package com.tesobe.obp.transport;
 
@@ -35,7 +36,7 @@ import static com.tesobe.obp.transport.Transport.Version.legacy;
           throw new IllegalArgumentException("Sender is required!");
         }
 
-        return Transport.api(legacy, encoder(), decoder(), s);
+        return Transport.connector(legacy, encoder(), decoder(), s);
       }
 
       @Override public Decoder decoder()
@@ -50,9 +51,9 @@ import static com.tesobe.obp.transport.Transport.Version.legacy;
     });
   }
 
-  static Connector api(Version v, Encoder e, Decoder d, Sender s)
+  static Connector connector(Version v, Encoder e, Decoder d, Sender s)
   {
-    return new LegacyApi(v, e, d, s);
+    return new LegacyConnector(v, e, d, s);
   }
 
   static Decoder decoder(Version v, Encoding e)

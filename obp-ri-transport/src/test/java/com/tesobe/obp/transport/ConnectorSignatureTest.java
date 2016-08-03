@@ -3,6 +3,7 @@
  *
  * Use of this source code is governed by a GNU AFFERO license
  * that can be found in the LICENSE file.
+ *
  */
 package com.tesobe.obp.transport;
 
@@ -12,7 +13,10 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
-import static com.tesobe.obp.transport.spi.MockResponder.*;
+import static com.tesobe.obp.transport.spi.MockResponder.CRESGIGI;
+import static com.tesobe.obp.transport.spi.MockResponder.charles;
+import static com.tesobe.obp.transport.spi.MockResponder.charles_CRESGIGI_1;
+import static com.tesobe.obp.transport.spi.MockResponder.hacker;
 import static java.util.Objects.deepEquals;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -51,7 +55,7 @@ public class ConnectorSignatureTest
 
     connector.getPublicBanks().forEach(banks::add);
 
-    assertThat(banks.size(), is(2));
+    assertThat(banks.size(), is(MockResponder.PUBLIC_BANKS.size()));
   }
 
   @Test public void getPrivateBanks() throws Exception
@@ -62,7 +66,8 @@ public class ConnectorSignatureTest
     connector.getPrivateBanks(hacker).forEach(banks::add); // 0
     connector.getPrivateBanks(null).forEach(banks::add); // 0
 
-    assertThat(banks.size(), is(1));
+    assertThat(banks.size(),
+      is(MockResponder.PRIVATE_BANKS.get(charles).size()));
   }
 
   private Connector connector;

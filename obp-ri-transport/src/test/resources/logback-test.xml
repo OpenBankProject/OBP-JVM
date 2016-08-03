@@ -4,6 +4,7 @@
   ~
   ~ Use of this source code is governed by a GNU AFFERO license
   ~ that can be found in the LICENSE file.
+  ~
   -->
 <configuration debug="false">
 
@@ -22,7 +23,7 @@
   </appender>
 
   <logger name="com.tesobe.obp" level="debug"/>
-  <logger name="com.tesobe.obp.transport.spi.LegacyApi" level="trace"/>
+  <logger name="com.tesobe.obp.transport.spi.LegacyConnector" level="trace"/>
   <logger name="com.tesobe.obp.transport.spi.LegacyResponder" level="trace"/>
 
   <logger name="com.tesobe.obp.transport.spi.SpeedTest" level="info"

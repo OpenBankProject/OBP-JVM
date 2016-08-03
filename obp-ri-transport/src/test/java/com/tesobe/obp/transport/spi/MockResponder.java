@@ -3,6 +3,7 @@
  *
  * Use of this source code is governed by a GNU AFFERO license
  * that can be found in the LICENSE file.
+ *
  */
 package com.tesobe.obp.transport.spi;
 
@@ -12,6 +13,7 @@ import java.util.*;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Collections.unmodifiableMap;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -43,7 +45,9 @@ import static org.junit.Assert.assertThat;
   {
     assertThat(request.userId(), notNullValue());
 
-    return request.userId().equals(charles) ? e.banks(CRESGIGI) : e.banks();
+    List<Connector.Bank> banks = PRIVATE_BANKS.get(request.userId());
+
+    return banks == null ? e.banks() : e.banks(banks);
   }
 
   @Override protected String getPublicBanks(String packet, Encoder e)
@@ -60,9 +64,9 @@ import static org.junit.Assert.assertThat;
   public static final Connector.Bank CRESGIGI = new Connector.Bank("CRESGIGI",
     "CREDIT SUISSE (GIBRALTAR) LTD", "CREDIT SUISSE (GIBRALTAR) LTD", "logo",
     "website");
-  public static final List<Connector.Bank> ALL_BANKS = unmodifiableList(
-    asList(AAIAATW1, CRESGIGI));
-  public static final Map<String, Connector.Bank> PRIVATE_BANKS;
+  public static final List<Connector.Bank> ALL_BANKS;
+  public static final Map<String, List<Connector.Bank>> PRIVATE_BANKS;
+  public static final List<Connector.Bank> PUBLIC_BANKS;
 
   public static final String charles = "charles.swann@example.org";
   public static final String odette = "Odette de Crécy";
@@ -70,10 +74,14 @@ import static org.junit.Assert.assertThat;
 
   static
   {
-    Map<String, Connector.Bank> privateBanks = new HashMap<>();
+    List<Connector.Bank> charlesBanks = new ArrayList<>();
+    Map<String, List<Connector.Bank>> privateBanks = new HashMap<>();
 
-    privateBanks.put(MockResponder.charles, CRESGIGI);
+    charlesBanks.add(CRESGIGI);
+    privateBanks.put(MockResponder.charles, unmodifiableList(charlesBanks));
 
-    PRIVATE_BANKS = Collections.unmodifiableMap(privateBanks);
+    ALL_BANKS =  unmodifiableList(asList(AAIAATW1, CRESGIGI));
+    PRIVATE_BANKS = unmodifiableMap(privateBanks);
+    PUBLIC_BANKS = ALL_BANKS;
   }
 }

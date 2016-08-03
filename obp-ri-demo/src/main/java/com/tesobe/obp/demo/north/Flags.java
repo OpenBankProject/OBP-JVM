@@ -5,13 +5,13 @@
  * that can be found in the LICENSE file.
  *
  */
-package com.tesobe.obp.demo.south;
+package com.tesobe.obp.demo.north;
 
 import com.tesobe.obp.util.Options;
 import joptsimple.OptionSpec;
 
 /**
- * Command line flags accepted by {@link South}.
+ * Command line flags accepted by {@link North}.
  *
  * @since 2016.0
  */

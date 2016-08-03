@@ -19,6 +19,8 @@ target
 .gradle
 .idea
 
+pom.xml.versionsBackup
+
 gradle
 gradlew*
 hs_err_pid*

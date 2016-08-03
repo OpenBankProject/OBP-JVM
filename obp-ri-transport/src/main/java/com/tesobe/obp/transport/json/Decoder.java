@@ -3,6 +3,7 @@
  *
  * Use of this source code is governed by a GNU AFFERO license
  * that can be found in the LICENSE file.
+ *
  */
 package com.tesobe.obp.transport.json;
 
@@ -79,6 +80,8 @@ import static java.util.Objects.nonNull;
 
   @Override public Optional<Connector.Account> account(String response)
   {
+    log.trace(String.valueOf(response));
+
     if(nonNull(response))
     {
       JSONObject a = new JSONObject(response);
@@ -102,6 +105,8 @@ import static java.util.Objects.nonNull;
   @Override public Iterable<Connector.Bank> banks(String response)
   {
     List<Connector.Bank> result = new ArrayList<>();
+
+    log.trace(String.valueOf(response));
 
     if(nonNull(response))
     {
@@ -142,5 +147,5 @@ import static java.util.Objects.nonNull;
   }
 
   final Transport.Version version;
-  static final Logger log = LoggerFactory.getLogger(Encoder.class);
+  static final Logger log = LoggerFactory.getLogger(Decoder.class);
 }

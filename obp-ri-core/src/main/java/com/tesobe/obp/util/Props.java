@@ -3,6 +3,7 @@
  *
  * Use of this source code is governed by a GNU AFFERO license
  * that can be found in the LICENSE file.
+ *
  */
 package com.tesobe.obp.util;
 
@@ -15,18 +16,14 @@ import java.util.Properties;
  */
 public class Props
 {
-  public Props(String path) throws IOException
+  public Props(Class root, String path) throws IOException
   {
-    assert path != null;
-
-    if(!path.startsWith("/"))
+    if(root != null && path != null)
     {
-      path = "/" + path;
-    }
-
-    try(InputStream props = getClass().getResourceAsStream(path))
-    {
-      properties.load(props);
+      try(InputStream props = root.getResourceAsStream(path))
+      {
+        properties.load(props);
+      }
     }
   }
 

@@ -3,6 +3,7 @@
  *
  * Use of this source code is governed by a GNU AFFERO license
  * that can be found in the LICENSE file.
+ *
  */
 package com.tesobe.obp.kafka;
 
@@ -22,11 +23,14 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 /**
+ * Must start Remote South before running the test.
+ * <pre>
  * user -> REST ->
- * api -> producer -> | -> consumer -> in -\
- * out <- consumer <- | <- producer <- responder
- * |
- * server      |    client
+ * connector -> producer -> | -> consumer -> queue -\
+ *     queue <- consumer <- | <- producer <- responder
+ *                          |
+ *      north               |          south
+ * </pre>
  */
 @SuppressWarnings("WeakerAccess") public class KafkaIT
 {
@@ -38,7 +42,7 @@ import static org.junit.Assert.assertThat;
   @SuppressWarnings("InfiniteLoopStatement") @Test public void simple()
     throws InterruptedException
   {
-    String userId = "charles.swann@example.org";
+    String userId = MockResponder.charles;
     SimpleNorth north = new SimpleNorth("Request", "Response");
 
     north.receive(); // listen for responses
@@ -51,8 +55,9 @@ import static org.junit.Assert.assertThat;
     connector.getPrivateBanks(userId).forEach(privateBanks::add);
     connector.getPublicBanks().forEach(publicBanks::add);
 
-    assertThat(privateBanks.size(), is(0));
-    assertThat(publicBanks.size(), is(1));
+    assertThat(privateBanks.size(),
+      is(MockResponder.PRIVATE_BANKS.get(MockResponder.charles).size()));
+    assertThat(publicBanks.size(), is(MockResponder.PUBLIC_BANKS.size()));
 
     north.shutdown();
   }
@@ -63,6 +68,7 @@ import static org.junit.Assert.assertThat;
 
   public static class RemoteSouth
   {
+    @SuppressWarnings("InfiniteLoopStatement")
     public static void main(String[] ignored)
     {
       factory = Transport.defaultFactory().orElseThrow(RuntimeException::new);

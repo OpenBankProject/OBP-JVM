@@ -1,0 +1,47 @@
+Dependencies
+
+  mvn dependency:tree -DoutputFile=mvn.log   print all dependencies
+  mvn dependency:go-offline                  copies all dependencies
+  mvn versions:display-dependency-updates -N available updates for dependencies
+  mvn versions:display-plugin-updates     -N available updates for plugins
+  mvn versions:display-property-updates   -N redundant?
+
+Release
+
+  git clone | git checkout -b
+  cd obp-ri; mvn versions:set -DnewVersion=2016.0-ALPHA1; cd ..
+  mvn versions:set -DnewVersion=2.0-ALPHA1
+  mvn deploy -DskipITs -DaltDeploymentRepository=test::default::file://local
+  find local
+  mvn deploy -DskipITs
+  mvn scm:tag
+  cd obp-ri; mvn scm:tag; cd ..
+  git push --tags
+
+  At top level
+  mvn versions:commit | mvn versions:revert
+
+Git
+
+  Track a new remote branch:
+
+  git remote show origin
+
+  If the remote branch you want to checkout is under "New remote branches" and
+  not "Tracked remote branches" then you need to fetch them first:
+
+  git remote update
+  git fetch
+
+  Now it should work:
+
+  git checkout -b local-name origin/remote-name
+
+  Track changes
+
+  git show --stat <commitish>
+  git show --stat HEAD^^..HEAD
+  git show --stat --source HEAD^^..HEAD
+  git diff-tree --name-only -r HEAD^^..HEAD
+  git log --stat HEAD^..HEAD
+

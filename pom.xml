@@ -4,6 +4,7 @@
   ~
   ~ Use of this source code is governed by a GNU AFFERO license
   ~ that can be found in the LICENSE file.
+  ~
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -32,6 +33,29 @@
 
   <url>https://github.com/OpenBankProject/OBP-JVM</url>
 
+  <licenses>
+    <license>
+      <name>GNU Affero General Public License (AGPL)</name>
+      <url>http://www.gnu.org/licenses/agpl-3.0.html</url>
+    </license>
+
+    <license>
+      <name>Proprietary licence issued by TESOBE LTD. upon request</name>
+      <url>www.tesobe.com</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:https://github.com/OpenBankProject/OBP-JVM</connection>
+  </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>local-repository</id>
+      <url>file:///local</url>
+    </repository>
+  </distributionManagement>
+
   <modules>
     <module>obp-ri</module>
     <module>obp-spec</module>
@@ -55,6 +79,11 @@
   <build>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.jvnet.jax-ws-commons</groupId>
+          <artifactId>jaxws-maven-plugin</artifactId>
+          <version>2.3</version>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>
@@ -126,6 +155,20 @@
           <version>2.5.2</version>
         </plugin>
         <plugin>
+          <groupId>org.mortbay.jetty</groupId>
+          <artifactId>maven-jetty-plugin</artifactId>
+          <version>6.1.26</version>
+          <configuration>
+            <scanIntervalSeconds>10</scanIntervalSeconds>
+            <connectors>
+              <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+                <port>8080</port>
+                <maxIdleTime>60000</maxIdleTime>
+              </connector>
+            </connectors>
+          </configuration>
+        </plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <version>2.6</version>
@@ -143,6 +186,13 @@
           <version>2.7</version>
           <configuration>
             <encoding>${project.build.sourceEncoding}</encoding>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-scm-plugin</artifactId>
+          <version>1.9.5</version>
+          <configuration>
+            <tag>${project.artifactId}-${project.version}</tag>
           </configuration>
         </plugin>
         <plugin>
@@ -179,23 +229,9 @@
           </configuration>
         </plugin>
         <plugin>
-          <groupId>org.jvnet.jax-ws-commons</groupId>
-          <artifactId>jaxws-maven-plugin</artifactId>
-          <version>2.3</version>
-        </plugin>
-        <plugin>
-          <groupId>org.mortbay.jetty</groupId>
-          <artifactId>maven-jetty-plugin</artifactId>
-          <version>6.1.26</version>
-          <configuration>
-            <scanIntervalSeconds>10</scanIntervalSeconds>
-            <connectors>
-              <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-                <port>8080</port>
-                <maxIdleTime>60000</maxIdleTime>
-              </connector>
-            </connectors>
-          </configuration>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>versions-maven-plugin</artifactId>
+          <version>2.2</version>
         </plugin>
       </plugins>
     </pluginManagement>
