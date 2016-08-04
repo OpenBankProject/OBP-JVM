@@ -27,6 +27,11 @@ import static com.tesobe.obp.transport.Transport.Version.legacy;
    */
   public static Optional<Factory> defaultFactory()
   {
+    return factory(Version.legacy, Encoding.json);
+  }
+
+  public static Optional<Transport.Factory> factory(Version v, Encoding e)
+  {
     return Optional.of(new Factory()
     {
       @Override public Connector connector(Sender s)
@@ -36,17 +41,17 @@ import static com.tesobe.obp.transport.Transport.Version.legacy;
           throw new IllegalArgumentException("Sender is required!");
         }
 
-        return Transport.connector(legacy, encoder(), decoder(), s);
+        return Transport.connector(v, encoder(), decoder(), s);
       }
 
       @Override public Decoder decoder()
       {
-        return Transport.decoder(legacy, json);
+        return Transport.decoder(v, e);
       }
 
       @Override public Encoder encoder()
       {
-        return Transport.encoder(legacy, json);
+        return Transport.encoder(v, e);
       }
     });
   }

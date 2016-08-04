@@ -4,7 +4,7 @@ A set of libraries and a demo application.
 
 ## Design
 
-This is a redesign of 
+This is a redesign of
 [OBP-API project's](https://github.com/OpenBankProject/OBP-API) `code.bankconnectors.Connector`.
 The connector is used to communicate with extensions/plugins/backends that are
 independently developed.
@@ -18,18 +18,18 @@ The goals are:
     * In memory (directly linked to OBP-API)
   * Easy testing
   * Provide a demo
-   
+
 **Your feedback is very much appreciated**
 
 ## Quick start
 
-Take a look at 
+Take a look at
 
 ```
 obp-ri-demo/src/test/java/com/tesobe/obp/demo/south/LocalDefaultConnectorTest.java
 ```
 
-The `factory` provides the *North* side of the connection. 
+The `factory` provides the *North* side of the connection.
 
 Use it to select the version of the connector (currently only `Version.legacy` which means unversioned) and the encoding to use (currently only `Encoding.json`).
 
@@ -91,7 +91,7 @@ For testing reduce the retention time to, for example, one minute
 
 ```
 bin/kafka-configs.sh --zookeeper localhost:2181 --entity-type topics --alter --add-config retention.ms=1000 --entity-name Request
-bin/kafka-configs.s --zookeeper localhost:2181 --entity-type topics --alter --add-config retention.ms=1000 --entity-name Response
+bin/kafka-configs.sh --zookeeper localhost:2181 --entity-type topics --alter --add-config retention.ms=1000 --entity-name Response
 ```
 
 If there is no props file in `OBP-API/src/main/resources/props/`, then `default.props` copied from `sample.props.template` will do.
@@ -122,15 +122,15 @@ Command line flags for the south demo
 
 ```
 java -jar obp-ri-demo/target/obp-ri-demo-2016.0-SNAPSHOT-jar-with-dependencies.jar -h
-Option                             Description                               
-------                             -----------                               
--?, -h, --help                     This message.                             
+Option                             Description
+------                             -----------
+-?, -h, --help                     This message.
 -c, --consumer <CONSUMER>          Consumer Configuration (default: consumer.
-                                     props)                                  
---consumer-topic <CONSUMER_TOPIC>  Consumer Topic (default: Request)         
+                                     props)
+--consumer-topic <CONSUMER_TOPIC>  Consumer Topic (default: Request)
 -p, --producer <PRODUCER>          Producer Configuration (default: producer.
-                                     props)                                  
---producer-topic <PRODUCER_TOPIC>  Producer Topic (default: Response)       
+                                     props)
+--producer-topic <PRODUCER_TOPIC>  Producer Topic (default: Response)
 ```
 
 Start the south demo
@@ -145,4 +145,10 @@ Try a request
 http://localhost:8080/obp/v2.0.0/banks
 ```
 
+Checking compatability with OBP-API with `KafkaMappedConnector.scala`
 
+```
+curl -v -H "Accept:application/json" -H "Content-Type:application/json" -X GET http://localhost:8080/obp/v2.0.0/banks
+curl -v -H "Accept:application/json" -H "Content-Type:application/json" -X GET http://localhost:8080/obp/v2.0.0/banks
+
+```

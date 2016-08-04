@@ -18,11 +18,21 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>obp-ri-transport</artifactId>
+  <name>obp-ri-transport</name>
+  <description>
+    TESOBE LTD.'s reference implementation of parts of the Open Bank Project.
+  </description>
 
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>obp-ri-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>obp-ri-core</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

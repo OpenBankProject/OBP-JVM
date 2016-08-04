@@ -11,10 +11,12 @@
   <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>
-        %-5level %d{HH:mm:ss.SSS} [%thread] %X{kafka} %c{30}.%method - %msg%n
+        %-5level %d{HH:mm:ss.SSS} [%thread] %X{kafka} %c{30}.%method %L - %msg%n
       </pattern>
     </encoder>
   </appender>
+
+  <logger name="ch.qos.logback" level="error"/>
 
   <logger name="org.apache.kafka" level="warn"/>
 
@@ -22,7 +24,7 @@
   <logger name="com.tesobe.obp.kafka" level="trace"/>
   <logger name="com.tesobe.obp.transport" level="trace"/>
 
-  <root level="info">
+  <root level="error">
     <appender-ref ref="console"/>
   </root>
 

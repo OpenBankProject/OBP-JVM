@@ -19,6 +19,10 @@
   </parent>
 
   <artifactId>obp-ri-kafka</artifactId>
+  <name>obp-ri-kafka</name>
+  <description>
+    TESOBE LTD.'s reference implementation of parts of the Open Bank Project.
+  </description>
 
   <dependencies>
     <dependency>

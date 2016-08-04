@@ -7,7 +7,8 @@
  */
 package com.tesobe.obp.transport.spi;
 
-import com.tesobe.obp.transport.Connector;
+import com.tesobe.obp.transport.Account;
+import com.tesobe.obp.transport.Bank;
 
 import java.util.Optional;
 
@@ -18,11 +19,13 @@ public interface Decoder
 {
   Request request(String request);
 
-  Iterable<Connector.Bank> banks(String response);
+  Optional<Account> account(String response) throws DecoderException;
 
-  Iterable<Connector.Bank> banks();
+  Iterable<Account> accounts(String response);
 
-  Optional<Connector.Account> account(String response);
+  Optional<Bank> bank(String response) throws DecoderException;
+
+  Iterable<Bank> banks(String response) throws DecoderException;
 
   interface Request
   {
@@ -30,8 +33,12 @@ public interface Decoder
 
     String name();
 
-    boolean hasArguments();
+    Optional<String> accountId();
 
-    String userId();
+    Optional<String> bankId();
+
+    Optional<String> transactionId();
+
+    Optional<String> userId();
   }
 }

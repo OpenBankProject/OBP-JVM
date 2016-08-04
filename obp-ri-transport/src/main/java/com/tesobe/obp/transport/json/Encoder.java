@@ -7,8 +7,12 @@
  */
 package com.tesobe.obp.transport.json;
 
-import com.tesobe.obp.transport.Connector;
+import com.tesobe.obp.transport.Account;
+import com.tesobe.obp.transport.Bank;
+import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.Transport;
+import com.tesobe.obp.transport.User;
+import com.tesobe.obp.util.tbd;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -16,11 +20,12 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-import static java.util.Collections.singletonMap;
 import static java.util.Objects.nonNull;
 
 /**
  * Internal JSON encoder. Only called by trusted code.
+ * <p>
+ * Todo make robust.
  *
  * @since 2016.0
  */
@@ -37,6 +42,21 @@ import static java.util.Objects.nonNull;
     return request("getBanks");
   }
 
+  @Override public Request getPublicTransaction()
+  {
+    throw new tbd();
+  }
+
+  @Override public Request getPublicTransactions()
+  {
+    throw new tbd();
+  }
+
+  @Override public Request getPublicUser(String userId)
+  {
+    throw new tbd();
+  }
+
   @Override public Request getPrivateBanks(String userId)
   {
     return request("getBanks").arguments("username", userId);
@@ -49,98 +69,134 @@ import static java.util.Objects.nonNull;
       .arguments("username", userId, "bankId", bankId, "accountId", accountId);
   }
 
+  @Override public Request getPrivateAccounts(String userId, String bankId)
+  {
+    return request("getBankAccounts")
+      .arguments("username", userId, "bankId", bankId);
+  }
+
+  @Override public Request getPrivateBank(String userId, String bankId)
+  {
+    return request("getBank")
+      .arguments("username", userId, "bankId", bankId);
+  }
+
   protected RequestBuilder request(String name)
   {
     return new RequestBuilder(name);
   }
 
-  @Override public String account()
+  @Override public String account(Account a)
   {
-    return JSONObject.NULL.toString();
+    JSONObject json = json(a);
+
+    return json != null ? json.toString() : JSONObject.NULL.toString();
   }
 
-  @Override public String account(Connector.Account a)
+  @Override public String accounts(List<Account> accounts)
+  {
+    JSONArray result = new JSONArray();
+
+    if(nonNull(accounts))
+    {
+      accounts.forEach(account -> json(account, result));
+    }
+
+    return result.toString();
+  }
+
+  @Override public String bank(Bank b)
+  {
+    JSONObject json = json(b);
+
+    return json != null ? json.toString() : JSONObject.NULL.toString();
+  }
+
+  @Override public String banks(List<Bank> banks)
+  {
+    JSONArray result = new JSONArray();
+
+    if(nonNull(banks))
+    {
+      banks.forEach(bank -> json(bank, result));
+    }
+
+    return result.toString();
+  }
+
+  protected JSONObject json(Account a)
   {
     if(nonNull(a))
     {
-      // @formatter:off
-      JSONObject account = new JSONObject()
-        .put("id", a.id)
-        .put("bank", a.bank)
-        .put("label", a.label)
-        .put("number", a.number)
-        .put("type", a.type)
-        .put("balance", new JSONObject()
-          .put("currency", a.currency)
-          .put("amount", a.amount))
-        .put("IBAN", a.iban)
-        .put("owners", new JSONArray()) // todo ?
-        .put("generate_public_view", false)
-        .put("generate_accountants_view", true)
-        .put("generate_auditors_view", true);
-      // @formatter:on
-
-      return account.toString();
+      return new AccountEncoder(a).toJson();
     }
 
-    return JSONObject.NULL.toString();
+    return null;
   }
 
-  protected Object bank(Connector.Bank b)
+  protected void json(Account a, JSONArray result)
+  {
+    if(nonNull(a))
+    {
+      JSONObject json = json(a);
+
+      result.put(json != null ? json : JSONObject.NULL);
+    }
+    else
+    {
+      result.put(JSONObject.NULL);
+    }
+  }
+
+  protected void json(Bank b, JSONArray result)
   {
     if(nonNull(b))
     {
-      // @formatter:off
-      JSONObject bank = new JSONObject()
-        .put("id", b.id)
-        .put("short_name", b.name)
-        .put("full_name", b.fullName)
-        .put("logo", b.logo)
-        .put("website", b.url);
-      // @formatter:on
+      JSONObject json = json(b);
 
-      return bank;
+      result.put(json != null ? json : JSONObject.NULL);
     }
-
-    return JSONObject.NULL;
-  }
-
-  @Override public String banks(Connector.Bank... banks)
-  {
-    JSONArray result = new JSONArray();
-
-    if(nonNull(banks))
+    else
     {
-      for(Connector.Bank b : banks)
-      {
-        put(result, b);
-      }
+      result.put(JSONObject.NULL);
     }
-
-    return result.toString();
   }
 
-  @Override public String banks(List<Connector.Bank> banks)
+  protected JSONObject json(Bank b)
   {
-    JSONArray result = new JSONArray();
-
-    if(nonNull(banks))
-    {
-      banks.forEach(bank -> put(result, bank));
-    }
-
-    return result.toString();
-  }
-
-  protected void put(JSONArray result, Connector.Bank b)
-  {
-    assert nonNull(result);
-
     if(nonNull(b))
     {
-      result.put(bank(b));
+      return new BankEncoder(b).toJson();
     }
+
+    return null;
   }
+
+  @Override public String transaction(Transaction t)
+  {
+    throw new tbd();
+  }
+
+  @Override public String transactions(List<Transaction> ts)
+  {
+    throw new tbd();
+  }
+
+  @Override public String user(User u)
+  {
+    throw new tbd();
+  }
+
+
+//  protected void put(JSONArray result, Connector.Bank b)
+//  {
+//    assert nonNull(result);
+//
+//    if(nonNull(b))
+//    {
+//      result.put(json(b));
+//    }
+//  }
 
   @Override public String toString()
   {
@@ -148,9 +204,6 @@ import static java.util.Objects.nonNull;
   }
 
   final Transport.Version version;
-
-  final static JSONObject ERROR = new JSONObject(
-    singletonMap("error", "bad request")); // todo mk better
 
   static final Logger log = LoggerFactory.getLogger(Encoder.class);
 
@@ -190,61 +243,3 @@ import static java.util.Objects.nonNull;
     final JSONObject request = new JSONObject();
   }
 }
-/*
-          // @formatter:off
-          result.add(new Connector.Bank(
-            b.optString("id", null),
-            b.optString("short_name", null),
-            b.optString("full_name", null),
-            b.optString("logo", null),
-            b.optString("website", null)));
-          // @formatter:on
-
-    public JSONObject toJson()
-    {
-      // @formatter:off
-    return new JSONObject()
-      .put("id", id)
-      .put("bank", bank)
-      .put("label", label)
-      .put("number", number)
-      .put("type", type)
-      .put("balance", new JSONObject().put("currency", currency).put
-      ("amount", amount))
-      .put("IBAN", iban)
-      .put("owners", new JSONArray()) // todo ?
-      .put("generate_public_view", false)
-      .put("generate_accountants_view", true)
-      .put("generate_auditors_view", true);
-    // @formatter:on
-    }
-
-    @Override public String toString()
-    {
-      return "Account{" + "id='" + id + '\'' + ", bank='" + bank + '\''
-             + ", label='" + label + '\'' + ", number='" + number + '\''
-             + ", type='" + type + '\'' + ", currency='" + currency + '\''
-             + ", amount='" + amount + '\'' + ", iban='" + iban + '\'' + '}';
-    }
-
-    public JSONObject toJson(String owner)
-    {
-      // @formatter:off
-    return new JSONObject()
-      .put("id", id)
-      .put("bank", bank)
-      .put("label", label)
-      .put("number", number)
-      .put("type", type)
-      .put("balance", new JSONObject().put("currency", currency).put
-      ("amount", amount))
-      .put("IBAN", iban)
-      .put("owners", new JSONArray().put(owner)) // todo fix!
-      .put("generate_public_view", false)
-      .put("generate_accountants_view", true)
-      .put("generate_auditors_view", true);
-    // @formatter:on
-    }
-
-
- */

@@ -7,18 +7,6 @@
  */
 package com.tesobe.obp.demo.south;
 
-import com.tesobe.obp.demo.data.Users;
-import com.tesobe.obp.transport.*;
-import com.tesobe.obp.transport.spi.LegacyResponder;
-import org.hamcrest.core.Is;
-import org.junit.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.*;
-
 /**
  * Run a synchronous and an asynchronous version of the default API with the
  * default encoding and the transport in memory.
@@ -27,71 +15,71 @@ import java.util.concurrent.*;
  */
 @SuppressWarnings("WeakerAccess") public class LocalDefaultConnectorTest
 {
-  /**
-   * <a href="https://www.iban.de/bic-suchen.html">BICs</a>
-   */
-  @Before public void setup()
-  {
-    factory = Transport.defaultFactory().orElseThrow(RuntimeException::new);
-    responder = new DemoResponder(factory.decoder(), factory.encoder());
-  }
-
-  @Test public void synchronous() throws InterruptedException
-  {
-    Connector connector = factory
-      .connector(request -> responder.respond(request));
-
-    List<Connector.Bank> publicBanks = new ArrayList<>();
-    List<Connector.Bank> privateBanks = new ArrayList<>();
-
-    connector.getPublicBanks().forEach(publicBanks::add);
-    connector.getPrivateBanks(Users.charles).forEach(privateBanks::add);
-
-    Assert.assertThat(publicBanks.size(), Is.is(2));
-    Assert.assertThat(privateBanks.size(), Is.is(1));
-  }
-
-  @Test public void asynchronous() throws InterruptedException
-  {
-    final BlockingQueue<String> in = new SynchronousQueue<>();
-    final BlockingQueue<Message> out = new SynchronousQueue<>();
-    ExecutorService service = Executors.newSingleThreadExecutor();
-
-    service.submit(new Callable<Void>()
-    {
-      @Override @SuppressWarnings({"InfiniteLoopStatement"}) public Void call()
-        throws Exception
-      {
-        for(; ; )
-        {
-          in.put(responder.respond(out.take()));
-        }
-      }
-    });
-
-    Connector connector = factory.connector(request ->
-    {
-      out.put(request);
-
-      return in.take();
-    });
-
-    String userId = "charles.swann@example.org";
-    List<Connector.Bank> publicBanks = new ArrayList<>();
-    List<Connector.Bank> privateBanks = new ArrayList<>();
-
-    connector.getPublicBanks().forEach(publicBanks::add);
-    connector.getPrivateBanks(userId).forEach(privateBanks::add);
-
-    Assert.assertThat(publicBanks.size(), Is.is(2));
-    Assert.assertThat(privateBanks.size(), Is.is(1));
-
-    service.shutdown();
-  }
-
-  Transport.Factory factory;
-  LegacyResponder responder;
-
-  static final Logger log = LoggerFactory
-    .getLogger(LocalDefaultConnectorTest.class);
+//  /**
+//   * <a href="https://www.iban.de/bic-suchen.html">BICs</a>
+//   */
+//  @Before public void setup()
+//  {
+//    factory = Transport.defaultFactory().orElseThrow(RuntimeException::new);
+//    responder = new DemoResponder(factory.decoder(), factory.encoder());
+//  }
+//
+//  @Test public void synchronous() throws InterruptedException
+//  {
+//    Connector connector = factory
+//      .connector(request -> responder.respond(request));
+//
+//    List<Connector.Bank> publicBanks = new ArrayList<>();
+//    List<Connector.Bank> privateBanks = new ArrayList<>();
+//
+//    connector.getPublicBanks().forEach(publicBanks::add);
+//    connector.getPrivateBanks(Users.charles).forEach(privateBanks::add);
+//
+//    Assert.assertThat(publicBanks.size(), Is.is(2));
+//    Assert.assertThat(privateBanks.size(), Is.is(1));
+//  }
+//
+//  @Test public void asynchronous() throws InterruptedException
+//  {
+//    final BlockingQueue<String> in = new SynchronousQueue<>();
+//    final BlockingQueue<Message> out = new SynchronousQueue<>();
+//    ExecutorService service = Executors.newSingleThreadExecutor();
+//
+//    service.submit(new Callable<Void>()
+//    {
+//      @Override @SuppressWarnings({"InfiniteLoopStatement"}) public Void call()
+//        throws Exception
+//      {
+//        for(; ; )
+//        {
+//          in.put(responder.respond(out.take()));
+//        }
+//      }
+//    });
+//
+//    Connector connector = factory.connector(request ->
+//    {
+//      out.put(request);
+//
+//      return in.take();
+//    });
+//
+//    String userId = "charles.swann@example.org";
+//    List<Connector.Bank> publicBanks = new ArrayList<>();
+//    List<Connector.Bank> privateBanks = new ArrayList<>();
+//
+//    connector.getPublicBanks().forEach(publicBanks::add);
+//    connector.getPrivateBanks(userId).forEach(privateBanks::add);
+//
+//    Assert.assertThat(publicBanks.size(), Is.is(2));
+//    Assert.assertThat(privateBanks.size(), Is.is(1));
+//
+//    service.shutdown();
+//  }
+//
+//  Transport.Factory factory;
+//  LegacyResponder responder;
+//
+//  static final Logger log = LoggerFactory
+//    .getLogger(LocalDefaultConnectorTest.class);
 }

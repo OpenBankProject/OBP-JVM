@@ -41,12 +41,10 @@ import java.util.concurrent.locks.LockSupport;
 
       Transport.Factory factory = Transport.defaultFactory()
         .orElseThrow(RuntimeException::new); // highly unlikely
-      Receiver responder = new DemoResponder(factory.decoder(),
-        factory.encoder());
+      Receiver responder = new DemoData(factory.decoder(), factory.encoder());
       SimpleSouth south = new SimpleSouth(consumerTopic, producerTopic,
         new Props(South.class, consumerProps).getProperties(),
-        new Props(South.class, producerProps).getProperties(),
-        responder);
+        new Props(South.class, producerProps).getProperties(), responder);
 
       south.receive();
 

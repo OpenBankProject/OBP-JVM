@@ -10,7 +10,7 @@ package com.tesobe.obp.util;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Json
+public final class Json
 {
   /**
    * No Exception thrown.

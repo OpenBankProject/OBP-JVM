@@ -7,10 +7,8 @@
  */
 package com.tesobe.obp.transport;
 
-import org.json.JSONObject;
+import com.tesobe.obp.transport.spi.DecoderException;
 
-import java.io.Serializable;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -20,278 +18,309 @@ import java.util.Optional;
  */
 @SuppressWarnings("WeakerAccess") public interface Connector
 {
-  Optional<Account> getPrivateAccount(String userId, String bankId,
-    String accountId) throws InterruptedException;
+  /**
+   * @param bankId An invalid bank id means an empty result.
+   * An all white space bank id is invalid.
+   * @param accountId An invalid account id means an empty result.
+   * An all white space account id is invalid.
+   * @param userId An invalid user id means an empty result.
+   * An all white space user id is invalid.
+   *
+   * @return An empty result if the account is not explicitly linked to the
+   * user.
+   * If the account is public but not linked to the user, empty will be
+   * returned.
+   *
+   * @throws InterruptedException Network trouble
+   * @throws DecoderException     Invalid content in the network packet.
+   */
+  Optional<Account> getPrivateAccount(String bankId, String accountId,
+    String userId) throws InterruptedException, DecoderException;
 
-  Iterable<Bank> getPublicBanks() throws InterruptedException;
+  /**
+   * All private accounts the user is explicitly linked to.
+   * No public accounts that the user is not linked to will be returned.
+   * The resulting iterable's {@code next()} will not produce {@code null} but
+   * fields in the accounts returned may be {@code null}.
+   * A {@link DecoderException} can be thrown at any time because the decoding
+   * is done lazily during the iteration.
+   *
+   * @param bankId An invalid bank id means an empty result.
+   * An all white space bank id is invalid.
+   * @param userId An invalid user id means an empty result.
+   * An all white space user id is invalid.
+   *
+   * @return The user's private banks or an empty result.
+   *
+   * @throws InterruptedException Network trouble
+   * @throws DecoderException     Invalid content in the network packet.
+   *                              The exception may be delayed until the
+   *                              iterable is dereferenced.
+   */
+  Iterable<Account> getPrivateAccounts(String bankId, String userId)
+    throws InterruptedException, DecoderException;
 
-  Iterable<Bank> getPrivateBanks(String userId) throws InterruptedException;
+  /**
+   * @param bankId An invalid bank id means an empty result.
+   * An all white space bank id is invalid.
+   * @param userId An invalid user id means an empty result.
+   * An all white space user id is invalid.
+   *
+   * @return An empty result if the bank is not explicitly linked to the user.
+   * If the bank is public but not linked to the user, empty will be returned.
+   *
+   * @throws InterruptedException Network trouble
+   * @throws DecoderException     Invalid content in the network packet.
+   */
+  Optional<Bank> getPrivateBank(String bankId, String userId)
+    throws InterruptedException, DecoderException;
 
-  public class Account implements Comparable<Account>, Serializable
-  {
-    public Account(String id, String label, String bank, String number,
-      String type, String currency, String amount, String iban)
-    {
-      this.id = id;
-      this.bank = bank;
-      this.label = label;
-      this.number = number;
-      this.type = type;
-      this.currency = currency;
-      this.amount = amount;
-      this.iban = iban;
-    }
+  /**
+   * All private banks the user is explicitly linked to.
+   * No public banks that the user is not linked to will be returned.
+   * The resulting iterable's {@code next()} will not produce {@code null} but
+   * fields in the banks returned may be {@code null}.
+   * A {@link DecoderException} can be thrown at any time because the decoding
+   * is done lazily during the iteration.
+   *
+   * @param userId An invalid user id means an empty result.
+   * An all white space user id is invalid.
+   *
+   * @return The user's private banks or an empty result.
+   *
+   * @throws InterruptedException Network trouble
+   * @throws DecoderException     Invalid content in the network packet.
+   *                              The exception may be delayed until the
+   *                              iterable is dereferenced.
+   */
+  Iterable<Bank> getPrivateBanks(String userId)
+    throws InterruptedException, DecoderException;
 
-    @Override public int compareTo(Account a)
-    {
-      return this == a ? 1 : id == null ? -1 : id.compareTo(a.id);
-    }
+  Optional<Transaction> getPrivateTransaction(String bankId, String accountId,
+    String userId) throws InterruptedException, DecoderException;
 
-    @Override public boolean equals(Object account)
-    {
-      return this == account || ((account instanceof Account) && Objects
-        .equals(id, ((Account)account).id));
-    }
+  Iterable<Transaction> getPrivateTransactions(String bankId, String accountId,
+    String userId) throws InterruptedException, DecoderException;
 
-    @Override public int hashCode()
-    {
-      return Objects.hash(id);
-    }
+  Optional<Account> getPublicAccount(String bankId, String accountId)
+    throws InterruptedException, DecoderException;
 
-    @Override public String toString()
-    {
-      return "Bank{" + "id='" + id + '\'' + ", bank='" + bank + '\'' + '}';
-    }
+  Iterable<Account> getPublicAccounts(String bankId, String accountId)
+    throws InterruptedException, DecoderException;
 
-    public final String id;
-    public final String bank;
-    public final String label;
-    public final String number;
-    public final String type;
-    public final String currency;
-    public final String amount;
-    public final String iban;
-    static final long serialVersionUID = 42L;
-  }
+  Optional<Bank> getPublicBank() throws InterruptedException, DecoderException;
 
-  public class AccountId implements Serializable
-  {
-    public AccountId(String id, String bank)
-    {
-      this.id = id;
-      this.bank = bank;
-    }
+  Iterable<Bank> getPublicBanks() throws InterruptedException, DecoderException;
 
-    @Override public boolean equals(Object o)
-    {
-      if(this == o)
-      {
-        return true;
-      }
+  Optional<Transaction> getPublicTransaction(String bankId, String accountId)
+    throws InterruptedException, DecoderException;
 
-      if(!(o instanceof AccountId))
-      {
-        return false;
-      }
+  Iterable<Transaction> getPublicTransactions(String bankId, String accountId)
+    throws InterruptedException, DecoderException;
 
-      AccountId accountId = (AccountId)o;
+  Optional<User> getUser(String bankId, String accountId, String userId)
+    throws InterruptedException, DecoderException;
 
-      return Objects.equals(id, accountId.id) && Objects
-        .equals(bank, accountId.bank);
-    }
 
-    @Override public int hashCode()
-    {
-      return Objects.hash(id, bank);
-    }
-
-    public JSONObject toJson()
-    {
-      // @formatter:off
-    return new JSONObject()
-      .put("id", id)
-      .put("bank", bank);
-    // @formatter:on
-    }
-
-    public final String id;
-    public final String bank;
-    static final long serialVersionUID = 42L;
-  }
-
-  public class Bank implements Comparable<Bank>, Serializable
-  {
-    public Bank(String id, String name, String fullName, String logo,
-      String url)
-    {
-      this.id = id;
-      this.name = name;
-      this.fullName = fullName;
-      this.logo = logo;
-      this.url = url;
-    }
-
-    @Override public int compareTo(Bank b)
-    {
-      return this == b ? 1 : id == null ? -1 : id.compareTo(b.id);
-    }
-
-    @Override public boolean equals(Object bank)
-    {
-      return this == bank || ((bank instanceof Bank) && Objects
-        .equals(id, ((Bank)bank).id));
-    }
-
-    @Override public int hashCode()
-    {
-      return Objects.hash(id);
-    }
-
-    @Override public String toString()
-    {
-      return "Bank{" + "id='" + id + '\'' + ", name='" + name + '\'' + '}';
-    }
-
-    public final String id;
-    public final String name;
-    public final String fullName;
-    public final String logo;
-    public final String url;
-    static final long serialVersionUID = 42L;
-  }
-
-  public class Transaction implements Serializable
-  {
-    public Transaction(String id, String accountId, String bankId,
-      String counterPartyName, String counterPartyAccountNumber, String type,
-      String description, String posted, String completed, String new_balance,
-      String value)
-    {
-      this.id = id;
-      this.this_account = new AccountId(accountId, bankId);
-      this.counterparty = new KafkaInboundTransactionCounterparty(
-        counterPartyName, counterPartyAccountNumber);
-      this.details = new KafkaInboundTransactionDetails(type, description,
-        posted, completed, new_balance, value);
-    }
-
-    public JSONObject toJson()
-    {
-      // @formatter:off
-    return new JSONObject()
-      .put("id", id)
-      .put("this_account", this_account.toJson())
-      .put("counterparty", counterparty.toJson())
-      .put("details", details.toJson());
-    // @formatter:on
-    }
-
-    public final String id;
-    public final AccountId this_account;
-    public final KafkaInboundTransactionCounterparty counterparty;
-    public final KafkaInboundTransactionDetails details;
-
-    public static class KafkaInboundTransactionCounterparty
-      implements Serializable
-    {
-      public KafkaInboundTransactionCounterparty(String name,
-        String account_number)
-      {
-        this.name = name;
-        this.account_number = account_number;
-      }
-
-      public JSONObject toJson()
-      {
-        // @formatter:off
-      return new JSONObject()
-        .put("name", name)
-        .put("account_number", account_number);
-      // @formatter:on
-      }
-
-      public final String name;
-      public final String account_number;
-    }
-
-    public static class KafkaInboundTransactionDetails implements Serializable
-    {
-      public KafkaInboundTransactionDetails(String type, String description,
-        String posted, String completed, String new_balance, String value)
-      {
-        this.type = type;
-        this.description = description;
-        this.posted = posted;
-        this.completed = completed;
-        this.new_balance = new_balance;
-        this.value = value;
-      }
-
-      public JSONObject toJson()
-      {
-        // @formatter:off
-      return new JSONObject()
-        .put("type", type)
-        .put("description", description)
-        .put("posted", posted)
-        .put("completed", completed)
-        .put("new_balance", new_balance)
-        .put("value", value);
-      // @formatter:on
-      }
-
-      public final String type;
-      public final String description;
-      public final String posted;
-      public final String completed;
-      public final String new_balance;
-      public final String value;
-    }
-
-    static final long serialVersionUID = 42L;
-  }
-
-  public class User implements Serializable
-  {
-    public User(String email, String password, String display_name)
-    {
-      this.email = email;
-      this.password = password;
-      this.display_name = display_name;
-    }
-
-    public JSONObject toJson()
-    {
-      // @formatter:off
-    return new JSONObject()
-      .put("email", email)
-      .put("password", password)
-      .put("display_name", display_name);
-    // @formatter:on
-    }
-
-    public final String email;
-    public final String password;
-    public final String display_name;
-    static final long serialVersionUID = 42L;
-  }
+//  public class AccountId implements Serializable
+//  {
+//    public AccountId(String id, String bank)
+//    {
+//      this.id = id;
+//      this.bank = bank;
+//    }
+//
+//    @Override public boolean equals(Object o)
+//    {
+//      if(this == o)
+//      {
+//        return true;
+//      }
+//
+//      if(!(o instanceof AccountId))
+//      {
+//        return false;
+//      }
+//
+//      AccountId accountId = (AccountId)o;
+//
+//      return Objects.equals(id, accountId.id) && Objects
+//        .equals(bank, accountId.bank);
+//    }
+//
+//    @Override public int hashCode()
+//    {
+//      return Objects.hash(id, bank);
+//    }
+//
+//    public JSONObject toJson()
+//    {
+//      // @formatter:off
+//    return new JSONObject()
+//      .put("id", id)
+//      .put("bank", bank);
+//    // @formatter:on
+//    }
+//
+//    public final String id;
+//    public final String bank;
+//    static final long serialVersionUID = 42L;
+//  }
+//
+//  public class Bank implements Comparable<Bank>, Serializable
+//  {
+//    public Bank(String id, String name, String fullName, String logo,
+//      String url)
+//    {
+//      this.id = id;
+//      this.name = name;
+//      this.fullName = fullName;
+//      this.logo = logo;
+//      this.url = url;
+//    }
+//
+//    @Override public int compareTo(Bank b)
+//    {
+//      return this == b ? 1 : id == null ? -1 : id.compareTo(b.id);
+//    }
+//
+//    @Override public boolean equals(Object bank)
+//    {
+//      return this == bank || ((bank instanceof Bank) && Objects
+//        .equals(id, ((Bank)bank).id));
+//    }
+//
+//    @Override public int hashCode()
+//    {
+//      return Objects.hash(id);
+//    }
+//
+//    @Override public String toString()
+//    {
+//      return "Bank{" + "id='" + id + '\'' + ", name='" + name + '\'' + '}';
+//    }
+//
+//    public final String id;
+//    public final String name;
+//    public final String fullName;
+//    public final String logo;
+//    public final String url;
+//    static final long serialVersionUID = 42L;
+//  }
+//
+//  public class Transaction implements Serializable
+//  {
+//    public Transaction(String id, String accountId, String bankId,
+//      String counterPartyName, String counterPartyAccountNumber, String type,
+//      String description, String posted, String completed, String new_balance,
+//      String value)
+//    {
+//      this.id = id;
+//      this.this_account = new AccountId(accountId, bankId);
+//      this.counterparty = new KafkaInboundTransactionCounterparty(
+//        counterPartyName, counterPartyAccountNumber);
+//      this.details = new KafkaInboundTransactionDetails(type, description,
+//        posted, completed, new_balance, value);
+//    }
+//
+//    public JSONObject toJson()
+//    {
+//      // @formatter:off
+//    return new JSONObject()
+//      .put("id", id)
+//      .put("this_account", this_account.toJson())
+//      .put("counterparty", counterparty.toJson())
+//      .put("details", details.toJson());
+//    // @formatter:on
+//    }
+//
+//    public final String id;
+//    public final AccountId this_account;
+//    public final KafkaInboundTransactionCounterparty counterparty;
+//    public final KafkaInboundTransactionDetails details;
+//
+//    public static class KafkaInboundTransactionCounterparty
+//      implements Serializable
+//    {
+//      public KafkaInboundTransactionCounterparty(String name,
+//        String account_number)
+//      {
+//        this.name = name;
+//        this.account_number = account_number;
+//      }
+//
+//      public JSONObject toJson()
+//      {
+//        // @formatter:off
+//      return new JSONObject()
+//        .put("name", name)
+//        .put("account_number", account_number);
+//      // @formatter:on
+//      }
+//
+//      public final String name;
+//      public final String account_number;
+//    }
+//
+//    public static class KafkaInboundTransactionDetails implements Serializable
+//    {
+//      public KafkaInboundTransactionDetails(String type, String description,
+//        String posted, String completed, String new_balance, String value)
+//      {
+//        this.type = type;
+//        this.description = description;
+//        this.posted = posted;
+//        this.completed = completed;
+//        this.new_balance = new_balance;
+//        this.value = value;
+//      }
+//
+//      public JSONObject toJson()
+//      {
+//        // @formatter:off
+//      return new JSONObject()
+//        .put("type", type)
+//        .put("description", description)
+//        .put("posted", posted)
+//        .put("completed", completed)
+//        .put("new_balance", new_balance)
+//        .put("value", value);
+//      // @formatter:on
+//      }
+//
+//      public final String type;
+//      public final String description;
+//      public final String posted;
+//      public final String completed;
+//      public final String new_balance;
+//      public final String value;
+//    }
+//
+//    static final long serialVersionUID = 42L;
+//  }
+//
+//  public class User implements Serializable
+//  {
+//    public User(String email, String password, String display_name)
+//    {
+//      this.email = email;
+//      this.password = password;
+//      this.display_name = display_name;
+//    }
+//
+//    public JSONObject toJson()
+//    {
+//      // @formatter:off
+//    return new JSONObject()
+//      .put("email", email)
+//      .put("password", password)
+//      .put("display_name", display_name);
+//    // @formatter:on
+//    }
+//
+//    public final String email;
+//    public final String password;
+//    public final String display_name;
+//    static final long serialVersionUID = 42L;
+//  }
 }
-/*
-    api.put("getBankAccount", request -> getBankAccount(valueOf(request),
-    getJSONObject(request, "getBankAccount")));
-    api.put("getBankAccounts", request -> getBankAccounts(valueOf(request),
-    getJSONObject(request, "getBankAccounts")));
-    api.put("getBanks", request -> getBanks(valueOf(request), getJSONObject
-    (request, "getBanks")));
-    api.put("getTransaction", request -> getTransaction(valueOf(request),
-    getJSONObject(request, "getTransaction")));
-    api.put("getTransactions", request -> getTransactions(valueOf(request),
-    getJSONObject(request, "getTransactions")));
-    api.put("getUser", request -> getUser(valueOf(request), getJSONObject
-    (request, "getUser")));
-    api.put("getUserAccounts", request -> getUserAccounts(valueOf(request),
-    getJSONObject(request, "getUserAccounts")));
-    api.put("getPublicAccounts",
-      request -> getPublicAccounts(valueOf(request), getJSONObject(request,
-      "getPublicAccounts")));
- */

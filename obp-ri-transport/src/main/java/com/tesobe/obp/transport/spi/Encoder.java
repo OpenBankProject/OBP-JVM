@@ -7,7 +7,10 @@
  */
 package com.tesobe.obp.transport.spi;
 
-import com.tesobe.obp.transport.Connector;
+import com.tesobe.obp.transport.Account;
+import com.tesobe.obp.transport.Bank;
+import com.tesobe.obp.transport.Transaction;
+import com.tesobe.obp.transport.User;
 
 import java.util.List;
 
@@ -16,23 +19,35 @@ import java.util.List;
  */
 public interface Encoder
 {
-  Request getPublicBanks();
-
   Request getPrivateAccount(String userId, String bankId, String accountId);
+
+  Request getPrivateAccounts(String userId, String bankId);
+
+  Request getPrivateBank(String userId, String bankId);
 
   Request getPrivateBanks(String userId);
 
-  String banks(Connector.Bank... banks);
+  Request getPublicBanks();
 
-  String banks(List<Connector.Bank> banks);
+  Request getPublicTransaction();
 
-  String account(Connector.Account account);
+  Request getPublicTransactions();
 
-  /**
-   *
-   * @return empty result for {@link #getPrivateAccount}.
-   */
-  String account();
+  Request getPublicUser(String userId);
+
+  String account(Account a);
+
+  String accounts(List<Account> as);
+
+  String bank(Bank b);
+
+  String banks(List<Bank> bs);
+
+  String transaction(Transaction t);
+
+  String transactions(List<Transaction> ts);
+
+  String user(User u);
 
   interface Request
   {

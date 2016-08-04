@@ -1,5 +1,5 @@
 // Copyright
-package com.tesobe.obp.demo.data;
+package com.tesobe.obp.demo.south.data;
 
 /**
  * @since 2016.0
