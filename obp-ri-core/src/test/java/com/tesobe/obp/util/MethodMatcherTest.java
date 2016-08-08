@@ -13,7 +13,6 @@ import org.junit.Test;
 import java.util.Optional;
 
 import static com.github.npathai.hamcrestopt.OptionalMatchers.hasValue;
-import static com.tesobe.obp.util.MethodMatcher.idEquals;
 import static com.tesobe.obp.util.MethodMatcher.returns;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -25,7 +24,6 @@ import static org.junit.Assert.assertThat;
     class A { public String id() { return "id"; }}
 
     assertThat(new A().id(), equalTo("id"));
-    assertThat(Optional.of(new A()), hasValue(idEquals("id")));
     assertThat(Optional.of(new A()), hasValue(returns("id", "id")));
   }
 }

@@ -9,6 +9,7 @@ package com.tesobe.obp.transport.spi;
 
 import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
+import com.tesobe.obp.transport.Transaction;
 
 import java.util.Optional;
 
@@ -26,6 +27,10 @@ public interface Decoder
   Optional<Bank> bank(String response) throws DecoderException;
 
   Iterable<Bank> banks(String response) throws DecoderException;
+
+  Optional<Transaction> transaction(String response);
+
+  Iterable<Transaction> transactions(String response);
 
   interface Request
   {

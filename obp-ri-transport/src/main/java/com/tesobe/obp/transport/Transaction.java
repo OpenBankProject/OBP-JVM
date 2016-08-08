@@ -36,4 +36,18 @@ package com.tesobe.obp.transport;
  */
 public interface Transaction
 {
+  String id();
+
+  String account();
+  String bank();
+
+  String name();
+  String account_number();
+
+  String type();
+  String description();
+  String posted();
+  String completed();
+  String new_balance();
+  String value();
 }

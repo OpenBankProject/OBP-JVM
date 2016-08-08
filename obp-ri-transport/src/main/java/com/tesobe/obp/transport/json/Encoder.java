@@ -42,24 +42,40 @@ import static java.util.Objects.nonNull;
     return request("getBanks");
   }
 
-  @Override public Request getPublicTransaction()
+  @Override public Request getPublicTransaction(String userId)
   {
-    throw new tbd();
+    throw new tbd("arguments?");
   }
 
-  @Override public Request getPublicTransactions()
+  @Override public Request getPublicTransactions(String userId)
   {
-    throw new tbd();
+    throw new tbd("arguments?");
   }
 
   @Override public Request getPublicUser(String userId)
   {
-    throw new tbd();
+    return request("getUser").arguments("username", userId);
   }
 
   @Override public Request getPrivateBanks(String userId)
   {
     return request("getBanks").arguments("username", userId);
+  }
+
+  @Override
+  public Request getPrivateTransaction(String bankId, String accountId,
+    String transactionId, String userId)
+  {
+    return request("getTransaction")
+      .arguments("username", userId, "bankId", bankId, "transactionId",
+        transactionId);
+  }
+
+  @Override
+  public Request getPrivateTransactions(String bankId, String accountId,
+    String userId)
+  {
+    throw new tbd();
   }
 
   @Override public Request getPrivateAccount(String userId, String bankId,
@@ -77,8 +93,7 @@ import static java.util.Objects.nonNull;
 
   @Override public Request getPrivateBank(String userId, String bankId)
   {
-    return request("getBank")
-      .arguments("username", userId, "bankId", bankId);
+    return request("getBank").arguments("username", userId, "bankId", bankId);
   }
 
   protected RequestBuilder request(String name)
@@ -172,9 +187,21 @@ import static java.util.Objects.nonNull;
     return null;
   }
 
+  protected JSONObject json(Transaction t)
+  {
+    if(nonNull(t))
+    {
+      return new TransactionEncoder(t).toJson();
+    }
+
+    return null;
+  }
+
   @Override public String transaction(Transaction t)
   {
-    throw new tbd();
+    JSONObject json = json(t);
+
+    return json != null ? json.toString() : JSONObject.NULL.toString();
   }
 
   @Override public String transactions(List<Transaction> ts)

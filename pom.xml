@@ -167,7 +167,6 @@
             </execution>
           </executions>
         </plugin>
-<!--
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-gpg-plugin</artifactId>
@@ -182,7 +181,6 @@
             </execution>
           </executions>
         </plugin>
--->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
@@ -313,9 +311,11 @@
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
       </plugin>
+<!--
       <plugin>
         <artifactId>maven-gpg-plugin</artifactId>
       </plugin>
+-->
       <plugin>
         <artifactId>maven-install-plugin</artifactId>
       </plugin>

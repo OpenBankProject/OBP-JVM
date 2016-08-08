@@ -97,7 +97,8 @@ import java.util.Optional;
     throws InterruptedException, DecoderException;
 
   Optional<Transaction> getPrivateTransaction(String bankId, String accountId,
-    String userId) throws InterruptedException, DecoderException;
+    String transactionId, String userId)
+    throws InterruptedException, DecoderException;
 
   Iterable<Transaction> getPrivateTransactions(String bankId, String accountId,
     String userId) throws InterruptedException, DecoderException;

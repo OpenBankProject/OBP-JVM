@@ -11,6 +11,7 @@ package com.tesobe.obp.transport.spi;
 import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Message;
+import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.util.tbd;
 import org.json.JSONObject;
@@ -107,12 +108,37 @@ public class LegacyResponderTest
 
   @Test public void getPrivateTransaction() throws Exception
   {
-    throw new tbd();
+    String id = UUID.randomUUID().toString();
+    String accountId = "account-x";
+    String bankId = "bank-x";
+    String userId = "user-x";
+    String transactionId = "transaction-x";
+    String request = new JSONObject().put("getTransaction",
+      new JSONObject().put("bankId", bankId).put("username", userId)
+        .put("username", userId).put("accountId", accountId)
+        .put("transactionId", transactionId)).toString();
+    String response = responder.respond(new Message(id, request));
+    Optional<Transaction> transaction = decoder.transaction(response);
+
+    assertThat(transaction, hasValue(returns("id", "transaction-x")));
   }
 
   @Test public void getPrivateTransactions() throws Exception
   {
-    throw new tbd();
+    String id = UUID.randomUUID().toString();
+    String accountId = "account-x";
+    String bankId = "bank-x";
+    String userId = "user-x";
+    String request = new JSONObject().put("getTransactions",
+      new JSONObject().put("username", userId).put("bankId", bankId)
+        .put("accountId", accountId)).toString();
+    String response = responder.respond(new Message(id, request));
+    Iterable<Transaction> transactions = decoder.transactions(response);
+    List<String> ids = new ArrayList<>();
+
+    transactions.forEach(t -> ids.add(t.id()));
+
+    assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
   }
 
   @Test public void getPrivateUser() throws Exception

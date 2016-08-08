@@ -12,6 +12,7 @@ import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Connector;
 import com.tesobe.obp.transport.Message;
+import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.util.tbd;
 import org.junit.After;
@@ -126,12 +127,30 @@ public class LegacyConnectorTest
 
   @Test public void getPrivateTransaction() throws Exception
   {
-    throw new tbd();
+    String accountId = "account-x";
+    String bankId = "bank-x";
+    String transactionId = "transaction-x";
+    String userId = "user-x";
+
+    Optional<Transaction> transaction = connector
+      .getPrivateTransaction(bankId, accountId, transactionId, userId);
+
+    assertThat(transaction, hasValue(returns("id", "transaction-x")));
   }
 
   @Test public void getPrivateTransactions() throws Exception
   {
-    throw new tbd();
+    String accountId = "account-x";
+    String bankId = "bank-x";
+    String userId = "user-x";
+
+    Iterable<Transaction> transactions = connector
+      .getPrivateTransactions(bankId, accountId, userId);
+    List<String> ids = new ArrayList<>();
+
+    transactions.forEach(bank -> ids.add(bank.id()));
+
+    assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
   }
 
   @Test public void getPublicAccount() throws Exception

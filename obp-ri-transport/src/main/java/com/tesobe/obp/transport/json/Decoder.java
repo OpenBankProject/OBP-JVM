@@ -9,6 +9,7 @@ package com.tesobe.obp.transport.json;
 
 import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
+import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.transport.spi.DecoderException;
 import org.json.JSONArray;
@@ -60,7 +61,7 @@ import static java.util.Objects.nonNull;
       {
         return arguments == null
                ? Optional.empty()
-               : white(arguments.optString("id", null));
+               : white(arguments.optString("transactionId", null));
       }
 
       @Override public Optional<String> userId()
@@ -177,35 +178,6 @@ import static java.util.Objects.nonNull;
     return Optional.empty();
   }
 
-
-//  @Override public Connector.Bank bank(String response) throws DecoderException
-//  {
-//    log.trace(String.valueOf(response));
-//
-//    if(nonNull(response) && !response.equals("null"))
-//    {
-//      try
-//      {
-//        JSONObject bank = new JSONObject(response);
-//
-//        // @formatter:off
-//        return new Connector.Bank(
-//          bank.optString("id", null),
-//          bank.optString("short_name", null),
-//          bank.optString("full_name", null),
-//          bank.optString("logo", null),
-//          bank.optString("website", null));
-//        // @formatter:on
-//      }
-//      catch(JSONException e)
-//      {
-//        throw new DecoderException("Cannot decode: " + response);
-//      }
-//    }
-//
-//    return bank();
-//  }
-
   @Override public Iterable<Bank> banks(String response)
   {
     log.trace(String.valueOf(response));
@@ -232,6 +204,59 @@ import static java.util.Objects.nonNull;
         }
 
         return new BankDecoder(JSONObject.class.cast(next));
+      }
+
+      final Iterator<Object> iterator = array(response).iterator();
+    };
+  }
+
+  @Override public Optional<Transaction> transaction(String response)
+  {
+    log.trace(String.valueOf(response));
+
+    if(nonNull(response) && !response.equals("null"))
+    {
+      try
+      {
+        JSONObject bank = new JSONObject(response);
+
+        return Optional.of(new TransactionDecoder(bank));
+      }
+      catch(JSONException e)
+      {
+        throw new DecoderException("Cannot decode: " + response);
+      }
+    }
+
+    return Optional.empty();
+  }
+
+  @Override public Iterable<Transaction> transactions(String response)
+  {
+    log.trace(String.valueOf(response));
+
+    if(isNull(response) || response.equals("null"))
+    {
+      return Collections::emptyIterator;
+    }
+
+    return () -> new Iterator<Transaction>()
+    {
+      @Override public boolean hasNext()
+      {
+        return iterator.hasNext();
+      }
+
+      @Override public Transaction next()
+      {
+        Object next = iterator.next();
+
+        if(!(next instanceof JSONObject))
+        {
+          throw new DecoderException(String.valueOf(next));
+        }
+
+        return new TransactionDecoder(JSONObject.class.cast(next));
       }
 
       final Iterator<Object> iterator = array(response).iterator();

@@ -82,17 +82,31 @@ import java.util.UUID;
   }
 
   @Override public Optional<Transaction> getPrivateTransaction(String bankId,
-    String accountId, String userId)
+    String accountId, String transactionId, String userId)
     throws InterruptedException, DecoderException
   {
-    throw new tbd();
+    String id = UUID.randomUUID().toString();
+    String request = encoder.getPrivateTransaction(bankId, accountId, transactionId, userId)
+      .toString();
+    String response = sender.send(new Message(id, request));
+
+    log.trace("{} {}", request, response);
+
+    return decoder.transaction(response);
   }
 
   @Override public Iterable<Transaction> getPrivateTransactions(String bankId,
     String accountId, String userId)
     throws InterruptedException, DecoderException
   {
-    throw new tbd();
+    String id = UUID.randomUUID().toString();
+    String request = encoder.getPrivateTransactions(bankId, accountId, userId)
+      .toString();
+    String response = sender.send(new Message(id, request));
+
+    log.trace("{} {}", request, response);
+
+    return decoder.transactions(response);
   }
 
   @Override
