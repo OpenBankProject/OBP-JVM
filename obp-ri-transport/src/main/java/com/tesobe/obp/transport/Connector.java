@@ -109,7 +109,8 @@ import java.util.Optional;
   Iterable<Account> getPublicAccounts(String bankId, String accountId)
     throws InterruptedException, DecoderException;
 
-  Optional<Bank> getPublicBank() throws InterruptedException, DecoderException;
+  Optional<Bank> getPublicBank(String bankId)
+    throws InterruptedException, DecoderException;
 
   Iterable<Bank> getPublicBanks() throws InterruptedException, DecoderException;
 

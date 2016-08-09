@@ -106,7 +106,7 @@ import static java.util.Objects.nonNull;
   @Override public Optional<Account> account(String response)
     throws DecoderException
   {
-    log.trace(String.valueOf(response));
+    log.trace("{} {}", version, String.valueOf(response));
 
     if(nonNull(response) && !response.equals("null"))
     {
@@ -127,7 +127,7 @@ import static java.util.Objects.nonNull;
 
   @Override public Iterable<Account> accounts(String response)
   {
-    log.trace(String.valueOf(response));
+    log.trace("{} {}", version, String.valueOf(response));
 
     if(isNull(response) || response.equals("null"))
     {
@@ -159,7 +159,7 @@ import static java.util.Objects.nonNull;
 
   @Override public Optional<Bank> bank(String response)
   {
-    log.trace(String.valueOf(response));
+    log.trace("{} {}", version, String.valueOf(response));
 
     if(nonNull(response) && !response.equals("null"))
     {
@@ -180,7 +180,7 @@ import static java.util.Objects.nonNull;
 
   @Override public Iterable<Bank> banks(String response)
   {
-    log.trace(String.valueOf(response));
+    log.trace("{} {}", version, String.valueOf(response));
 
     if(isNull(response) || response.equals("null"))
     {
@@ -212,7 +212,7 @@ import static java.util.Objects.nonNull;
 
   @Override public Optional<Transaction> transaction(String response)
   {
-    log.trace(String.valueOf(response));
+    log.trace("{} {}", version, String.valueOf(response));
 
     if(nonNull(response) && !response.equals("null"))
     {
@@ -233,7 +233,7 @@ import static java.util.Objects.nonNull;
 
   @Override public Iterable<Transaction> transactions(String response)
   {
-    log.trace(String.valueOf(response));
+    log.trace("{} {}", version, String.valueOf(response));
 
     if(isNull(response) || response.equals("null"))
     {

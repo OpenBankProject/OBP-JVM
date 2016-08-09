@@ -7,6 +7,13 @@
  */
 package com.tesobe.obp.demo.south;
 
+import com.tesobe.obp.transport.Connector;
+import com.tesobe.obp.transport.Sender;
+import com.tesobe.obp.transport.Transport;
+import com.tesobe.obp.transport.spi.Decoder;
+import com.tesobe.obp.transport.spi.DefaultLegacyResponder;
+import com.tesobe.obp.transport.spi.Encoder;
+import com.tesobe.obp.transport.spi.Receiver;
 import org.junit.Before;
 
 /**
@@ -20,17 +27,6 @@ import org.junit.Before;
   @Before
   public void setup()
   {
-//    Transport.Factory factory = Transport.defaultFactory();
-//    Decoder decoder = factory.decoder();
-//    Encoder encoder = factory.encoder();
-//    Sender sender = request -> new Receiver(){
-//
-//      @Override public String respond(Message request)
-//      {
-//        throw new tbd();
-//      }
-//    }.respond(request);
-//    Connector connector = factory.connector(sender);
   }
 //  /**
 //   * <a href="https://www.iban.de/bic-suchen.html">BICs</a>

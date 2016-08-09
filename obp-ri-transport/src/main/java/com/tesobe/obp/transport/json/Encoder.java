@@ -96,6 +96,11 @@ import static java.util.Objects.nonNull;
     return request("getBank").arguments("username", userId, "bankId", bankId);
   }
 
+  @Override public Request getPublicBank(String bankId)
+  {
+    return request("getBank").arguments("bankId", bankId);
+  }
+
   protected RequestBuilder request(String name)
   {
     return new RequestBuilder(name);

@@ -31,6 +31,8 @@ public interface Encoder
 
   Request getPrivateTransactions(String bankId, String accountId, String userId);
 
+  Request getPublicBank(String bankId);
+
   Request getPublicBanks();
 
   Request getPublicTransaction(String userId);

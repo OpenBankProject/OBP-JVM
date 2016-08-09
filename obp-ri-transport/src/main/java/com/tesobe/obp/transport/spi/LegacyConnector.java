@@ -86,7 +86,8 @@ import java.util.UUID;
     throws InterruptedException, DecoderException
   {
     String id = UUID.randomUUID().toString();
-    String request = encoder.getPrivateTransaction(bankId, accountId, transactionId, userId)
+    String request = encoder
+      .getPrivateTransaction(bankId, accountId, transactionId, userId)
       .toString();
     String response = sender.send(new Message(id, request));
 
@@ -113,13 +114,6 @@ import java.util.UUID;
   public Optional<Account> getPublicAccount(String bankId, String accountId)
     throws InterruptedException, DecoderException
   {
-//    String request = encoder.getPublicAccount1(bankId, accountId)
-//      .toString();
-//    String response = sender.send(new Message("id", request));
-//
-//    log.trace("{} {}", request, response);
-//
-//    return decoder.account1(response);
     throw new tbd();
   }
 
@@ -130,9 +124,16 @@ import java.util.UUID;
     throw new tbd();
   }
 
-  @Override public Optional<Bank> getPublicBank() throws InterruptedException
+  @Override public Optional<Bank> getPublicBank(String bankId)
+    throws InterruptedException
   {
-    throw new tbd();
+    String id = UUID.randomUUID().toString();
+    String request = encoder.getPublicBank(bankId).toString();
+    String response = sender.send(new Message(id, request));
+
+    log.trace("{} {}", request, response);
+
+    return decoder.bank(response);
   }
 
   @Override public Iterable<Bank> getPublicBanks()
