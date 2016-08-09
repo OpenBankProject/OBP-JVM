@@ -89,7 +89,7 @@ If the south is local to the north, the sender only has one method to call on **
 
 ```java
 MyResponder responder = new MyResponder(decoder, encoder);
-Sender = request -> reponder.respond(request);
+Sender = request -> responder.respond(request);
 ```
 
 For a simple but complete implementation of **Receiver** for testing see `com.tesobe.obp.transport.spi.MockLegacyResponder`.
@@ -103,7 +103,7 @@ String userId = "...";
 Optional<Bank> bank = connector.getPrivateBank(bankId, userId);
 ```
 
-Examples for all methods in connector are here: `com.tesobe.obp.transport.spi.LegacyConnectorTest `.
+Examples for all methods in the connector are here: `com.tesobe.obp.transport.spi.LegacyConnectorTest `.
 
 ### Implementing Encoders and Decoders
 
@@ -212,7 +212,7 @@ http://localhost:8080/obp/v2.0.0/banks
 Checking compatability with OBP-API with `KafkaMappedConnector.scala`
 
 ```
-curl -v -H "Accept:application/json" -H "Content-Type:application/json" -X GET http://localhost:8080/obp/v2.0.0/banks
+curl -v -H "Accept:application/json" -H "Content-Type:application/json" -X GET http://localhost:8080/obp/v2.0.0/bank
 curl -v -H "Accept:application/json" -H "Content-Type:application/json" -X GET http://localhost:8080/obp/v2.0.0/banks
 
 ```
