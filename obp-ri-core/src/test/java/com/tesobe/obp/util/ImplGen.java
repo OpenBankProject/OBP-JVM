@@ -10,6 +10,7 @@ package com.tesobe.obp.util;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -87,8 +88,8 @@ public class ImplGen
 
     if(isNull(f))
     {
-      throw new NullPointerException(
-        anInterface.getName() + "#" + method.getName());
+      // RuntimeException freezes the JVM (!) todo file bug?
+      throw new Error(anInterface.getName() + "#" + method.getName());
     }
 
     return type.cast(f.apply(method.getName(), counter));
@@ -105,5 +106,6 @@ public class ImplGen
     values.put(String.class, (s, i) -> s + "-" + i);
     values.put(Integer.class, (s, i) -> i);
     values.put(BigDecimal.class, (s, i) -> new BigDecimal(i));
+    values.put(ZonedDateTime.class, (s, i) -> ZonedDateTime.now());
   }
 }

@@ -8,6 +8,8 @@
 
 package com.tesobe.obp.transport;
 
+import java.time.ZonedDateTime;
+
 /**
  * Matches these classes in KafkaMappedConnector.
  * <pre>
@@ -46,8 +48,8 @@ public interface Transaction
 
   String type();
   String description();
-  String posted();
-  String completed();
+  ZonedDateTime posted();
+  ZonedDateTime completed();
   String new_balance();
   String value();
 }

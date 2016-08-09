@@ -21,6 +21,15 @@ import java.util.List;
 import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresent;
 import static org.junit.Assert.assertThat;
 
+/**
+ * Gives generated responses to all requests in the legacy version of the SPI.
+ * <p>
+ * The required request fields are checked, then a response is generated with
+ * self documenting values for each field.
+ * <p>
+ * If the request contained an id for a specific item, that id is set on the
+ * returned item to allow the test to check for the id.
+ */
 @SuppressWarnings({"WeakerAccess", "OptionalGetWithoutIsPresent"})
 class MockLegacyResponder extends LegacyResponder
 {

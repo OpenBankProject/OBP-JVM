@@ -122,48 +122,48 @@ import static java.util.Objects.nonNull;
     return savePrivateTransaction(r.raw(), r, e);
   }
 
-  protected abstract String getPrivateAccount(String packet, Decoder.Request r,
+  protected abstract String getPrivateAccount(String payload, Decoder.Request r,
     Encoder e);
 
-  protected abstract String getPrivateAccounts(String packet, Decoder.Request r,
-    Encoder e);
-
-  protected abstract String getPrivateBank(String packet, Decoder.Request r,
-    Encoder e);
-
-  protected abstract String getPrivateBanks(String packet, Decoder.Request r,
-    Encoder e);
-
-  protected abstract String getPrivateTransaction(String packet,
+  protected abstract String getPrivateAccounts(String payload,
     Decoder.Request r, Encoder e);
 
-  protected abstract String getPrivateTransactions(String packet,
+  protected abstract String getPrivateBank(String payload, Decoder.Request r,
+    Encoder e);
+
+  protected abstract String getPrivateBanks(String payload, Decoder.Request r,
+    Encoder e);
+
+  protected abstract String getPrivateTransaction(String payload,
     Decoder.Request r, Encoder e);
 
-  protected abstract String getPrivateUser(String packet, Decoder.Request r,
-    Encoder e);
-
-  protected abstract String getPublicAccount(String packet, Decoder.Request r,
-    Encoder e);
-
-  protected abstract String getPublicAccounts(String packet, Decoder.Request r,
-    Encoder e);
-
-  protected abstract String getPublicBank(String packet, Decoder.Request r,
-    Encoder e);
-
-  protected abstract String getPublicBanks(String packet, Encoder e);
-
-  protected abstract String getPublicTransaction(String packet,
+  protected abstract String getPrivateTransactions(String payload,
     Decoder.Request r, Encoder e);
 
-  protected abstract String getPublicTransactions(String packet,
-    Decoder.Request r, Encoder e);
-
-  protected abstract String getPublicUser(String packet, Decoder.Request r,
+  protected abstract String getPrivateUser(String payload, Decoder.Request r,
     Encoder e);
 
-  protected abstract String savePrivateTransaction(String packet,
+  protected abstract String getPublicAccount(String payload, Decoder.Request r,
+    Encoder e);
+
+  protected abstract String getPublicAccounts(String payload, Decoder.Request r,
+    Encoder e);
+
+  protected abstract String getPublicBank(String payload, Decoder.Request r,
+    Encoder e);
+
+  protected abstract String getPublicBanks(String payload, Encoder e);
+
+  protected abstract String getPublicTransaction(String payload,
+    Decoder.Request r, Encoder e);
+
+  protected abstract String getPublicTransactions(String payload,
+    Decoder.Request r, Encoder e);
+
+  protected abstract String getPublicUser(String payload, Decoder.Request r,
+    Encoder e);
+
+  protected abstract String savePrivateTransaction(String payload,
     Decoder.Request r, Encoder e);
 
   final Decoder decoder;

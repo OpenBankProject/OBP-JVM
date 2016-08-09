@@ -46,8 +46,7 @@ import org.slf4j.LoggerFactory;
     north.shutdown();
   }
 
-  static Transport.Factory factory = Transport.defaultFactory()
-    .orElseThrow(RuntimeException::new);
+  static Transport.Factory factory = Transport.defaultFactory();
   static final Logger log = LoggerFactory.getLogger(KafkaIT.class);
 //
 //  public static class RemoteSouth

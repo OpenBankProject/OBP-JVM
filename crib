@@ -34,6 +34,18 @@ Signing
   gpg2 --list-keys
   gpg2 --keyserver hkp://pool.sks-keyservers.net --send-keys <id>
 
+  Pass the passphrase when calling maven
+
+  mvn -Dgpg.passphrase='your pass phrase'
+
+  Below does not work for me:
+  # Set your gpg.passphrase in your ~/.m2/settings.xml like so:
+  #
+  # <server>
+  #   <id>gpg.passphrase</id>
+  #   <passphrase>clear or encrypted text</passphrase>
+  # </server>
+
 Git
 
   Track a new remote branch:

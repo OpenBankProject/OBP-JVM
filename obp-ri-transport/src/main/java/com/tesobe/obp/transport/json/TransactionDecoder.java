@@ -9,11 +9,17 @@
 package com.tesobe.obp.transport.json;
 
 import com.tesobe.obp.transport.Transaction;
-import com.tesobe.obp.util.tbd;
 import org.json.JSONObject;
 
-@SuppressWarnings("WeakerAccess") class TransactionDecoder implements
-  Transaction
+import java.time.ZonedDateTime;
+
+import static com.tesobe.obp.util.Json.zonedDateTimeFromJson;
+
+/**
+ * todo error handling
+ */
+@SuppressWarnings("WeakerAccess") class TransactionDecoder
+  implements Transaction
 {
   public TransactionDecoder(JSONObject transaction)
   {
@@ -27,52 +33,74 @@ import org.json.JSONObject;
 
   @Override public String account()
   {
-    throw new tbd();
+    JSONObject this_account = transaction.optJSONObject("this_account");
+
+    return this_account != null ? this_account.optString("id") : null;
   }
 
   @Override public String bank()
   {
-    throw new tbd();
+    JSONObject this_account = transaction.optJSONObject("this_account");
+
+    return this_account != null ? this_account.optString("bank") : null;
   }
 
   @Override public String name()
   {
-    throw new tbd();
+    JSONObject counterparty = transaction.optJSONObject("counterparty");
+
+    return counterparty != null ? counterparty.optString("name") : null;
   }
 
   @Override public String account_number()
   {
-    throw new tbd();
+    JSONObject counterparty = transaction.optJSONObject("counterparty");
+
+    return counterparty != null
+           ? counterparty.optString("account_number")
+           : null;
   }
 
   @Override public String type()
   {
-    throw new tbd();
+    JSONObject details = transaction.optJSONObject("details");
+
+    return details != null ? details.optString("type") : null;
   }
 
   @Override public String description()
   {
-    throw new tbd();
+    JSONObject details = transaction.optJSONObject("details");
+
+    return details != null ? details.optString("type") : null;
   }
 
-  @Override public String posted()
+  @Override public ZonedDateTime posted()
   {
-    throw new tbd();
+    JSONObject details = transaction.optJSONObject("details");
+
+    return details != null ? zonedDateTimeFromJson(details.optString("posted")) : null;
   }
 
-  @Override public String completed()
+  @Override public ZonedDateTime completed()
   {
-    throw new tbd();
+    JSONObject details = transaction.optJSONObject("details");
+
+    return details != null ? zonedDateTimeFromJson(details.optString("completed")) : null;
   }
 
   @Override public String new_balance()
   {
-    throw new tbd();
+    JSONObject details = transaction.optJSONObject("details");
+
+    return details != null ? details.optString("new_balance") : null;
   }
 
   @Override public String value()
   {
-    throw new tbd();
+    JSONObject details = transaction.optJSONObject("details");
+
+    return details != null ? details.optString("value") : null;
   }
 
   @Override public String toString()

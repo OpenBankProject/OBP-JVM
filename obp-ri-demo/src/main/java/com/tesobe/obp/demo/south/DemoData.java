@@ -13,7 +13,7 @@ import com.tesobe.obp.transport.spi.Encoder;
 import com.tesobe.obp.transport.spi.LegacyResponder;
 import com.tesobe.obp.util.tbd;
 
-public class DemoData extends LegacyResponder
+@SuppressWarnings("WeakerAccess") public class DemoData extends LegacyResponder
 {
   public DemoData(Decoder d, Encoder e)
   {

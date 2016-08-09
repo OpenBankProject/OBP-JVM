@@ -39,8 +39,7 @@ import java.util.concurrent.locks.LockSupport;
       String producerProps = flags.valueOf(flags.producerProps);
       String producerTopic = flags.valueOf(flags.producerTopic);
 
-      Transport.Factory factory = Transport.defaultFactory()
-        .orElseThrow(RuntimeException::new); // highly unlikely
+      Transport.Factory factory = Transport.defaultFactory();
       Receiver responder = new DemoData(factory.decoder(), factory.encoder());
       SimpleSouth south = new SimpleSouth(consumerTopic, producerTopic,
         new Props(South.class, consumerProps).getProperties(),

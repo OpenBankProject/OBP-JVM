@@ -2,6 +2,116 @@
 A set of libraries and a demo application.
 *Not quite ready for release.*
 
+## Using this Library in your Project
+
+Add a dependency
+
+```xml
+<dependency>
+  <groupId>com.tesobe.obp</groupId>
+  <artifactId>obp-ri-kafka</artifactId>
+  <version>2016.0-SNAPSHOT</version>
+</dependency>
+```
+For testing also add
+
+```xml
+<dependency>
+  <groupId>com.tesobe.obp</groupId>
+  <artifactId>obp-ri-transport</artifactId>
+  <version>2016.0-SNAPSHOT</version>
+  <classifier>tests</classifier>
+</dependency>
+```
+
+### Implementing the South
+To build a connector that is called by OBP-API you need to do three things:
+
+  * Implement a version of the service provider interface
+  * Pick an encoding (or implement your own)
+  * Pick a transport (or implement your own) 
+
+#### Implementing the SPI
+
+If you want _(but there is no need to, see below)_ to do everything from scratch, all you need to implement is `com.tesobe.obp.transport.spi.Receiver`. It has one method:
+
+```java
+public interface Receiver
+{
+  String respond(Message request);
+}
+```
+
+The request has an **id** and a **payload**.
+The **id** is a `UUID` used to match the response to the request.
+The **payload** is a request by OBP-API encoded in the encoding you choose, or that was choosen for you. 
+
+The possible requests depend on the version of the SPI you are using.
+
+For the `Version.legacy` the possible requests are listed in `com.tesobe.obp.transport.spi.LegacyResponder`. 
+The **LegacyResponder** implements **Receiver** and has an abstract method for each request.
+
+You need to subclass **LegacyResponder** and implement these methods. This is an example for one of them:
+
+```java
+protected abstract String getPrivateBank(String payload, Decoder.Request r, Encoder e);
+```
+
+The first argument **payload** is the verbatim request as taken from the request.
+It is not needed for the response but it has one important use: 
+Pass it on to the APIs you are calling to document the origin of the call.
+
+The second argument, of type **Decoder.Request** is used to decode the request.
+
+The third argument, of type **Encode** is used to encode the response.
+
+Every request is implemented by `com.tesobe.obp.transport.spi.MockLegacyResponder` used to test
+the **LegacyResonder**. The Demo gives a more complete example: `com.tesobe.obp.demo.south.DemoData`.
+A third test worth looking at because it implements the **North** and **South** sides is: `com.tesobe.obp.transport.spi.LegacyConnectorTest`.
+
+### Implementing the North
+
+The connector `com.tesobe.obp.transport.Connector` lists the methods you can call to communicate with external parties, the south. 
+To optain a connector you need to implement `com.tesobe.obp.transport.Sender` and:
+
+```java
+import com.tesobe.obp.transport.Transport;
+
+Transport.Factory factory = Transport.defaultFactory();
+Decoder decoder = factory.decoder();
+Encoder encoder = factory.encoder();
+MySender sender = MySender(decoder, encoder);
+Connector connector = factory.connector(sender);
+```
+
+The sender send messages to the south and receives the responses.
+If the south is local to the north, the sender only has one method to call on **MyResponder**, an implementation of `com.tesobe.obp.transport.spi.Receiver`:
+
+```java
+MyResponder responder = new MyResponder(decoder, encoder);
+Sender = request -> reponder.respond(request);
+```
+
+For a simple but complete implementation of **Receiver** for testing see `com.tesobe.obp.transport.spi.MockLegacyResponder`.
+
+Now, to use the **connector** simply call the methods, for example:
+
+```java
+String bankId = "...";
+String userId = "...";
+
+Optional<Bank> bank = connector.getPrivateBank(bankId, userId);
+```
+
+Examples for all methods in connector are here: `com.tesobe.obp.transport.spi.LegacyConnectorTest `.
+
+### Implementing Encoders and Decoders
+
+### Implementing a Transport
+
+### Implementing a new Version of the API / SPI
+
+
 ## Design
 
 This is a redesign of
@@ -17,63 +127,15 @@ The goals are:
     * Kafka
     * In memory (directly linked to OBP-API)
   * Easy testing
+  * **Clearly label public and private data**
+  * **Do not pass user data to anonymous methods**
   * Provide a demo
 
 **Your feedback is very much appreciated**
 
-## Quick start
-
-Take a look at
-
-```
-obp-ri-demo/src/test/java/com/tesobe/obp/demo/south/LocalDefaultConnectorTest.java
-```
-
-The `factory` provides the *North* side of the connection.
-
-Use it to select the version of the connector (currently only `Version.legacy` which means unversioned) and the encoding to use (currently only `Encoding.json`).
-
-The `responder` provides the *South* side of the connection.
-
-Implement the interface `com.tesobe.obp.transport.spi.Receiver` or subclass `com.tesobe.obp.transport.spi.LegacyResponder` to get started.
-
-The `DemoResponder` subclasses `LegacyResponder`.
-
-```java
-  @Before public void setup()
-  {
-    factory = Transport.defaultFactory().orElseThrow(RuntimeException::new);
-    responder = new DemoResponder(factory.decoder(), factory.encoder());
-  }
-```
-
-This test uses synchronous, in memory communitcation by passing a function to `factory.connector` that directly calls the (south side's) responder when receiving a request.
-
-The two lists of banks will receive the results of the api calls.
-
-`connector.getPublicBanks()` is a call that is executed on the *north* side, normally triggered by a REST call. It returns the response generated by the *south* side that was encoded, transmitted, and decoded by the library. It will result in a call on the provider `com.tesobe.obp.demo.south.DemoResponder`.
-
-Run the tests to see the log output.
-
-```java
-  @Test public void synchronous() throws InterruptedException
-  {
-    Connector connector = factory
-      .connector(request -> responder.respond(request));
-
-    List<Connector.Bank> publicBanks = new ArrayList<>();
-    List<Connector.Bank> privateBanks = new ArrayList<>();
-
-    connector.getPublicBanks().forEach(publicBanks::add);
-    connector.getPrivateBanks(Users.charles).forEach(privateBanks::add);
-
-    Assert.assertThat(publicBanks.size(), Is.is(2));
-    Assert.assertThat(privateBanks.size(), Is.is(1));
-  }
-```
-
-Integration test are configured to only run from the command line:
-`mvn failsafe:integration-test`
+Currently, the Kafka implementation is very simple, allowing only a single consumer and producer. 
+The response must arrive before a the next request can be made.
+My knowledge of Kafka is too limited to implement a higher throughput version.
 
 ## Kafka
 
@@ -81,6 +143,18 @@ We are using Kafka version **0.10.0.0**.
 Start the servers and add the topics configured in your copy of OBP-API.
 The names of the topics are specified in `OBP-API/src/main/resources/props/default.props`.
 Substitute the name of your `.props` file. By default they are _Request_ and _Response_.
+
+If there is no props file in `OBP-API/src/main/resources/props/`, then `default.props` copied from `sample.props.template` will do.
+In the `.props` file these lines are required:
+
+```
+connector=kafka
+kafka.zookeeper_host=localhost:2181
+kafka.request_topic=Request
+kafka.response_topic=Response
+```
+
+Create the topics
 
 ```
 bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic Request
@@ -92,16 +166,6 @@ For testing reduce the retention time to, for example, one minute
 ```
 bin/kafka-configs.sh --zookeeper localhost:2181 --entity-type topics --alter --add-config retention.ms=1000 --entity-name Request
 bin/kafka-configs.sh --zookeeper localhost:2181 --entity-type topics --alter --add-config retention.ms=1000 --entity-name Response
-```
-
-If there is no props file in `OBP-API/src/main/resources/props/`, then `default.props` copied from `sample.props.template` will do.
-In the `.props` file these lines are required:
-
-```
-connector=kafka
-kafka.zookeeper_host=localhost:2181
-kafka.request_topic=Request
-kafka.response_topic=Response
 ```
 
 Then start the server

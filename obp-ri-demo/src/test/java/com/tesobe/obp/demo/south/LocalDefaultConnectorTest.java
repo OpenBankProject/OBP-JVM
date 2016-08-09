@@ -7,6 +7,8 @@
  */
 package com.tesobe.obp.demo.south;
 
+import org.junit.Before;
+
 /**
  * Run a synchronous and an asynchronous version of the default API with the
  * default encoding and the transport in memory.
@@ -15,6 +17,21 @@ package com.tesobe.obp.demo.south;
  */
 @SuppressWarnings("WeakerAccess") public class LocalDefaultConnectorTest
 {
+  @Before
+  public void setup()
+  {
+//    Transport.Factory factory = Transport.defaultFactory();
+//    Decoder decoder = factory.decoder();
+//    Encoder encoder = factory.encoder();
+//    Sender sender = request -> new Receiver(){
+//
+//      @Override public String respond(Message request)
+//      {
+//        throw new tbd();
+//      }
+//    }.respond(request);
+//    Connector connector = factory.connector(sender);
+  }
 //  /**
 //   * <a href="https://www.iban.de/bic-suchen.html">BICs</a>
 //   */

@@ -9,6 +9,7 @@
 package com.tesobe.obp.transport.json;
 
 import com.tesobe.obp.transport.Transaction;
+import com.tesobe.obp.util.Json;
 import org.json.JSONObject;
 
 @SuppressWarnings("WeakerAccess") class TransactionEncoder
@@ -35,8 +36,8 @@ import org.json.JSONObject;
       .put("details", new JSONObject()
         .put("type", transaction.type())
         .put("description", transaction.description())
-        .put("posted", transaction.posted())
-        .put("completed", transaction.completed())
+        .put("posted", Json.toJson(transaction.posted()))
+        .put("completed", Json.toJson(transaction.completed()))
         .put("new_balance", transaction.new_balance())
         .put("value", transaction.value()));
     // @formatter:on

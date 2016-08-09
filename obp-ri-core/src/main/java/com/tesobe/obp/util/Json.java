@@ -7,43 +7,56 @@
  */
 package com.tesobe.obp.util;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.time.DateTimeException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
-public final class Json
+import static java.util.Objects.nonNull;
+
+@SuppressWarnings("WeakerAccess") public final class Json
 {
   /**
-   * No Exception thrown.
+   * Uses the format JavaScript Date uses: yyyy-MM-dd'T'HH:mm:ss.SSSZ.
    *
-   * @param o a JSONObject
-   * @param key may , or may not be present
+   * @param dt date time with time zone
    *
-   * @return null if key is absent
-   *
-   * @since 2016.0
+   * @return null when dt is null
    */
-  public static JSONObject getJSONObject(JSONObject o, String key)
+  public static String toJson(ZonedDateTime dt)
   {
-    try
+    if(nonNull(dt))
     {
-      return o == null ? null : o.getJSONObject(key);
+      return dt.format(FORMATTER);
     }
-    catch(JSONException e)
-    {
-      return null;
-    }
+
+    return null;
   }
 
   /**
-   * No Exception thrown.
+   * Uses the format JavaScript Date uses: yyyy-MM-dd'T'HH:mm:ss.SSSZ.
    *
-   * @param o a JSONObject
-   * @param key may , or may not be present
+   * @param dt should conform to yyyy-MM-dd'T'HH:mm:ss.SSSZ
    *
-   * @return null if key is absent
+   * @return null when dt is null
    */
-  public static String safeString(JSONObject o, String key)
+  public static ZonedDateTime zonedDateTimeFromJson(String dt)
   {
-    return o == null ? null : o.optString(key);
+    if(nonNull(dt))
+    {
+      try
+      {
+        return ZonedDateTime.parse(dt, FORMATTER);
+      }
+      catch(DateTimeException e)
+      {
+        return null; // todo log?
+      }
+    }
+
+    return null;
   }
+
+  static final DateTimeFormatter FORMATTER = DateTimeFormatter
+    .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
 }

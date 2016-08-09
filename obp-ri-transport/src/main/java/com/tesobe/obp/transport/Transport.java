@@ -7,9 +7,13 @@
  */
 package com.tesobe.obp.transport;
 
-import com.tesobe.obp.transport.spi.*;
+import com.tesobe.obp.transport.spi.Decoder;
+import com.tesobe.obp.transport.spi.Encoder;
+import com.tesobe.obp.transport.spi.LegacyConnector;
 
-import java.util.*;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.tesobe.obp.transport.Transport.Encoding.json;
 import static com.tesobe.obp.transport.Transport.Version.legacy;
@@ -22,14 +26,26 @@ import static com.tesobe.obp.transport.Transport.Version.legacy;
 @SuppressWarnings("WeakerAccess") public abstract class Transport
 {
   /**
-   * @return version.legacy, encoding JSON
+   * Uses {@link Version#legacy}, {@link Encoding#json}.
+   *
+   * @return a factory that is always available
+   *
    * @since 2016.0
    */
-  public static Optional<Factory> defaultFactory()
+  public static Factory defaultFactory()
   {
-    return factory(Version.legacy, Encoding.json);
+    //noinspection OptionalGetWithoutIsPresent
+    return factory(Version.legacy, Encoding.json).get();
   }
 
+  /**
+   * Try to provide a factory for a version / encoding combination.
+   *
+   * @param v the API / SPI version
+   * @param e the encoding used by the transport layer
+   *
+   * @return empty if the version / encoding combination is not available
+   */
   public static Optional<Transport.Factory> factory(Version v, Encoding e)
   {
     return Optional.of(new Factory()
@@ -75,7 +91,9 @@ import static com.tesobe.obp.transport.Transport.Version.legacy;
   {
     /**
      * @param s not null
+     *
      * @return Connector
+     *
      * @throw RuntimeException is sender is null
      * @since 2016.0
      */
