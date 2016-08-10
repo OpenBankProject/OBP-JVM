@@ -9,7 +9,6 @@ import com.tesobe.obp.transport.Sender;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.transport.User;
-import com.tesobe.obp.util.tbd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,14 +113,24 @@ import java.util.UUID;
   public Optional<Account> getPublicAccount(String bankId, String accountId)
     throws InterruptedException, DecoderException
   {
-    throw new tbd();
+    String id = UUID.randomUUID().toString();
+    String request = encoder.getPublicAccount(bankId, accountId).toString();
+    String response = sender.send(new Message(id, request));
+
+    log.trace("{} {}", request, response);
+
+    return decoder.account(response);
   }
 
-  @Override
-  public Iterable<Account> getPublicAccounts(String bankId, String accountId)
+  @Override public Iterable<Account> getPublicAccounts(String bankId)
     throws InterruptedException, DecoderException
   {
-    throw new tbd();
+    String request = encoder.getPublicAccounts(bankId).toString();
+    String response = sender.send(new Message("id", request));
+
+    log.trace("{} {}", request, response);
+
+    return decoder.accounts(response);
   }
 
   @Override public Optional<Bank> getPublicBank(String bankId)
@@ -139,26 +148,51 @@ import java.util.UUID;
   @Override public Iterable<Bank> getPublicBanks()
     throws InterruptedException, DecoderException
   {
-    throw new tbd();
+    String id = UUID.randomUUID().toString();
+    String request = encoder.getPublicBanks().toString();
+    String response = sender.send(new Message(id, request));
+
+    log.trace("{} {}", request, response);
+
+    return decoder.banks(response);
   }
 
   @Override public Optional<Transaction> getPublicTransaction(String bankId,
-    String accountId) throws InterruptedException, DecoderException
+    String accountId, String transactionId)
+    throws InterruptedException, DecoderException
   {
-    throw new tbd();
+    String id = UUID.randomUUID().toString();
+    String request = encoder
+      .getPublicTransaction(bankId, accountId, transactionId).toString();
+    String response = sender.send(new Message(id, request));
+
+    log.trace("{} {}", request, response);
+
+    return decoder.transaction(response);
   }
 
   @Override public Iterable<Transaction> getPublicTransactions(String bankId,
     String accountId) throws InterruptedException, DecoderException
   {
-    throw new tbd();
+    String id = UUID.randomUUID().toString();
+    String request = encoder.getPublicTransactions(bankId, accountId).toString();
+    String response = sender.send(new Message(id, request));
+
+    log.trace("{} {}", request, response);
+
+    return decoder.transactions(response);
   }
 
-  @Override
-  public Optional<User> getUser(String bankId, String accountId, String userId)
+  @Override public Optional<User> getUser(String userId)
     throws InterruptedException, DecoderException
   {
-    throw new tbd();
+    String id = UUID.randomUUID().toString();
+    String request = encoder.getPublicUser(userId).toString();
+    String response = sender.send(new Message(id, request));
+
+    log.trace("{} {}", request, response);
+
+    return decoder.user(response);
   }
 
   protected final Transport.Version version;

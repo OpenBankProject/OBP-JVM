@@ -70,12 +70,26 @@ import static java.util.Objects.nonNull;
 
   protected String getAccount(Decoder.Request r, Encoder e)
   {
-    return getPrivateAccount(r.raw(), r, e);
+    assert nonNull(r);
+    assert nonNull(e);
+
+    log.trace("{} user id present? {}", r, r.userId().isPresent());
+
+    return r.userId().isPresent()
+      ? getPrivateAccount(r.raw(), r, e)
+      : getPublicAccount(r.raw(), r, e);
   }
 
   protected String getAccounts(Decoder.Request r, Encoder e)
   {
-    return getPrivateAccounts(r.raw(), r, e);
+    assert nonNull(r);
+    assert nonNull(e);
+
+    log.trace("{} user id present? {}", r, r.userId().isPresent());
+
+    return r.userId().isPresent()
+           ? getPrivateAccounts(r.raw(), r, e)
+           : getPublicAccounts(r.raw(), r, e);
   }
 
   protected String getBank(Decoder.Request r, Encoder e)
@@ -104,17 +118,38 @@ import static java.util.Objects.nonNull;
 
   protected String getTransaction(Decoder.Request r, Encoder e)
   {
-    return getPrivateTransaction(r.raw(), r, e);
+    assert nonNull(r);
+    assert nonNull(e);
+
+    log.trace("{} user id present? {}", r, r.userId().isPresent());
+
+    return r.userId().isPresent()
+           ? getPrivateTransaction(r.raw(), r, e)
+           : getPublicTransaction(r.raw(), r, e);
   }
 
   protected String getTransactions(Decoder.Request r, Encoder e)
   {
-    return getPrivateTransactions(r.raw(), r, e);
+    assert nonNull(r);
+    assert nonNull(e);
+
+    log.trace("{} user id present? {}", r, r.userId().isPresent());
+
+    return r.userId().isPresent()
+           ? getPrivateTransactions(r.raw(), r, e)
+           : getPublicTransactions(r.raw(), r, e);
   }
 
   protected String getUser(Decoder.Request r, Encoder e)
   {
-    return getPrivateUser(r.raw(), r, e);
+    assert nonNull(r);
+    assert nonNull(e);
+
+    log.trace("{} user id present? {}", r, r.userId().isPresent());
+
+    return r.userId().isPresent()
+           ? getPrivateUser(r.raw(), r, e)
+           : getPublicUser(r.raw(), r, e);
   }
 
   protected String saveTransaction(Decoder.Request r, Encoder e)

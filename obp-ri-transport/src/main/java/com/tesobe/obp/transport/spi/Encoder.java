@@ -31,13 +31,18 @@ public interface Encoder
 
   Request getPrivateTransactions(String bankId, String accountId, String userId);
 
+  Request getPublicAccount(String bankId, String accountId);
+
+  Request getPublicAccounts(String bankId);
+
   Request getPublicBank(String bankId);
 
   Request getPublicBanks();
 
-  Request getPublicTransaction(String userId);
+  Request getPublicTransaction(String bankId, String accountId,
+    String transactionId);
 
-  Request getPublicTransactions(String userId);
+  Request getPublicTransactions(String bankId, String accountId);
 
   Request getPublicUser(String userId);
 
@@ -48,6 +53,10 @@ public interface Encoder
   String bank(Bank b);
 
   String banks(List<Bank> bs);
+
+  String error(String message);
+
+  String notFound();
 
   String transaction(Transaction t);
 

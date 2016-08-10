@@ -11,6 +11,7 @@ import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.Transport;
+import com.tesobe.obp.transport.User;
 import com.tesobe.obp.transport.spi.DecoderException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -261,6 +262,27 @@ import static java.util.Objects.nonNull;
 
       final Iterator<Object> iterator = array(response).iterator();
     };
+  }
+
+  @Override public Optional<User> user(String response)
+  {
+    log.trace("{} {}", version, String.valueOf(response));
+
+    if(nonNull(response) && !response.equals("null"))
+    {
+      try
+      {
+        JSONObject bank = new JSONObject(response);
+
+        return Optional.of(new UserDecoder(bank));
+      }
+      catch(JSONException e)
+      {
+        throw new DecoderException("Cannot decode: " + response);
+      }
+    }
+
+    return Optional.empty();
   }
 
   protected JSONArray array(String json) throws DecoderException

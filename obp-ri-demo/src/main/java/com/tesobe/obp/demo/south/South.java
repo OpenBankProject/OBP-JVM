@@ -9,6 +9,7 @@ package com.tesobe.obp.demo.south;
 
 import com.tesobe.obp.kafka.SimpleSouth;
 import com.tesobe.obp.transport.Transport;
+import com.tesobe.obp.transport.spi.LoggingReceiver;
 import com.tesobe.obp.transport.spi.Receiver;
 import com.tesobe.obp.util.Props;
 import org.slf4j.Logger;
@@ -43,7 +44,8 @@ import java.util.concurrent.locks.LockSupport;
       Receiver responder = new DemoData(factory.decoder(), factory.encoder());
       SimpleSouth south = new SimpleSouth(consumerTopic, producerTopic,
         new Props(South.class, consumerProps).getProperties(),
-        new Props(South.class, producerProps).getProperties(), responder);
+        new Props(South.class, producerProps).getProperties(),
+        new LoggingReceiver(responder));
 
       south.receive();
 

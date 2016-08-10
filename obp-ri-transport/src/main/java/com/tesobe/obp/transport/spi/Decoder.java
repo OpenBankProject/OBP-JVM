@@ -10,6 +10,7 @@ package com.tesobe.obp.transport.spi;
 import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Transaction;
+import com.tesobe.obp.transport.User;
 
 import java.util.Optional;
 
@@ -31,6 +32,8 @@ public interface Decoder
   Optional<Transaction> transaction(String response);
 
   Iterable<Transaction> transactions(String response);
+
+  Optional<User> user(String response);
 
   interface Request
   {
