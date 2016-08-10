@@ -14,7 +14,7 @@ import com.tesobe.obp.transport.Connector;
 import com.tesobe.obp.transport.Message;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.Transport;
-import com.tesobe.obp.util.tbd;
+import com.tesobe.obp.transport.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -155,37 +155,79 @@ public class LegacyConnectorTest
 
   @Test public void getPublicAccount() throws Exception
   {
-    throw new tbd();
+    String bankId = "bank-x";
+    String accountId = "account-x";
+
+    Optional<Account> account = connector.getPublicAccount(bankId, accountId);
+
+    assertThat(account, hasValue(returns("id", "account-x")));
   }
 
   @Test public void getPublicAccounts() throws Exception
   {
-    throw new tbd();
+    String bankId = "bank-x";
+
+    Iterable<Account> accounts = connector.getPublicAccounts(bankId);
+    List<String> ids = new ArrayList<>();
+
+    accounts.forEach(account -> assertThat(account.bank(), is(bankId)));
+    accounts.forEach(account -> ids.add(account.id()));
+
+    assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
   }
 
   @Test public void getPublicBank() throws Exception
   {
-    throw new tbd();
+    String bankId = "bank-x";
+
+    Optional<Bank> bank = connector.getPublicBank(bankId);
+
+    assertThat(bank, hasValue(returns("id", "bank-x")));
   }
 
   @Test public void getPublicBanks() throws Exception
   {
-    throw new tbd();
+    Iterable<Bank> banks = connector.getPublicBanks();
+    List<String> ids = new ArrayList<>();
+
+    banks.forEach(bank -> ids.add(bank.id()));
+
+    assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
   }
 
   @Test public void getPublicTransaction() throws Exception
   {
-    throw new tbd();
+    String bankId = "bank-x";
+    String accountId = "account-x";
+    String transactionId = "transaction-x";
+
+    Optional<Transaction> transaction = connector
+      .getPublicTransaction(bankId, accountId, transactionId);
+
+    assertThat(transaction, hasValue(returns("id", "transaction-x")));
   }
 
   @Test public void getPublicTransactions() throws Exception
   {
-    throw new tbd();
+    String bankId = "bank-x";
+    String accountId = "account-x";
+
+    Iterable<Transaction> transactions = connector
+      .getPublicTransactions(bankId, accountId);
+    List<String> ids = new ArrayList<>();
+
+    transactions.forEach(transaction -> ids.add(transaction.id()));
+
+    assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
   }
 
   @Test public void getUser() throws Exception
   {
-    throw new tbd();
+    String userId = "user-x@example.org";
+
+    Optional<User> user = connector.getUser(userId);
+
+    assertThat(user, hasValue(returns("email", userId)));
   }
 
   private Connector connector;

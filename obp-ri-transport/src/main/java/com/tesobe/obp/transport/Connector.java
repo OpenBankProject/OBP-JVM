@@ -106,20 +106,22 @@ import java.util.Optional;
   Optional<Account> getPublicAccount(String bankId, String accountId)
     throws InterruptedException, DecoderException;
 
-  Iterable<Account> getPublicAccounts(String bankId, String accountId)
+  Iterable<Account> getPublicAccounts(String bankId)
     throws InterruptedException, DecoderException;
 
-  Optional<Bank> getPublicBank() throws InterruptedException, DecoderException;
+  Optional<Bank> getPublicBank(String bankId)
+    throws InterruptedException, DecoderException;
 
   Iterable<Bank> getPublicBanks() throws InterruptedException, DecoderException;
 
-  Optional<Transaction> getPublicTransaction(String bankId, String accountId)
+  Optional<Transaction> getPublicTransaction(String bankId, String accountId,
+    String transactionId)
     throws InterruptedException, DecoderException;
 
   Iterable<Transaction> getPublicTransactions(String bankId, String accountId)
     throws InterruptedException, DecoderException;
 
-  Optional<User> getUser(String bankId, String accountId, String userId)
+  Optional<User> getUser(String userId)
     throws InterruptedException, DecoderException;
 
 

@@ -12,7 +12,6 @@ import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.transport.User;
-import com.tesobe.obp.util.tbd;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -42,14 +41,19 @@ import static java.util.Objects.nonNull;
     return request("getBanks");
   }
 
-  @Override public Request getPublicTransaction(String userId)
+  @Override public Request getPublicTransaction(String bankId, String accountId,
+    String transactionId)
   {
-    throw new tbd("arguments?");
+    return request("getTransaction")
+      .arguments("bankId", bankId, "accountId", accountId, "transactionId",
+        transactionId);
   }
 
-  @Override public Request getPublicTransactions(String userId)
+  @Override
+  public Request getPublicTransactions(String bankId, String accountId)
   {
-    throw new tbd("arguments?");
+    return request("getTransactions")
+      .arguments("bankId", bankId, "accountId", accountId);
   }
 
   @Override public Request getPublicUser(String userId)
@@ -67,15 +71,27 @@ import static java.util.Objects.nonNull;
     String transactionId, String userId)
   {
     return request("getTransaction")
-      .arguments("username", userId, "bankId", bankId, "transactionId",
-        transactionId);
+      .arguments("username", userId, "accountId", accountId, "bankId", bankId,
+        "transactionId", transactionId);
   }
 
   @Override
   public Request getPrivateTransactions(String bankId, String accountId,
     String userId)
   {
-    throw new tbd();
+    return request("getTransactions")
+      .arguments("bankId", bankId, "accountId", accountId, "userId", userId);
+  }
+
+  @Override public Request getPublicAccount(String bankId, String accountId)
+  {
+    return request("getBankAccount")
+      .arguments("bankId", bankId, "accountId", accountId);
+  }
+
+  @Override public Request getPublicAccounts(String bankId)
+  {
+    return request("getBankAccounts").arguments("bankId", bankId);
   }
 
   @Override public Request getPrivateAccount(String userId, String bankId,
@@ -94,6 +110,11 @@ import static java.util.Objects.nonNull;
   @Override public Request getPrivateBank(String userId, String bankId)
   {
     return request("getBank").arguments("username", userId, "bankId", bankId);
+  }
+
+  @Override public Request getPublicBank(String bankId)
+  {
+    return request("getBank").arguments("bankId", bankId);
   }
 
   protected RequestBuilder request(String name)
@@ -187,6 +208,20 @@ import static java.util.Objects.nonNull;
     return null;
   }
 
+  private void json(Transaction t, JSONArray result)
+  {
+    if(nonNull(t))
+    {
+      JSONObject json = json(t);
+
+      result.put(json != null ? json : JSONObject.NULL);
+    }
+    else
+    {
+      result.put(JSONObject.NULL);
+    }
+  }
+
   protected JSONObject json(Transaction t)
   {
     if(nonNull(t))
@@ -197,6 +232,17 @@ import static java.util.Objects.nonNull;
     return null;
   }
 
+  protected JSONObject json(User u)
+  {
+    if(nonNull(u))
+    {
+      return new UserEncoder(u).toJson();
+    }
+
+    return null;
+  }
+
+
   @Override public String transaction(Transaction t)
   {
     JSONObject json = json(t);
@@ -206,12 +252,31 @@ import static java.util.Objects.nonNull;
 
   @Override public String transactions(List<Transaction> ts)
   {
-    throw new tbd();
+    JSONArray result = new JSONArray();
+
+    if(nonNull(ts))
+    {
+      ts.forEach(transaction -> json(transaction, result));
+    }
+
+    return result.toString();
   }
 
   @Override public String user(User u)
   {
-    throw new tbd();
+    JSONObject json = json(u);
+
+    return json != null ? json.toString() : JSONObject.NULL.toString();
+  }
+
+  @Override public String error(String message)
+  {
+    return new JSONObject().put("error", message).toString();
+  }
+
+  @Override public String notFound()
+  {
+    return JSONObject.NULL.toString();
   }
 
 

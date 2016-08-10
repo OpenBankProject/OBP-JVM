@@ -11,7 +11,15 @@
   <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>
-        %-5level %d{HH:mm:ss.SSS} [%thread] %logger{30} %L - %msg%n
+        %-5level %d{HH:mm:ss.SSS} [%thread] %logger{30}.%M:%L - %msg%n
+      </pattern>
+    </encoder>
+  </appender>
+
+  <appender name="log" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>
+        %-5level %d{HH:mm:ss.SSS} [%thread] %msg%n
       </pattern>
     </encoder>
   </appender>
@@ -21,6 +29,11 @@
   <logger name="com.tesobe.obp" level="trace"/>
   <logger name="com.tesobe.obp.transport.spi.LegacyConnector" level="trace"/>
   <logger name="com.tesobe.obp.transport.spi.LegacyResponder" level="trace"/>
+
+  <logger name="com.tesobe.obp.transport.spi.LoggingReceiver" level="info"
+    additivity="false">
+    <appender-ref ref="log"/>
+  </logger>
 
   <root level="info">
     <appender-ref ref="console"/>

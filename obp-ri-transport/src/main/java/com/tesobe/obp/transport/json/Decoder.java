@@ -11,6 +11,7 @@ import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.Transport;
+import com.tesobe.obp.transport.User;
 import com.tesobe.obp.transport.spi.DecoderException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -106,7 +107,7 @@ import static java.util.Objects.nonNull;
   @Override public Optional<Account> account(String response)
     throws DecoderException
   {
-    log.trace(String.valueOf(response));
+    log.trace("{} {}", version, String.valueOf(response));
 
     if(nonNull(response) && !response.equals("null"))
     {
@@ -127,7 +128,7 @@ import static java.util.Objects.nonNull;
 
   @Override public Iterable<Account> accounts(String response)
   {
-    log.trace(String.valueOf(response));
+    log.trace("{} {}", version, String.valueOf(response));
 
     if(isNull(response) || response.equals("null"))
     {
@@ -159,7 +160,7 @@ import static java.util.Objects.nonNull;
 
   @Override public Optional<Bank> bank(String response)
   {
-    log.trace(String.valueOf(response));
+    log.trace("{} {}", version, String.valueOf(response));
 
     if(nonNull(response) && !response.equals("null"))
     {
@@ -180,7 +181,7 @@ import static java.util.Objects.nonNull;
 
   @Override public Iterable<Bank> banks(String response)
   {
-    log.trace(String.valueOf(response));
+    log.trace("{} {}", version, String.valueOf(response));
 
     if(isNull(response) || response.equals("null"))
     {
@@ -212,7 +213,7 @@ import static java.util.Objects.nonNull;
 
   @Override public Optional<Transaction> transaction(String response)
   {
-    log.trace(String.valueOf(response));
+    log.trace("{} {}", version, String.valueOf(response));
 
     if(nonNull(response) && !response.equals("null"))
     {
@@ -233,7 +234,7 @@ import static java.util.Objects.nonNull;
 
   @Override public Iterable<Transaction> transactions(String response)
   {
-    log.trace(String.valueOf(response));
+    log.trace("{} {}", version, String.valueOf(response));
 
     if(isNull(response) || response.equals("null"))
     {
@@ -261,6 +262,27 @@ import static java.util.Objects.nonNull;
 
       final Iterator<Object> iterator = array(response).iterator();
     };
+  }
+
+  @Override public Optional<User> user(String response)
+  {
+    log.trace("{} {}", version, String.valueOf(response));
+
+    if(nonNull(response) && !response.equals("null"))
+    {
+      try
+      {
+        JSONObject bank = new JSONObject(response);
+
+        return Optional.of(new UserDecoder(bank));
+      }
+      catch(JSONException e)
+      {
+        throw new DecoderException("Cannot decode: " + response);
+      }
+    }
+
+    return Optional.empty();
   }
 
   protected JSONArray array(String json) throws DecoderException

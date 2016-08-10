@@ -57,7 +57,7 @@ You need to subclass **LegacyResponder** and implement these methods. This is an
 protected abstract String getPrivateBank(String payload, Decoder.Request r, Encoder e);
 ```
 
-The first argument **payload** is the verbatim request as taken from the request.
+The first argument **payload** is the verbatim request as taken from the message.
 It is not needed for the response but it has one important use: 
 Pass it on to the APIs you are calling to document the origin of the call.
 
@@ -69,7 +69,12 @@ Every request is implemented by `com.tesobe.obp.transport.spi.MockLegacyResponde
 the **LegacyResonder**. The Demo gives a more complete example: `com.tesobe.obp.demo.south.DemoData`.
 A third test worth looking at because it implements the **North** and **South** sides is: `com.tesobe.obp.transport.spi.LegacyConnectorTest`.
 
+To get you started, you may use `com.tesobe.obp.transport.spi.DefaultLegacyResponder`.
+It has a no-op implementation of every method in LegacyResponder.
+
 ### Implementing the North
+
+(Look at `com.tesobe.obp.demo.SuperSimpleDemo` while you are reading this chapter)
 
 The connector `com.tesobe.obp.transport.Connector` lists the methods you can call to communicate with external parties, the south. 
 To optain a connector you need to implement `com.tesobe.obp.transport.Sender` and:

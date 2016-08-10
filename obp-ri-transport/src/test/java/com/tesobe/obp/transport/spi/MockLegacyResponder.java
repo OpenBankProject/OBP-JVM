@@ -13,12 +13,14 @@ import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.User;
 import com.tesobe.obp.util.ImplGen;
-import com.tesobe.obp.util.tbd;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresent;
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -100,7 +102,6 @@ class MockLegacyResponder extends LegacyResponder
   {
     log.trace("{}", packet);
 
-    assertThat(r.userId(), isPresent());
     assertThat(r.transactionId(), isPresent());
 
     return e.transaction(
@@ -139,7 +140,6 @@ class MockLegacyResponder extends LegacyResponder
     log.trace("{}", packet);
 
     assertThat(r.accountId(), isPresent());
-    assertThat(r.userId(), isPresent());
 
     return e
       .account(ImplGen.generate(Account.class, 1, "id", r.accountId().get()));
@@ -148,12 +148,16 @@ class MockLegacyResponder extends LegacyResponder
   @Override protected String getPublicAccounts(String packet, Decoder.Request r,
     Encoder e)
   {
-    List<Account> accounts = new ArrayList<>();
+    return r.bankId().map(bankId -> {
 
-    accounts.add(ImplGen.generate(Account.class, 1));
-    accounts.add(ImplGen.generate(Account.class, 2));
+      List<Account> accounts = new ArrayList<>();
 
-    return e.accounts(accounts);
+      accounts.add(ImplGen.generate(Account.class, 1, "bank", bankId));
+      accounts.add(ImplGen.generate(Account.class, 2, "bank", bankId));
+
+      return e.accounts(accounts);
+
+    }).orElse(e.accounts(emptyList()));
   }
 
   @Override
@@ -163,7 +167,7 @@ class MockLegacyResponder extends LegacyResponder
 
     assertThat(r.bankId(), isPresent());
 
-    return e.bank(ImplGen.generate(Bank.class, 1, "bankId", r.bankId().get()));
+    return e.bank(ImplGen.generate(Bank.class, 1, "id", r.bankId().get()));
   }
 
   @Override protected String getPublicBanks(String packet, Encoder e)
@@ -218,6 +222,7 @@ class MockLegacyResponder extends LegacyResponder
   protected String savePrivateTransaction(String packet, Decoder.Request r,
     Encoder e)
   {
-    throw new tbd();
+    return e.error("Not implemented");
   }
+  static final Logger log = LoggerFactory.getLogger(MockLegacyResponder.class);
 }
