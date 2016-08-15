@@ -14,7 +14,7 @@ import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.User;
 import com.tesobe.obp.transport.spi.Decoder;
 import com.tesobe.obp.transport.spi.Encoder;
-import com.tesobe.obp.transport.spi.LegacyResponder;
+import com.tesobe.obp.transport.spi.ResponderV0;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +31,7 @@ import static java.lang.reflect.Proxy.newProxyInstance;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 
-@SuppressWarnings("WeakerAccess") public class DemoData extends LegacyResponder
+@SuppressWarnings("WeakerAccess") public class DemoData extends ResponderV0
 {
   public DemoData(Decoder d, Encoder e)
   {

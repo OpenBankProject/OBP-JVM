@@ -7,9 +7,11 @@
  */
 package com.tesobe.obp.transport;
 
+import com.tesobe.obp.transport.json.DecoderV0;
+import com.tesobe.obp.transport.json.EncoderV0;
 import com.tesobe.obp.transport.spi.Decoder;
 import com.tesobe.obp.transport.spi.Encoder;
-import com.tesobe.obp.transport.spi.LegacyConnector;
+import com.tesobe.obp.transport.spi.ConnectorV0;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -74,7 +76,7 @@ import static com.tesobe.obp.transport.Transport.Version.legacy;
 
   static Connector connector(Version v, Encoder e, Decoder d, Sender s)
   {
-    return new LegacyConnector(v, e, d, s);
+    return new ConnectorV0(v, e, d, s);
   }
 
   static Decoder decoder(Version v, Encoding e)
@@ -124,8 +126,8 @@ import static com.tesobe.obp.transport.Transport.Version.legacy;
     EnumMap<Version, Decoder> ds = new EnumMap<>(Version.class);
     EnumMap<Version, Encoder> es = new EnumMap<>(Version.class);
 
-    ds.put(legacy, new com.tesobe.obp.transport.json.Decoder(legacy));
-    es.put(legacy, new com.tesobe.obp.transport.json.Encoder(legacy));
+    ds.put(legacy, new DecoderV0(legacy));
+    es.put(legacy, new EncoderV0(legacy));
 
     decoders.put(json, ds);
     encoders.put(json, es);

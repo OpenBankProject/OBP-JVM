@@ -32,10 +32,10 @@ import static java.util.Objects.nonNull;
  *
  * @since 2016.0
  */
-@SuppressWarnings("WeakerAccess") public class Decoder
+@SuppressWarnings("WeakerAccess") public class DecoderV0
   implements com.tesobe.obp.transport.spi.Decoder
 {
-  public Decoder(Transport.Version v)
+  public DecoderV0(Transport.Version v)
   {
     version = v;
   }
@@ -342,5 +342,5 @@ import static java.util.Objects.nonNull;
   }
 
   final Transport.Version version;
-  static final Logger log = LoggerFactory.getLogger(Decoder.class);
+  static final Logger log = LoggerFactory.getLogger(DecoderV0.class);
 }

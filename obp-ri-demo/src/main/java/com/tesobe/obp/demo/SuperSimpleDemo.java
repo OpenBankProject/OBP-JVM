@@ -8,12 +8,9 @@
 
 package com.tesobe.obp.demo;
 
-import com.tesobe.obp.transport.Bank;
-import com.tesobe.obp.transport.Connector;
-import com.tesobe.obp.transport.Sender;
-import com.tesobe.obp.transport.Transport;
+import com.tesobe.obp.transport.*;
 import com.tesobe.obp.transport.spi.Decoder;
-import com.tesobe.obp.transport.spi.DefaultLegacyResponder;
+import com.tesobe.obp.transport.spi.DefaultResponderV0;
 import com.tesobe.obp.transport.spi.Encoder;
 import com.tesobe.obp.transport.spi.Receiver;
 
@@ -32,7 +29,7 @@ public class SuperSimpleDemo
     Decoder decoder = factory.decoder();
     Encoder encoder = factory.encoder();
 
-    Receiver south = new DefaultLegacyResponder(decoder, encoder)
+    Receiver south = new DefaultResponderV0(decoder, encoder)
     {
       @Override
       protected String getPublicBank(String payload, Decoder.Request r,
@@ -79,7 +76,9 @@ public class SuperSimpleDemo
     Sender north = south::respond; // super simple transport layer
     Connector connector = factory.connector(north);
 
-    Optional<Bank> bank = connector.getPublicBank("my-bank");
+    Context context = new Context(null, null);
+
+    Optional<Bank> bank = connector.getBank("my-bank", context);
 
     System.out.println(bank);
   }

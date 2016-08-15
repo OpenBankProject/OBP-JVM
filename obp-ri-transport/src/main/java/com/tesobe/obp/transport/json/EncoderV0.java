@@ -7,11 +7,7 @@
  */
 package com.tesobe.obp.transport.json;
 
-import com.tesobe.obp.transport.Account;
-import com.tesobe.obp.transport.Bank;
-import com.tesobe.obp.transport.Transaction;
-import com.tesobe.obp.transport.Transport;
-import com.tesobe.obp.transport.User;
+import com.tesobe.obp.transport.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -28,94 +24,86 @@ import static java.util.Objects.nonNull;
  *
  * @since 2016.0
  */
-@SuppressWarnings("WeakerAccess") public class Encoder
+@SuppressWarnings("WeakerAccess") public class EncoderV0
   implements com.tesobe.obp.transport.spi.Encoder
 {
-  public Encoder(Transport.Version v)
+  public EncoderV0(Transport.Version v)
   {
     version = v;
   }
 
-  @Override public Request getPublicBanks()
-  {
-    return request("getBanks");
-  }
-
-  @Override public Request getPublicTransaction(String bankId, String accountId,
-    String transactionId)
-  {
-    return request("getTransaction")
-      .arguments("bankId", bankId, "accountId", accountId, "transactionId",
-        transactionId);
-  }
-
-  @Override
-  public Request getPublicTransactions(String bankId, String accountId)
-  {
-    return request("getTransactions")
-      .arguments("bankId", bankId, "accountId", accountId);
-  }
-
-  @Override public Request getPublicUser(String userId)
+  @Override public Request getUser(String userId, Context context)
   {
     return request("getUser").arguments("username", userId);
   }
 
-  @Override public Request getPrivateBanks(String userId)
+  @Override public Request getBanks(Context context)
   {
-    return request("getBanks").arguments("username", userId);
+    if (context != null && context.user != null){
+      return request("getBanks").arguments("username", context.user.userId);
+    } else {
+      return request("getBanks");
+    }
   }
 
   @Override
-  public Request getPrivateTransaction(String bankId, String accountId,
-    String transactionId, String userId)
+  public Request getTransaction(String bankId, String accountId,
+                                String transactionId, Context context)
   {
-    return request("getTransaction")
-      .arguments("username", userId, "accountId", accountId, "bankId", bankId,
-        "transactionId", transactionId);
+    if (context != null && context.user != null){
+      return request("getTransaction")
+              .arguments("username", context.user.userId, "accountId", accountId, "bankId", bankId,
+                      "transactionId", transactionId);
+    } else {
+      return request("getTransaction")
+              .arguments("bankId", bankId, "accountId", accountId, "transactionId", transactionId);
+    }
   }
 
   @Override
-  public Request getPrivateTransactions(String bankId, String accountId,
-    String userId)
+  public Request getTransactions(String bankId, String accountId,
+                                 Context context)
   {
-    return request("getTransactions")
-      .arguments("bankId", bankId, "accountId", accountId, "userId", userId);
+    if (context != null && context.user != null) {
+      return request("getTransactions")
+              .arguments("bankId", bankId, "accountId", accountId, "userId", context.user.userId);
+    } else {
+      return request("getTransactions")
+              .arguments("bankId", bankId, "accountId", accountId);
+    }
   }
 
-  @Override public Request getPublicAccount(String bankId, String accountId)
+  @Override public Request getAccount(Context context, String bankId,
+                                      String accountId)
   {
-    return request("getBankAccount")
-      .arguments("bankId", bankId, "accountId", accountId);
+    if (context != null && context.user != null) {
+      return request("getBankAccount")
+              .arguments("username", context.user.userId, "bankId", bankId, "accountId", accountId);
+    } else {
+      return request("getBankAccount")
+              .arguments("bankId", bankId, "accountId", accountId);
+    }
   }
 
-  @Override public Request getPublicAccounts(String bankId)
+  @Override public Request getAccounts(Context context, String bankId)
   {
-    return request("getBankAccounts").arguments("bankId", bankId);
+    if (context != null && context.user != null) {
+      return request("getBankAccounts")
+              .arguments("username", context.user.userId, "bankId", bankId);
+    } else {
+      return request("getBankAccounts").arguments("bankId", bankId);
+    }
   }
 
-  @Override public Request getPrivateAccount(String userId, String bankId,
-    String accountId)
+  @Override public Request getBank(Context context, String bankId)
   {
-    return request("getBankAccount")
-      .arguments("username", userId, "bankId", bankId, "accountId", accountId);
+    if (context != null && context.user != null) {
+      return request("getBank").arguments("username", context.user.userId, "bankId", bankId);
+    } else {
+      return request("getBank").arguments("bankId", bankId);
+    }
   }
 
-  @Override public Request getPrivateAccounts(String userId, String bankId)
-  {
-    return request("getBankAccounts")
-      .arguments("username", userId, "bankId", bankId);
-  }
-
-  @Override public Request getPrivateBank(String userId, String bankId)
-  {
-    return request("getBank").arguments("username", userId, "bankId", bankId);
-  }
-
-  @Override public Request getPublicBank(String bankId)
-  {
-    return request("getBank").arguments("bankId", bankId);
-  }
 
   protected RequestBuilder request(String name)
   {
@@ -297,7 +285,7 @@ import static java.util.Objects.nonNull;
 
   final Transport.Version version;
 
-  static final Logger log = LoggerFactory.getLogger(Encoder.class);
+  static final Logger log = LoggerFactory.getLogger(EncoderV0.class);
 
   class RequestBuilder implements Request
   {

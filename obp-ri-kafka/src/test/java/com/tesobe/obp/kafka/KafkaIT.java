@@ -7,9 +7,7 @@
  */
 package com.tesobe.obp.kafka;
 
-import com.tesobe.obp.transport.Bank;
-import com.tesobe.obp.transport.Connector;
-import com.tesobe.obp.transport.Transport;
+import com.tesobe.obp.transport.*;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +39,9 @@ import org.slf4j.LoggerFactory;
 
     Connector connector = factory.connector(north);
 
-    Iterable<Bank> banks = connector.getPublicBanks();
+    Context context = new Context(null, null);
+
+    Iterable<Bank> banks = connector.getBanks(context);
 
     north.shutdown();
   }

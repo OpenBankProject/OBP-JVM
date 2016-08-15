@@ -33,7 +33,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
 @SuppressWarnings("OptionalGetWithoutIsPresent")
-public class LegacyResponderTest
+public class ResponderV0Test
 {
   @Before public void setup()
   {
@@ -41,7 +41,7 @@ public class LegacyResponderTest
       .orElseThrow(RuntimeException::new);
 
     decoder = factory.decoder();
-    responder = new MockLegacyResponder(decoder, factory.encoder());
+    responder = new MockResponderV0(decoder, factory.encoder());
   }
 
   @Test public void getPrivateAccount() throws Exception

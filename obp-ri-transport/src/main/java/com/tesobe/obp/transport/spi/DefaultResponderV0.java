@@ -9,12 +9,12 @@
 package com.tesobe.obp.transport.spi;
 
 /**
- * Implements {@link LegacyResponder}'s abstract methods without functionality
+ * Implements {@link ResponderV0}'s abstract methods without functionality
  * returning {@code "null"} or {@code "[]"}.
  */
-public class DefaultLegacyResponder extends LegacyResponder
+public class DefaultResponderV0 extends ResponderV0
 {
-  public DefaultLegacyResponder(Decoder d, Encoder e)
+  public DefaultResponderV0(Decoder d, Encoder e)
   {
     super(d, e);
   }

@@ -7,10 +7,7 @@
  */
 package com.tesobe.obp.transport.spi;
 
-import com.tesobe.obp.transport.Account;
-import com.tesobe.obp.transport.Bank;
-import com.tesobe.obp.transport.Transaction;
-import com.tesobe.obp.transport.User;
+import com.tesobe.obp.transport.*;
 
 import java.util.List;
 
@@ -19,32 +16,19 @@ import java.util.List;
  */
 public interface Encoder
 {
-  Request getPrivateAccount(String userId, String bankId, String accountId);
+  Request getAccount(Context context, String bankId, String accountId);
 
-  Request getPrivateAccounts(String userId, String bankId);
+  Request getAccounts(Context context, String bankId);
 
-  Request getPrivateBank(String userId, String bankId);
+  Request getBank(Context context, String bankId);
 
-  Request getPrivateBanks(String userId);
+  Request getBanks(Context context);
 
-  Request getPrivateTransaction(String bankId, String accountId, String transactionId, String userId);
+  Request getTransaction(String bankId, String accountId, String transactionId, Context context);
 
-  Request getPrivateTransactions(String bankId, String accountId, String userId);
+  Request getTransactions(String bankId, String accountId, Context context);
 
-  Request getPublicAccount(String bankId, String accountId);
-
-  Request getPublicAccounts(String bankId);
-
-  Request getPublicBank(String bankId);
-
-  Request getPublicBanks();
-
-  Request getPublicTransaction(String bankId, String accountId,
-    String transactionId);
-
-  Request getPublicTransactions(String bankId, String accountId);
-
-  Request getPublicUser(String userId);
+  Request getUser(String userId, Context context);
 
   String account(Account a);
 

@@ -99,7 +99,7 @@ import org.junit.Ignore;
 //      for(List<Connector.Bank> banks = new ArrayList<>();
 //          banks.size() < 1_000_000; )
 //      {
-//        connector.getPrivateBanks(charles).forEach(banks::add);
+//        connector.getBanks(charles).forEach(banks::add);
 //      }
 //
 //      long duration = System.nanoTime() - start;
