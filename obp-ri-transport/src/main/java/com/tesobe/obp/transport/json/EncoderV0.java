@@ -34,74 +34,52 @@ import static java.util.Objects.nonNull;
 
   @Override public Request getUser(String userId, OutboundContext outboundContext)
   {
-    return request("getUser").arguments("username", userId);
+    return request("request")
+            .arguments(outboundContext, "function", "getUser", "version", version.toString(), "username", userId);
   }
 
   @Override public Request getBanks(OutboundContext outboundContext)
   {
-    if (outboundContext != null && outboundContext.user != null){
-      return request("getBanks").arguments("username", outboundContext.user.userId);
-    } else {
-      return request("getBanks");
-    }
+    return request("request")
+            .arguments(outboundContext, "function", "getBanks", "version", version.toString());
   }
 
   @Override
   public Request getTransaction(String bankId, String accountId,
                                 String transactionId, OutboundContext outboundContext)
   {
-    if (outboundContext != null && outboundContext.user != null){
-      return request("getTransaction")
-              .arguments("username", outboundContext.user.userId, "accountId", accountId, "bankId", bankId,
-                      "transactionId", transactionId);
-    } else {
-      return request("getTransaction")
-              .arguments("bankId", bankId, "accountId", accountId, "transactionId", transactionId);
-    }
+    return request("request")
+            .arguments(outboundContext, "function", "getTransaction", "version", version.toString(),
+                    "accountId", accountId, "bankId", bankId, "transactionId", transactionId);
   }
 
   @Override
   public Request getTransactions(String bankId, String accountId,
                                  OutboundContext outboundContext)
   {
-    if (outboundContext != null && outboundContext.user != null) {
-      return request("getTransactions")
-              .arguments("bankId", bankId, "accountId", accountId, "userId", outboundContext.user.userId);
-    } else {
-      return request("getTransactions")
-              .arguments("bankId", bankId, "accountId", accountId);
-    }
+    return request("request")
+            .arguments(outboundContext, "function", "getTransactions", "version", version.toString(),
+                    "bankId", bankId, "accountId", accountId);
   }
 
   @Override public Request getAccount(OutboundContext outboundContext, String bankId,
                                       String accountId)
   {
-    if (outboundContext != null && outboundContext.user != null) {
-      return request("getBankAccount")
-              .arguments("username", outboundContext.user.userId, "bankId", bankId, "accountId", accountId);
-    } else {
-      return request("getBankAccount")
-              .arguments("bankId", bankId, "accountId", accountId);
-    }
+    return request("request")
+            .arguments(outboundContext, "function", "getBankAccount", "version", version.toString(),
+                    "bankId", bankId, "accountId", accountId);
   }
 
   @Override public Request getAccounts(OutboundContext outboundContext, String bankId)
   {
-    if (outboundContext != null && outboundContext.user != null) {
-      return request("getBankAccounts")
-              .arguments("username", outboundContext.user.userId, "bankId", bankId);
-    } else {
-      return request("getBankAccounts").arguments("bankId", bankId);
-    }
+    return request("request")
+            .arguments(outboundContext, "function", "getBankAccounts", "version", version.toString(), "bankId", bankId);
   }
 
   @Override public Request getBank(OutboundContext outboundContext, String bankId)
   {
-    if (outboundContext != null && outboundContext.user != null) {
-      return request("getBank").arguments("username", outboundContext.user.userId, "bankId", bankId);
-    } else {
-      return request("getBank").arguments("bankId", bankId);
-    }
+    return request("request")
+            .arguments(outboundContext, "function", "getBank", "version", version.toString(), "bankId", bankId);
   }
 
 
@@ -303,12 +281,19 @@ import static java.util.Objects.nonNull;
       return request.toString();
     }
 
-    public Request arguments(String... kv)
+    public Request arguments(OutboundContext outboundContext, String... kv)
     {
       for(int i = 0; i < kv.length - 1; i += 2)
       {
         arguments.put(kv[i], kv[i + 1]);
       }
+
+      // Add the outbound context
+      arguments.put("outboundContext", new JSONObject()
+              .put("user", outboundContext.user != null ? new JSONObject().put("userId", outboundContext.user.userId) : JSONObject.NULL)
+              .put("view", outboundContext.view != null ? new JSONObject().put("viewId", outboundContext.view.viewId)
+                      .put("isPublic", outboundContext.view.isPublic) : JSONObject.NULL)
+              .put("token", outboundContext.token != null ? new JSONObject().put("tokenId", outboundContext.token.tokenId) :JSONObject.NULL));
 
       if(request.opt(name) == JSONObject.NULL)
       {

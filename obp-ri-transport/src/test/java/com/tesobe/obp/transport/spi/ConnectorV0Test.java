@@ -21,7 +21,7 @@ import java.util.concurrent.*;
 
 import static com.github.npathai.hamcrestopt.OptionalMatchers.hasValue;
 import static com.tesobe.obp.transport.Transport.Encoding.json;
-import static com.tesobe.obp.transport.Transport.Version.legacy;
+import static com.tesobe.obp.transport.Transport.Version.v0;
 import static com.tesobe.obp.util.MethodMatcher.returns;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -31,7 +31,7 @@ public class ConnectorV0Test
 {
   @Before public void setup()
   {
-    Transport.Factory factory = Transport.factory(legacy, json)
+    Transport.Factory factory = Transport.factory(v0, json)
       .orElseThrow(RuntimeException::new);
     Receiver responder = new MockResponderV0(factory.decoder(),
       factory.encoder());
@@ -72,7 +72,9 @@ public class ConnectorV0Test
     String accountId = "account-x";
     String bankId = "id-x";
     String userId = "user-x";
-    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), null);
+    String viewId = "view-x";
+    String tokenId = "token-x";
+    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
 
     Optional<Account> account = connector
       .getAccount(bankId, accountId, outboundContext);
@@ -84,7 +86,9 @@ public class ConnectorV0Test
   {
     String bankId = "bank-x";
     String userId = "user-x";
-    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), null);
+    String viewId = "view-x";
+    String tokenId = "token-x";
+    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
 
     Iterable<Account> accounts = connector.getAccounts(bankId, outboundContext);
     List<String> ids = new ArrayList<>();
@@ -99,7 +103,9 @@ public class ConnectorV0Test
   {
     String bankId = "bank-x";
     String userId = "user-x";
-    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), null);
+    String viewId = "view-x";
+    String tokenId = "token-x";
+    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
 
     Optional<Bank> bank = connector.getBank(bankId, outboundContext);
 
@@ -109,7 +115,9 @@ public class ConnectorV0Test
   @Test public void getBanks() throws Exception
   {
     String userId = "user-x";
-    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), null);
+    String viewId = "view-x";
+    String tokenId = "token-x";
+    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
 
     Iterable<Bank> banks = connector.getBanks(outboundContext);
     List<String> ids = new ArrayList<>();
@@ -125,7 +133,9 @@ public class ConnectorV0Test
     String bankId = "bank-x";
     String transactionId = "transaction-x";
     String userId = "user-x";
-    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), null);
+    String viewId = "view-x";
+    String tokenId = "token-x";
+    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
 
     Optional<Transaction> transaction = connector
       .getTransaction(bankId, accountId, transactionId, outboundContext);
@@ -138,7 +148,9 @@ public class ConnectorV0Test
     String accountId = "account-x";
     String bankId = "bank-x";
     String userId = "user-x";
-    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), null);
+    String viewId = "view-x";
+    String tokenId = "token-x";
+    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
 
     Iterable<Transaction> transactions = connector
       .getTransactions(bankId, accountId, outboundContext);
@@ -152,7 +164,9 @@ public class ConnectorV0Test
   @Test public void getUser() throws Exception
   {
     String userId = "user-x@example.org";
-    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), null);
+    String viewId = "view-x";
+    String tokenId = "token-x";
+    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
 
     Optional<User> user = connector.getUser(userId, outboundContext);
 

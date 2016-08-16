@@ -50,7 +50,7 @@ import static java.util.Objects.nonNull;
     if(nonNull(request))
     {
       Decoder.Request decoded = decoder.request(request.payload);
-      String name = decoded.name();
+      String name = decoded.function();
       BiFunction<Decoder.Request, Encoder, String> call = api.get(name);
 
       if(nonNull(call))

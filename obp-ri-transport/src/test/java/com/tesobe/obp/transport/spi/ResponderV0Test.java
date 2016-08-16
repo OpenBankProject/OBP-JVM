@@ -26,7 +26,7 @@ import java.util.UUID;
 
 import static com.github.npathai.hamcrestopt.OptionalMatchers.hasValue;
 import static com.tesobe.obp.transport.Transport.Encoding.json;
-import static com.tesobe.obp.transport.Transport.Version.legacy;
+import static com.tesobe.obp.transport.Transport.Version.v0;
 import static com.tesobe.obp.util.MethodMatcher.returns;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -37,7 +37,7 @@ public class ResponderV0Test
 {
   @Before public void setup()
   {
-    Transport.Factory factory = Transport.factory(legacy, json)
+    Transport.Factory factory = Transport.factory(v0, json)
       .orElseThrow(RuntimeException::new);
 
     decoder = factory.decoder();
@@ -129,7 +129,7 @@ public class ResponderV0Test
     String accountId = "account-x";
     String bankId = "bank-x";
     String userId = "user-x";
-    String request = new JSONObject().put("getTransactions",
+    String request = new JSONObject().put("request",
       new JSONObject().put("username", userId).put("bankId", bankId)
         .put("accountId", accountId)).toString();
     String response = responder.respond(new Message(id, request));

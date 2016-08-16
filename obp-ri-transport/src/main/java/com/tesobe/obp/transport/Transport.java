@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.tesobe.obp.transport.Transport.Encoding.json;
-import static com.tesobe.obp.transport.Transport.Version.legacy;
+import static com.tesobe.obp.transport.Transport.Version.v0;
 
 /**
  * Transport manages the different versions of the transport api.
@@ -28,7 +28,7 @@ import static com.tesobe.obp.transport.Transport.Version.legacy;
 @SuppressWarnings("WeakerAccess") public abstract class Transport
 {
   /**
-   * Uses {@link Version#legacy}, {@link Encoding#json}.
+   * Uses {@link Version#v0}, {@link Encoding#json}.
    *
    * @return a factory that is always available
    *
@@ -37,7 +37,7 @@ import static com.tesobe.obp.transport.Transport.Version.legacy;
   public static Factory defaultFactory()
   {
     //noinspection OptionalGetWithoutIsPresent
-    return factory(Version.legacy, Encoding.json).get();
+    return factory(Version.v0, Encoding.json).get();
   }
 
   /**
@@ -108,7 +108,7 @@ import static com.tesobe.obp.transport.Transport.Version.legacy;
 
   public enum Version
   {
-    legacy
+    v0
   }
 
   public enum Encoding
@@ -126,8 +126,8 @@ import static com.tesobe.obp.transport.Transport.Version.legacy;
     EnumMap<Version, Decoder> ds = new EnumMap<>(Version.class);
     EnumMap<Version, Encoder> es = new EnumMap<>(Version.class);
 
-    ds.put(legacy, new DecoderV0(legacy));
-    es.put(legacy, new EncoderV0(legacy));
+    ds.put(v0, new DecoderV0(v0));
+    es.put(v0, new EncoderV0(v0));
 
     decoders.put(json, ds);
     encoders.put(json, es);

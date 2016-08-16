@@ -80,6 +80,11 @@ import static java.util.Objects.nonNull;
         return name;
       }
 
+      @Override public String function()
+      {
+        return arguments.optString("function", null);
+      }
+
       @Override public String raw()
       {
         return request;

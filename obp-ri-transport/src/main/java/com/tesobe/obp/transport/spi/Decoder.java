@@ -41,6 +41,8 @@ public interface Decoder
 
     String name();
 
+    String function();
+
     Optional<String> accountId();
 
     Optional<String> bankId();

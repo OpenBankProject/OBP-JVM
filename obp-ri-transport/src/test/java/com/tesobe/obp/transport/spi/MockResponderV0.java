@@ -24,7 +24,7 @@ import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertThat;
 
 /**
- * Gives generated responses to all requests in the legacy version of the SPI.
+ * Gives generated responses to all requests in the v0 version of the SPI.
  * <p>
  * The required request fields are checked, then a response is generated with
  * self documenting values for each field.
