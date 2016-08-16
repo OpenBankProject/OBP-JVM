@@ -32,15 +32,15 @@ import static java.util.Objects.nonNull;
     version = v;
   }
 
-  @Override public Request getUser(String userId, Context context)
+  @Override public Request getUser(String userId, OutboundContext outboundContext)
   {
     return request("getUser").arguments("username", userId);
   }
 
-  @Override public Request getBanks(Context context)
+  @Override public Request getBanks(OutboundContext outboundContext)
   {
-    if (context != null && context.user != null){
-      return request("getBanks").arguments("username", context.user.userId);
+    if (outboundContext != null && outboundContext.user != null){
+      return request("getBanks").arguments("username", outboundContext.user.userId);
     } else {
       return request("getBanks");
     }
@@ -48,11 +48,11 @@ import static java.util.Objects.nonNull;
 
   @Override
   public Request getTransaction(String bankId, String accountId,
-                                String transactionId, Context context)
+                                String transactionId, OutboundContext outboundContext)
   {
-    if (context != null && context.user != null){
+    if (outboundContext != null && outboundContext.user != null){
       return request("getTransaction")
-              .arguments("username", context.user.userId, "accountId", accountId, "bankId", bankId,
+              .arguments("username", outboundContext.user.userId, "accountId", accountId, "bankId", bankId,
                       "transactionId", transactionId);
     } else {
       return request("getTransaction")
@@ -62,43 +62,43 @@ import static java.util.Objects.nonNull;
 
   @Override
   public Request getTransactions(String bankId, String accountId,
-                                 Context context)
+                                 OutboundContext outboundContext)
   {
-    if (context != null && context.user != null) {
+    if (outboundContext != null && outboundContext.user != null) {
       return request("getTransactions")
-              .arguments("bankId", bankId, "accountId", accountId, "userId", context.user.userId);
+              .arguments("bankId", bankId, "accountId", accountId, "userId", outboundContext.user.userId);
     } else {
       return request("getTransactions")
               .arguments("bankId", bankId, "accountId", accountId);
     }
   }
 
-  @Override public Request getAccount(Context context, String bankId,
+  @Override public Request getAccount(OutboundContext outboundContext, String bankId,
                                       String accountId)
   {
-    if (context != null && context.user != null) {
+    if (outboundContext != null && outboundContext.user != null) {
       return request("getBankAccount")
-              .arguments("username", context.user.userId, "bankId", bankId, "accountId", accountId);
+              .arguments("username", outboundContext.user.userId, "bankId", bankId, "accountId", accountId);
     } else {
       return request("getBankAccount")
               .arguments("bankId", bankId, "accountId", accountId);
     }
   }
 
-  @Override public Request getAccounts(Context context, String bankId)
+  @Override public Request getAccounts(OutboundContext outboundContext, String bankId)
   {
-    if (context != null && context.user != null) {
+    if (outboundContext != null && outboundContext.user != null) {
       return request("getBankAccounts")
-              .arguments("username", context.user.userId, "bankId", bankId);
+              .arguments("username", outboundContext.user.userId, "bankId", bankId);
     } else {
       return request("getBankAccounts").arguments("bankId", bankId);
     }
   }
 
-  @Override public Request getBank(Context context, String bankId)
+  @Override public Request getBank(OutboundContext outboundContext, String bankId)
   {
-    if (context != null && context.user != null) {
-      return request("getBank").arguments("username", context.user.userId, "bankId", bankId);
+    if (outboundContext != null && outboundContext.user != null) {
+      return request("getBank").arguments("username", outboundContext.user.userId, "bankId", bankId);
     } else {
       return request("getBank").arguments("bankId", bankId);
     }

@@ -72,10 +72,10 @@ public class ConnectorV0Test
     String accountId = "account-x";
     String bankId = "id-x";
     String userId = "user-x";
-    Context context = new Context(new UserContext(userId), null);
+    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), null);
 
     Optional<Account> account = connector
-      .getAccount(bankId, accountId, context);
+      .getAccount(bankId, accountId, outboundContext);
 
     assertThat(account, hasValue(returns("id", "account-x")));
   }
@@ -84,9 +84,9 @@ public class ConnectorV0Test
   {
     String bankId = "bank-x";
     String userId = "user-x";
-    Context context = new Context(new UserContext(userId), null);
+    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), null);
 
-    Iterable<Account> accounts = connector.getAccounts(bankId, context);
+    Iterable<Account> accounts = connector.getAccounts(bankId, outboundContext);
     List<String> ids = new ArrayList<>();
 
     accounts.forEach(account -> assertThat(account.bank(), is(bankId)));
@@ -99,9 +99,9 @@ public class ConnectorV0Test
   {
     String bankId = "bank-x";
     String userId = "user-x";
-    Context context = new Context(new UserContext(userId), null);
+    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), null);
 
-    Optional<Bank> bank = connector.getBank(bankId, context);
+    Optional<Bank> bank = connector.getBank(bankId, outboundContext);
 
     assertThat(bank, hasValue(returns("id", "bank-x")));
   }
@@ -109,9 +109,9 @@ public class ConnectorV0Test
   @Test public void getBanks() throws Exception
   {
     String userId = "user-x";
-    Context context = new Context(new UserContext(userId), null);
+    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), null);
 
-    Iterable<Bank> banks = connector.getBanks(context);
+    Iterable<Bank> banks = connector.getBanks(outboundContext);
     List<String> ids = new ArrayList<>();
 
     banks.forEach(bank -> ids.add(bank.id()));
@@ -125,10 +125,10 @@ public class ConnectorV0Test
     String bankId = "bank-x";
     String transactionId = "transaction-x";
     String userId = "user-x";
-    Context context = new Context(new UserContext(userId), null);
+    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), null);
 
     Optional<Transaction> transaction = connector
-      .getTransaction(bankId, accountId, transactionId, context);
+      .getTransaction(bankId, accountId, transactionId, outboundContext);
 
     assertThat(transaction, hasValue(returns("id", "transaction-x")));
   }
@@ -138,10 +138,10 @@ public class ConnectorV0Test
     String accountId = "account-x";
     String bankId = "bank-x";
     String userId = "user-x";
-    Context context = new Context(new UserContext(userId), null);
+    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), null);
 
     Iterable<Transaction> transactions = connector
-      .getTransactions(bankId, accountId, context);
+      .getTransactions(bankId, accountId, outboundContext);
     List<String> ids = new ArrayList<>();
 
     transactions.forEach(bank -> ids.add(bank.id()));
@@ -152,9 +152,9 @@ public class ConnectorV0Test
   @Test public void getUser() throws Exception
   {
     String userId = "user-x@example.org";
-    Context context = new Context(new UserContext(userId), null);
+    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), null);
 
-    Optional<User> user = connector.getUser(userId, context);
+    Optional<User> user = connector.getUser(userId, outboundContext);
 
     assertThat(user, hasValue(returns("email", userId)));
   }

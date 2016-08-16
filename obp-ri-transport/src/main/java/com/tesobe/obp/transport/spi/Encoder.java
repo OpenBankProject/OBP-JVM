@@ -16,19 +16,19 @@ import java.util.List;
  */
 public interface Encoder
 {
-  Request getAccount(Context context, String bankId, String accountId);
+  Request getAccount(OutboundContext outboundContext, String bankId, String accountId);
 
-  Request getAccounts(Context context, String bankId);
+  Request getAccounts(OutboundContext outboundContext, String bankId);
 
-  Request getBank(Context context, String bankId);
+  Request getBank(OutboundContext outboundContext, String bankId);
 
-  Request getBanks(Context context);
+  Request getBanks(OutboundContext outboundContext);
 
-  Request getTransaction(String bankId, String accountId, String transactionId, Context context);
+  Request getTransaction(String bankId, String accountId, String transactionId, OutboundContext outboundContext);
 
-  Request getTransactions(String bankId, String accountId, Context context);
+  Request getTransactions(String bankId, String accountId, OutboundContext outboundContext);
 
-  Request getUser(String userId, Context context);
+  Request getUser(String userId, OutboundContext outboundContext);
 
   String account(Account a);
 

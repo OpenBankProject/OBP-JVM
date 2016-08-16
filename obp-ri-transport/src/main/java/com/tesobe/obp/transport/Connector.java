@@ -23,7 +23,7 @@ import java.util.Optional;
    * An all white space bank id is invalid.
    * @param accountId An invalid account id means an empty result.
    * An all white space account id is invalid.
-   * @param context Context object containing information about user, view, token, etc..
+   * @param outboundContext OutboundContext object containing information about user, view, token, etc..
    * An all white space user id is invalid.
    *
    * @return An empty result if the account is not explicitly linked to the
@@ -34,7 +34,7 @@ import java.util.Optional;
    * @throws InterruptedException Network trouble
    * @throws DecoderException     Invalid content in the network packet.
    */
-  Optional<Account> getAccount(String bankId, String accountId, Context context) throws InterruptedException, DecoderException;
+  Optional<Account> getAccount(String bankId, String accountId, OutboundContext outboundContext) throws InterruptedException, DecoderException;
 
   /**
    * All private accounts the user is explicitly linked to.
@@ -46,7 +46,7 @@ import java.util.Optional;
    *
    * @param bankId An invalid bank id means an empty result.
    * An all white space bank id is invalid.
-   * @param context Context object containing information about user, view, token, etc..
+   * @param outboundContext OutboundContext object containing information about user, view, token, etc..
    * An all white space user id is invalid.
    *
    * @return The user's private banks or an empty result.
@@ -56,12 +56,12 @@ import java.util.Optional;
    *                              The exception may be delayed until the
    *                              iterable is dereferenced.
    */
-  Iterable<Account> getAccounts(String bankId, Context context) throws InterruptedException, DecoderException;
+  Iterable<Account> getAccounts(String bankId, OutboundContext outboundContext) throws InterruptedException, DecoderException;
 
   /**
    * @param bankId An invalid bank id means an empty result.
    * An all white space bank id is invalid.
-   * @param context Context object containing information about user, view, token, etc..
+   * @param outboundContext OutboundContext object containing information about user, view, token, etc..
    * An all white space user id is invalid.
    *
    * @return An empty result if the bank is not explicitly linked to the user.
@@ -70,7 +70,7 @@ import java.util.Optional;
    * @throws InterruptedException Network trouble
    * @throws DecoderException     Invalid content in the network packet.
    */
-  Optional<Bank> getBank(String bankId, Context context) throws InterruptedException, DecoderException;
+  Optional<Bank> getBank(String bankId, OutboundContext outboundContext) throws InterruptedException, DecoderException;
 
   /**
    * All private banks the user is explicitly linked to.
@@ -80,7 +80,7 @@ import java.util.Optional;
    * A {@link DecoderException} can be thrown at any time because the decoding
    * is done lazily during the iteration.
    *
-   * @param context Context object containing information about user, view, token, etc..
+   * @param outboundContext OutboundContext object containing information about user, view, token, etc..
    * An all white space user id is invalid.
    *
    * @return The user's private banks or an empty result.
@@ -90,13 +90,13 @@ import java.util.Optional;
    *                              The exception may be delayed until the
    *                              iterable is dereferenced.
    */
-  Iterable<Bank> getBanks(Context context) throws InterruptedException, DecoderException;
+  Iterable<Bank> getBanks(OutboundContext outboundContext) throws InterruptedException, DecoderException;
 
-  Optional<Transaction> getTransaction(String bankId, String accountId, String transactionId, Context context) throws InterruptedException, DecoderException;
+  Optional<Transaction> getTransaction(String bankId, String accountId, String transactionId, OutboundContext outboundContext) throws InterruptedException, DecoderException;
 
-  Iterable<Transaction> getTransactions(String bankId, String accountId, Context context) throws InterruptedException, DecoderException;
+  Iterable<Transaction> getTransactions(String bankId, String accountId, OutboundContext outboundContext) throws InterruptedException, DecoderException;
 
-  Optional<User> getUser(String userId, Context context) throws InterruptedException, DecoderException;
+  Optional<User> getUser(String userId, OutboundContext outboundContext) throws InterruptedException, DecoderException;
 
 
 //  public class AccountId implements Serializable

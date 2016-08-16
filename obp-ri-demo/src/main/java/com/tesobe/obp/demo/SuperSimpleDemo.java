@@ -76,9 +76,9 @@ public class SuperSimpleDemo
     Sender north = south::respond; // super simple transport layer
     Connector connector = factory.connector(north);
 
-    Context context = new Context(null, null);
+    OutboundContext outboundContext = new OutboundContext(null, null);
 
-    Optional<Bank> bank = connector.getBank("my-bank", context);
+    Optional<Bank> bank = connector.getBank("my-bank", outboundContext);
 
     System.out.println(bank);
   }

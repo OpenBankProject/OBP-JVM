@@ -26,11 +26,11 @@ import java.util.UUID;
 
   @Override
   public Optional<Account> getAccount(String bankId, String accountId,
-                                      Context context) throws InterruptedException, DecoderException
+                                      OutboundContext outboundContext) throws InterruptedException, DecoderException
   {
-    String request = encoder.getAccount(context, bankId, accountId)
-      .toString();
-    String response = sender.send(new Message("id", request));
+    String id = UUID.randomUUID().toString();
+    String request = encoder.getAccount(outboundContext, bankId, accountId).toString();
+    String response = sender.send(new Message(id, request));
 
     log.trace("{} {}", request, response);
 
@@ -38,22 +38,24 @@ import java.util.UUID;
   }
 
   @Override
-  public Iterable<Account> getAccounts(String bankId, Context context)
+  public Iterable<Account> getAccounts(String bankId, OutboundContext outboundContext)
     throws InterruptedException, DecoderException
   {
-    String request = encoder.getAccounts(context, bankId).toString();
-    String response = sender.send(new Message("id", request));
+    String id = UUID.randomUUID().toString();
+    String request = encoder.getAccounts(outboundContext, bankId).toString();
+    String response = sender.send(new Message(id, request));
 
     log.trace("{} {}", request, response);
 
     return decoder.accounts(response);
   }
 
-  @Override public Optional<Bank> getBank(String bankId, Context context)
+  @Override public Optional<Bank> getBank(String bankId, OutboundContext outboundContext)
     throws InterruptedException, DecoderException
   {
-    String request = encoder.getBank(context, bankId).toString();
-    String response = sender.send(new Message("id", request));
+    String id = UUID.randomUUID().toString();
+    String request = encoder.getBank(outboundContext, bankId).toString();
+    String response = sender.send(new Message(id, request));
 
     log.trace("{} {}", request, response);
 
@@ -61,11 +63,11 @@ import java.util.UUID;
   }
 
 
-  @Override public Iterable<Bank> getBanks(Context context)
+  @Override public Iterable<Bank> getBanks(OutboundContext outboundContext)
     throws InterruptedException, DecoderException
   {
     String id = UUID.randomUUID().toString();
-    String request = encoder.getBanks(context).toString();
+    String request = encoder.getBanks(outboundContext).toString();
     String response = sender.send(new Message(id, request));
 
     log.trace("{} {}", request, response);
@@ -74,13 +76,11 @@ import java.util.UUID;
   }
 
   @Override public Optional<Transaction> getTransaction(String bankId,
-                                                        String accountId, String transactionId, Context context)
+                                                        String accountId, String transactionId, OutboundContext outboundContext)
     throws InterruptedException, DecoderException
   {
     String id = UUID.randomUUID().toString();
-    String request = encoder
-      .getTransaction(bankId, accountId, transactionId, context)
-      .toString();
+    String request = encoder.getTransaction(bankId, accountId, transactionId, outboundContext).toString();
     String response = sender.send(new Message(id, request));
 
     log.trace("{} {}", request, response);
@@ -89,12 +89,11 @@ import java.util.UUID;
   }
 
   @Override public Iterable<Transaction> getTransactions(String bankId,
-                                                         String accountId, Context context)
+                                                         String accountId, OutboundContext outboundContext)
     throws InterruptedException, DecoderException
   {
     String id = UUID.randomUUID().toString();
-    String request = encoder.getTransactions(bankId, accountId, context)
-      .toString();
+    String request = encoder.getTransactions(bankId, accountId, outboundContext).toString();
     String response = sender.send(new Message(id, request));
 
     log.trace("{} {}", request, response);
@@ -102,11 +101,11 @@ import java.util.UUID;
     return decoder.transactions(response);
   }
 
-  @Override public Optional<User> getUser(String userId, Context context)
+  @Override public Optional<User> getUser(String userId, OutboundContext outboundContext)
     throws InterruptedException, DecoderException
   {
     String id = UUID.randomUUID().toString();
-    String request = encoder.getUser(userId, context).toString();
+    String request = encoder.getUser(userId, outboundContext).toString();
     String response = sender.send(new Message(id, request));
 
     log.trace("{} {}", request, response);
