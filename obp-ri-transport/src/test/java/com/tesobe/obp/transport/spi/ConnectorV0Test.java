@@ -21,7 +21,6 @@ import java.util.concurrent.*;
 
 import static com.github.npathai.hamcrestopt.OptionalMatchers.hasValue;
 import static com.tesobe.obp.transport.Transport.Encoding.json;
-import static com.tesobe.obp.transport.Transport.Version.v0;
 import static com.tesobe.obp.util.MethodMatcher.returns;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -29,150 +28,136 @@ import static org.junit.Assert.assertThat;
 
 public class ConnectorV0Test
 {
-  @Before public void setup()
-  {
-    Transport.Factory factory = Transport.factory(v0, json)
-      .orElseThrow(RuntimeException::new);
-    Receiver responder = new MockResponderV0(factory.decoder(),
-      factory.encoder());
-    final BlockingQueue<String> in = new SynchronousQueue<>();
-    final BlockingQueue<Message> out = new SynchronousQueue<>();
-
-    // sender
-    connector = factory.connector(request ->
+    @Before public void setup()
     {
-      out.put(request);
+        Transport.Factory factory = Transport.factory(Transport.Version.v0, json)
+                .orElseThrow(RuntimeException::new);
+        Receiver responder = new MockResponderV0(factory.decoder(),
+                factory.encoder());
+        final BlockingQueue<String> in = new SynchronousQueue<>();
+        final BlockingQueue<Message> out = new SynchronousQueue<>();
 
-      return in.take();
-    });
-
-    service = Executors.newSingleThreadExecutor();
-
-    // receiver
-    service.submit(new Callable<Void>()
-    {
-      @Override @SuppressWarnings({"InfiniteLoopStatement"}) public Void call()
-        throws InterruptedException
-      {
-        for(; ; )
+        // sender
+        connector = factory.connector(request ->
         {
-          in.put(responder.respond(out.take()));
-        }
-      }
-    });
-  }
+            out.put(request);
 
-  @After public void shutdown()
-  {
-    service.shutdown();
-  }
+            return in.take();
+        });
 
-  @Test public void getAccount() throws Exception
-  {
-    String accountId = "account-x";
-    String bankId = "id-x";
-    String userId = "user-x";
-    String viewId = "view-x";
-    String tokenId = "token-x";
-    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
+        service = Executors.newSingleThreadExecutor();
 
-    Optional<Account> account = connector
-      .getAccount(bankId, accountId, outboundContext);
+        // receiver
+        service.submit(new Callable<Void>()
+        {
+            @Override @SuppressWarnings({"InfiniteLoopStatement"}) public Void call()
+                    throws InterruptedException
+            {
+                for(; ; )
+                {
+                    in.put(responder.respond(out.take()));
+                }
+            }
+        });
+    }
 
-    assertThat(account, hasValue(returns("id", "account-x")));
-  }
+    @After public void shutdown()
+    {
+        service.shutdown();
+    }
 
-  @Test public void getAccounts() throws Exception
-  {
-    String bankId = "bank-x";
-    String userId = "user-x";
-    String viewId = "view-x";
-    String tokenId = "token-x";
-    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
+    @Test public void getAccount() throws Exception
+    {
+        String accountId = "account-x";
+        String bankId = "id-x";
+        String userId = "user-x";
+        OutboundContext context = new OutboundContext(new UserContext(userId), null, null);
 
-    Iterable<Account> accounts = connector.getAccounts(bankId, outboundContext);
-    List<String> ids = new ArrayList<>();
+        Optional<Account> account = connector
+                .getAccount(bankId, accountId, context);
 
-    accounts.forEach(account -> assertThat(account.bank(), is(bankId)));
-    accounts.forEach(account -> ids.add(account.id()));
+        assertThat(account, hasValue(returns("id", "account-x")));
+    }
 
-    assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
-  }
+    @Test public void getAccounts() throws Exception
+    {
+        String bankId = "bank-x";
+        String userId = "user-x";
+        OutboundContext context = new OutboundContext(new UserContext(userId), null, null);
 
-  @Test public void getBank() throws Exception
-  {
-    String bankId = "bank-x";
-    String userId = "user-x";
-    String viewId = "view-x";
-    String tokenId = "token-x";
-    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
+        Iterable<Account> accounts = connector.getAccounts(bankId, context);
+        List<String> ids = new ArrayList<>();
 
-    Optional<Bank> bank = connector.getBank(bankId, outboundContext);
+        accounts.forEach(account -> assertThat(account.bank(), is(bankId)));
+        accounts.forEach(account -> ids.add(account.id()));
 
-    assertThat(bank, hasValue(returns("id", "bank-x")));
-  }
+        assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
+    }
 
-  @Test public void getBanks() throws Exception
-  {
-    String userId = "user-x";
-    String viewId = "view-x";
-    String tokenId = "token-x";
-    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
+    @Test public void getBank() throws Exception
+    {
+        String bankId = "bank-x";
+        String userId = "user-x";
+        OutboundContext context = new OutboundContext(new UserContext(userId), null, null);
 
-    Iterable<Bank> banks = connector.getBanks(outboundContext);
-    List<String> ids = new ArrayList<>();
+        Optional<Bank> bank = connector.getBank(bankId, context);
 
-    banks.forEach(bank -> ids.add(bank.id()));
+        assertThat(bank, hasValue(returns("id", "bank-x")));
+    }
 
-    assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
-  }
+    @Test public void getBanks() throws Exception
+    {
+        String userId = "user-x";
+        OutboundContext context = new OutboundContext(new UserContext(userId), null, null);
 
-  @Test public void getTransaction() throws Exception
-  {
-    String accountId = "account-x";
-    String bankId = "bank-x";
-    String transactionId = "transaction-x";
-    String userId = "user-x";
-    String viewId = "view-x";
-    String tokenId = "token-x";
-    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
+        Iterable<Bank> banks = connector.getBanks(context);
+        List<String> ids = new ArrayList<>();
 
-    Optional<Transaction> transaction = connector
-      .getTransaction(bankId, accountId, transactionId, outboundContext);
+        banks.forEach(bank -> ids.add(bank.id()));
 
-    assertThat(transaction, hasValue(returns("id", "transaction-x")));
-  }
+        assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
+    }
 
-  @Test public void getTransactions() throws Exception
-  {
-    String accountId = "account-x";
-    String bankId = "bank-x";
-    String userId = "user-x";
-    String viewId = "view-x";
-    String tokenId = "token-x";
-    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
+    @Test public void getTransaction() throws Exception
+    {
+        String accountId = "account-x";
+        String bankId = "bank-x";
+        String transactionId = "transaction-x";
+        String userId = "user-x";
+        OutboundContext context = new OutboundContext(new UserContext(userId), null, null);
 
-    Iterable<Transaction> transactions = connector
-      .getTransactions(bankId, accountId, outboundContext);
-    List<String> ids = new ArrayList<>();
+        Optional<Transaction> transaction = connector
+                .getTransaction(bankId, accountId, transactionId, context);
 
-    transactions.forEach(bank -> ids.add(bank.id()));
+        assertThat(transaction, hasValue(returns("id", "transaction-x")));
+    }
 
-    assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
-  }
+    @Test public void getTransactions() throws Exception
+    {
+        String accountId = "account-x";
+        String bankId = "bank-x";
+        String userId = "user-x";
+        OutboundContext context = new OutboundContext(new UserContext(userId), null, null);
 
-  @Test public void getUser() throws Exception
-  {
-    String userId = "user-x@example.org";
-    String viewId = "view-x";
-    String tokenId = "token-x";
-    OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
+        Iterable<Transaction> transactions = connector
+                .getTransactions(bankId, accountId, context);
+        List<String> ids = new ArrayList<>();
 
-    Optional<User> user = connector.getUser(userId, outboundContext);
+        transactions.forEach(bank -> ids.add(bank.id()));
 
-    assertThat(user, hasValue(returns("email", userId)));
-  }
+        assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
+    }
 
-  private Connector connector;
-  private ExecutorService service;
+    @Test public void getUser() throws Exception
+    {
+        String userId = "user-x@example.org";
+        OutboundContext context = new OutboundContext(new UserContext(userId), null, null);
+
+        Optional<User> user = connector.getUser(userId, context);
+
+        assertThat(user, hasValue(returns("email", userId)));
+    }
+
+    private Connector connector;
+    private ExecutorService service;
 }

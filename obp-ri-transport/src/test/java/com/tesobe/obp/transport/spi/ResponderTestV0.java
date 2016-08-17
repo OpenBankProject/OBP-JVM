@@ -8,36 +8,27 @@
 
 package com.tesobe.obp.transport.spi;
 
-import com.tesobe.obp.transport.Account;
-import com.tesobe.obp.transport.Bank;
-import com.tesobe.obp.transport.Message;
-import com.tesobe.obp.transport.Transaction;
-import com.tesobe.obp.transport.Transport;
+import com.tesobe.obp.transport.*;
 import com.tesobe.obp.util.tbd;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static com.github.npathai.hamcrestopt.OptionalMatchers.hasValue;
 import static com.tesobe.obp.transport.Transport.Encoding.json;
-import static com.tesobe.obp.transport.Transport.Version.v0;
 import static com.tesobe.obp.util.MethodMatcher.returns;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
 @SuppressWarnings("OptionalGetWithoutIsPresent")
-public class ResponderV0Test
+public class ResponderTestV0
 {
   @Before public void setup()
   {
-    Transport.Factory factory = Transport.factory(v0, json)
+    Transport.Factory factory = Transport.factory(Transport.Version.v0, json)
       .orElseThrow(RuntimeException::new);
 
     decoder = factory.decoder();

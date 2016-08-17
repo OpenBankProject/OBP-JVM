@@ -30,8 +30,8 @@
   <logger name="ch.qos.logback" level="error"/>
 
   <logger name="com.tesobe.obp" level="trace"/>
-  <logger name="com.tesobe.obp.transport.spi.ConnectorV0" level="trace"/>
-  <logger name="com.tesobe.obp.transport.spi.ResponderV0" level="trace"/>
+  <logger name="com.tesobe.obp.transport.spi.Connector" level="trace"/>
+  <logger name="com.tesobe.obp.transport.spi.ResponderV1" level="trace"/>
 
   <logger name="com.tesobe.obp.transport.spi.LoggingReceiver" level="info"
     additivity="false">

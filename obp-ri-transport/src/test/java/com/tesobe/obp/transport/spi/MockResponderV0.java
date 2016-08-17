@@ -35,194 +35,194 @@ import static org.junit.Assert.assertThat;
 @SuppressWarnings({"WeakerAccess", "OptionalGetWithoutIsPresent"})
 class MockResponderV0 extends ResponderV0
 {
-  public MockResponderV0(Decoder decoder, Encoder encoder)
-  {
-    super(decoder, encoder);
-  }
+    public MockResponderV0(Decoder decoder, Encoder encoder)
+    {
+        super(decoder, encoder);
+    }
 
-  @Override protected String getPrivateAccount(String packet, Decoder.Request r,
-    Encoder e)
-  {
-    log.trace("{}", packet);
+    @Override protected String getPrivateAccount(String packet, Decoder.Request r,
+            Encoder e)
+    {
+        log.trace("{}", packet);
 
-    assertThat(r.accountId(), isPresent());
-    assertThat(r.userId(), isPresent());
+        assertThat(r.accountId(), isPresent());
+        assertThat(r.userId(), isPresent());
 
-    return e
-      .account(ImplGen.generate(Account.class, 1, "id", r.accountId().get()));
-  }
+        return e
+                .account(ImplGen.generate(Account.class, 1, "id", r.accountId().get()));
+    }
 
-  @Override
-  protected String getPrivateAccounts(String packet, Decoder.Request r,
-    Encoder e)
-  {
-    log.trace("{}", packet);
+    @Override
+    protected String getPrivateAccounts(String packet, Decoder.Request r,
+                                        Encoder e)
+    {
+        log.trace("{}", packet);
 
-    assertThat(r.userId(), isPresent());
-    assertThat(r.bankId(), isPresent());
+        assertThat(r.userId(), isPresent());
+        assertThat(r.bankId(), isPresent());
 
-    List<Account> accounts = new ArrayList<>();
-    String bankId = r.bankId().get();
+        List<Account> accounts = new ArrayList<>();
+        String bankId = r.bankId().get();
 
-    accounts.add(ImplGen.generate(Account.class, 1, "bank", bankId));
-    accounts.add(ImplGen.generate(Account.class, 2, "bank", bankId));
+        accounts.add(ImplGen.generate(Account.class, 1, "bank", bankId));
+        accounts.add(ImplGen.generate(Account.class, 2, "bank", bankId));
 
-    return e.accounts(accounts);
-  }
+        return e.accounts(accounts);
+    }
 
-  @Override
-  protected String getPrivateBank(String packet, Decoder.Request r, Encoder e)
-  {
-    log.trace("{}", packet);
+    @Override
+    protected String getPrivateBank(String packet, Decoder.Request r, Encoder e)
+    {
+        log.trace("{}", packet);
 
-    assertThat(r.userId(), isPresent());
-    assertThat(r.bankId(), isPresent());
+        assertThat(r.userId(), isPresent());
+        assertThat(r.bankId(), isPresent());
 
-    return e.bank(ImplGen.generate(Bank.class, 1, "id", r.bankId().get()));
-  }
+        return e.bank(ImplGen.generate(Bank.class, 1, "id", r.bankId().get()));
+    }
 
-  @Override
-  protected String getPrivateBanks(String packet, Decoder.Request r, Encoder e)
-  {
-    log.trace("{}", packet);
+    @Override
+    protected String getPrivateBanks(String packet, Decoder.Request r, Encoder e)
+    {
+        log.trace("{}", packet);
 
-    assertThat(r.userId(), isPresent());
+        assertThat(r.userId(), isPresent());
 
-    List<Bank> banks = new ArrayList<>();
+        List<Bank> banks = new ArrayList<>();
 
-    banks.add(ImplGen.generate(Bank.class, 1));
-    banks.add(ImplGen.generate(Bank.class, 2));
+        banks.add(ImplGen.generate(Bank.class, 1));
+        banks.add(ImplGen.generate(Bank.class, 2));
 
-    return e.banks(banks);
-  }
+        return e.banks(banks);
+    }
 
-  @Override
-  protected String getPrivateTransaction(String packet, Decoder.Request r,
-    Encoder e)
-  {
-    log.trace("{}", packet);
+    @Override
+    protected String getPrivateTransaction(String packet, Decoder.Request r,
+                                           Encoder e)
+    {
+        log.trace("{}", packet);
 
-    assertThat(r.transactionId(), isPresent());
+        assertThat(r.transactionId(), isPresent());
 
-    return e.transaction(
-      ImplGen.generate(Transaction.class, 1, "id", r.transactionId().get()));
-  }
+        return e.transaction(
+                ImplGen.generate(Transaction.class, 1, "id", r.transactionId().get()));
+    }
 
-  @Override
-  protected String getPrivateTransactions(String packet, Decoder.Request r,
-    Encoder e)
-  {
-    log.trace("{}", packet);
+    @Override
+    protected String getPrivateTransactions(String packet, Decoder.Request r,
+                                            Encoder e)
+    {
+        log.trace("{}", packet);
 
-    assertThat(r.userId(), isPresent());
+        assertThat(r.userId(), isPresent());
 
-    List<Transaction> transactions = new ArrayList<>();
+        List<Transaction> transactions = new ArrayList<>();
 
-    transactions.add(ImplGen.generate(Transaction.class, 1));
-    transactions.add(ImplGen.generate(Transaction.class, 2));
+        transactions.add(ImplGen.generate(Transaction.class, 1));
+        transactions.add(ImplGen.generate(Transaction.class, 2));
 
-    return e.transactions(transactions);
-  }
+        return e.transactions(transactions);
+    }
 
-  @Override
-  protected String getPrivateUser(String packet, Decoder.Request r, Encoder e)
-  {
-    log.trace("{}", packet);
+    @Override
+    protected String getPrivateUser(String packet, Decoder.Request r, Encoder e)
+    {
+        log.trace("{}", packet);
 
-    assertThat(r.userId(), isPresent());
+        assertThat(r.userId(), isPresent());
 
-    return e.user(ImplGen.generate(User.class, 1, "email", r.userId().get()));
-  }
+        return e.user(ImplGen.generate(User.class, 1, "email", r.userId().get()));
+    }
 
-  @Override
-  protected String getPublicAccount(String packet, Decoder.Request r, Encoder e)
-  {
-    log.trace("{}", packet);
+    @Override
+    protected String getPublicAccount(String packet, Decoder.Request r, Encoder e)
+    {
+        log.trace("{}", packet);
 
-    assertThat(r.accountId(), isPresent());
+        assertThat(r.accountId(), isPresent());
 
-    return e
-      .account(ImplGen.generate(Account.class, 1, "id", r.accountId().get()));
-  }
+        return e
+                .account(ImplGen.generate(Account.class, 1, "id", r.accountId().get()));
+    }
 
-  @Override protected String getPublicAccounts(String packet, Decoder.Request r,
-    Encoder e)
-  {
-    return r.bankId().map(bankId -> {
+    @Override protected String getPublicAccounts(String packet, Decoder.Request r,
+                                                 Encoder e)
+    {
+        return r.bankId().map(bankId -> {
 
-      List<Account> accounts = new ArrayList<>();
+            List<Account> accounts = new ArrayList<>();
 
-      accounts.add(ImplGen.generate(Account.class, 1, "bank", bankId));
-      accounts.add(ImplGen.generate(Account.class, 2, "bank", bankId));
+            accounts.add(ImplGen.generate(Account.class, 1, "bank", bankId));
+            accounts.add(ImplGen.generate(Account.class, 2, "bank", bankId));
 
-      return e.accounts(accounts);
+            return e.accounts(accounts);
 
-    }).orElse(e.accounts(emptyList()));
-  }
+        }).orElse(e.accounts(emptyList()));
+    }
 
-  @Override
-  protected String getPublicBank(String packet, Decoder.Request r, Encoder e)
-  {
-    log.trace("{}", packet);
+    @Override
+    protected String getPublicBank(String packet, Decoder.Request r, Encoder e)
+    {
+        log.trace("{}", packet);
 
-    assertThat(r.bankId(), isPresent());
+        assertThat(r.bankId(), isPresent());
 
-    return e.bank(ImplGen.generate(Bank.class, 1, "id", r.bankId().get()));
-  }
+        return e.bank(ImplGen.generate(Bank.class, 1, "id", r.bankId().get()));
+    }
 
-  @Override protected String getPublicBanks(String packet, Encoder e)
-  {
-    log.trace("{}", packet);
+    @Override protected String getPublicBanks(String packet, Encoder e)
+    {
+        log.trace("{}", packet);
 
-    List<Bank> banks = new ArrayList<>();
+        List<Bank> banks = new ArrayList<>();
 
-    banks.add(ImplGen.generate(Bank.class, 1));
-    banks.add(ImplGen.generate(Bank.class, 2));
+        banks.add(ImplGen.generate(Bank.class, 1));
+        banks.add(ImplGen.generate(Bank.class, 2));
 
-    return e.banks(banks);
-  }
+        return e.banks(banks);
+    }
 
-  @Override
-  protected String getPublicTransaction(String packet, Decoder.Request r,
-    Encoder e)
-  {
-    log.trace("{}", packet);
+    @Override
+    protected String getPublicTransaction(String packet, Decoder.Request r,
+                                          Encoder e)
+    {
+        log.trace("{}", packet);
 
-    assertThat(r.transactionId(), isPresent());
+        assertThat(r.transactionId(), isPresent());
 
-    return e.transaction(
-      ImplGen.generate(Transaction.class, 1, "id", r.transactionId().get()));
-  }
+        return e.transaction(
+                ImplGen.generate(Transaction.class, 1, "id", r.transactionId().get()));
+    }
 
-  @Override
-  protected String getPublicTransactions(String packet, Decoder.Request r,
-    Encoder e)
-  {
-    log.trace("{}", packet);
+    @Override
+    protected String getPublicTransactions(String packet, Decoder.Request r,
+                                           Encoder e)
+    {
+        log.trace("{}", packet);
 
-    List<Transaction> transactions = new ArrayList<>();
+        List<Transaction> transactions = new ArrayList<>();
 
-    transactions.add(ImplGen.generate(Transaction.class, 1));
-    transactions.add(ImplGen.generate(Transaction.class, 2));
+        transactions.add(ImplGen.generate(Transaction.class, 1));
+        transactions.add(ImplGen.generate(Transaction.class, 2));
 
-    return e.transactions(transactions);
-  }
+        return e.transactions(transactions);
+    }
 
-  @Override
-  protected String getPublicUser(String packet, Decoder.Request r, Encoder e)
-  {
-    log.trace("{}", packet);
+    @Override
+    protected String getPublicUser(String packet, Decoder.Request r, Encoder e)
+    {
+        log.trace("{}", packet);
 
-    assertThat(r.userId(), isPresent());
+        assertThat(r.userId(), isPresent());
 
-    return e.user(ImplGen.generate(User.class, 1, "email", r.userId().get()));
-  }
+        return e.user(ImplGen.generate(User.class, 1, "email", r.userId().get()));
+    }
 
-  @Override
-  protected String savePrivateTransaction(String packet, Decoder.Request r,
-    Encoder e)
-  {
-    return e.error("Not implemented");
-  }
-  static final Logger log = LoggerFactory.getLogger(MockResponderV0.class);
+    @Override
+    protected String savePrivateTransaction(String packet, Decoder.Request r,
+                                            Encoder e)
+    {
+        return e.error("Not implemented");
+    }
+    static final Logger log = LoggerFactory.getLogger(MockResponderV1.class);
 }

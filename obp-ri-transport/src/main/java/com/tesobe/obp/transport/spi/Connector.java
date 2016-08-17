@@ -13,10 +13,10 @@ import java.util.UUID;
  *
  * @since 2016.0
  */
-@SuppressWarnings("WeakerAccess") public class ConnectorV0
-  implements Connector
+@SuppressWarnings("WeakerAccess") public class Connector
+  implements com.tesobe.obp.transport.Connector
 {
-  public ConnectorV0(Transport.Version v, Encoder e, Decoder d, Sender s)
+  public Connector(Transport.Version v, Encoder e, Decoder d, Sender s)
   {
     decoder = d;
     encoder = e;
@@ -119,5 +119,5 @@ import java.util.UUID;
   protected final Sender sender;
 
   protected static final Logger log = LoggerFactory
-    .getLogger(ConnectorV0.class);
+    .getLogger(Connector.class);
 }

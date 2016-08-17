@@ -33,7 +33,7 @@ import org.junit.Ignore;
 //  @Before public void setup()
 //  {
 //    factory = Transport.defaultFactory().orElseThrow(RuntimeException::new);
-//    responder = new MockResponder(factory.decoder(), factory.encoder());
+//    responder = new MockResponderV1(factory.decoder(), factory.encoder());
 //  }
 //
 //  /**
@@ -118,7 +118,7 @@ import org.junit.Ignore;
 //
 //  Transport.Factory factory;
 //  private Connector connector;
-//  private MockResponder responder;
+//  private MockResponderV1 responder;
 //
 //  static final Logger log = LoggerFactory.getLogger(SpeedTest.class);
 }

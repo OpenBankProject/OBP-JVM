@@ -8,17 +8,18 @@
 package com.tesobe.obp.transport;
 
 import com.tesobe.obp.transport.json.DecoderV0;
+import com.tesobe.obp.transport.json.DecoderV1;
 import com.tesobe.obp.transport.json.EncoderV0;
+import com.tesobe.obp.transport.json.EncoderV1;
+import com.tesobe.obp.transport.spi.Connector;
 import com.tesobe.obp.transport.spi.Decoder;
 import com.tesobe.obp.transport.spi.Encoder;
-import com.tesobe.obp.transport.spi.ConnectorV0;
 
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
 
 import static com.tesobe.obp.transport.Transport.Encoding.json;
-import static com.tesobe.obp.transport.Transport.Version.v0;
 
 /**
  * Transport manages the different versions of the transport api.
@@ -52,7 +53,7 @@ import static com.tesobe.obp.transport.Transport.Version.v0;
   {
     return Optional.of(new Factory()
     {
-      @Override public Connector connector(Sender s)
+      @Override public com.tesobe.obp.transport.spi.Connector connector(Sender s)
       {
         if(s == null)
         {
@@ -74,9 +75,9 @@ import static com.tesobe.obp.transport.Transport.Version.v0;
     });
   }
 
-  static Connector connector(Version v, Encoder e, Decoder d, Sender s)
+  static com.tesobe.obp.transport.spi.Connector connector(Version v, Encoder e, Decoder d, Sender s)
   {
-    return new ConnectorV0(v, e, d, s);
+    return new Connector(v, e, d, s);
   }
 
   static Decoder decoder(Version v, Encoding e)
@@ -99,7 +100,7 @@ import static com.tesobe.obp.transport.Transport.Version.v0;
      * @throw RuntimeException is sender is null
      * @since 2016.0
      */
-    Connector connector(Sender s);
+    com.tesobe.obp.transport.spi.Connector connector(Sender s);
 
     Decoder decoder();
 
@@ -108,7 +109,7 @@ import static com.tesobe.obp.transport.Transport.Version.v0;
 
   public enum Version
   {
-    v0
+    v0, v1
   }
 
   public enum Encoding
@@ -126,8 +127,10 @@ import static com.tesobe.obp.transport.Transport.Version.v0;
     EnumMap<Version, Decoder> ds = new EnumMap<>(Version.class);
     EnumMap<Version, Encoder> es = new EnumMap<>(Version.class);
 
-    ds.put(v0, new DecoderV0(v0));
-    es.put(v0, new EncoderV0(v0));
+    ds.put(Version.v0, new DecoderV0(Version.v0));
+    ds.put(Version.v1, new DecoderV1(Version.v1));
+    es.put(Version.v0, new EncoderV0(Version.v0));
+    es.put(Version.v1, new EncoderV1(Version.v1));
 
     decoders.put(json, ds);
     encoders.put(json, es);
