@@ -63,7 +63,7 @@ import java.util.UUID;
   }
 
 
-  @Override public Iterable<Bank> getBanks(OutboundContext outboundContext)
+  @Override public BanksWrapper getBanks(OutboundContext outboundContext)
     throws InterruptedException, DecoderException
   {
     String id = UUID.randomUUID().toString();
@@ -72,7 +72,7 @@ import java.util.UUID;
 
     log.trace("{} {}", request, response);
 
-    return decoder.banks(response);
+    return new BanksWrapper(decoder.banks(response),decoder.inboundContext(response));
   }
 
   @Override public Optional<Transaction> getTransaction(String bankId,

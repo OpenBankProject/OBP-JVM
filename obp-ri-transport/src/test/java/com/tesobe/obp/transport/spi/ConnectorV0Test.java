@@ -110,7 +110,8 @@ public class ConnectorV0Test
         String userId = "user-x";
         OutboundContext context = new OutboundContext(new UserContext(userId), null, null);
 
-        Iterable<Bank> banks = connector.getBanks(context);
+        BanksWrapper banksWrapper = connector.getBanks(context);
+        Iterable<Bank> banks = banksWrapper.banks;
         List<String> ids = new ArrayList<>();
 
         banks.forEach(bank -> ids.add(bank.id()));

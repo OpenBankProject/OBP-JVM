@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
     OutboundContext outboundContext = new OutboundContext(null, null, null);
 
-    Iterable<Bank> banks = connector.getBanks(outboundContext);
+    Iterable<Bank> banks = connector.getBanks(outboundContext).banks;
 
     north.shutdown();
   }

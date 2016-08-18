@@ -7,11 +7,7 @@
  */
 package com.tesobe.obp.transport.json;
 
-import com.tesobe.obp.transport.Account;
-import com.tesobe.obp.transport.Bank;
-import com.tesobe.obp.transport.Transaction;
-import com.tesobe.obp.transport.Transport;
-import com.tesobe.obp.transport.User;
+import com.tesobe.obp.transport.*;
 import com.tesobe.obp.transport.spi.DecoderException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -288,6 +284,28 @@ import static java.util.Objects.nonNull;
         }
 
         return Optional.empty();
+    }
+
+    @Override public Optional<InboundContext> inboundContext(String response)
+            throws DecoderException
+    {
+        log.trace("{} {}", version, String.valueOf(response));
+
+        if(nonNull(response) && !response.equals("null"))
+        {
+            try
+            {
+                JSONObject responseObject = new JSONObject(response);
+
+                return Optional.of(InboundContextDecoder.inboundContextFromJsonObject(responseObject));
+            }
+            catch(JSONException e)
+            {
+                throw new DecoderException("Cannot decode: " + response);
+            }
+        }
+
+        return null;
     }
 
     protected JSONArray array(String json) throws DecoderException

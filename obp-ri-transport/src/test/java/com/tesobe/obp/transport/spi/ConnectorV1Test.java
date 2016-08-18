@@ -118,7 +118,8 @@ public class ConnectorV1Test
     String tokenId = "token-x";
     OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
 
-    Iterable<Bank> banks = connector.getBanks(outboundContext);
+    BanksWrapper banksWrapper = connector.getBanks(outboundContext);
+    Iterable<Bank> banks = banksWrapper.banks;
     List<String> ids = new ArrayList<>();
 
     banks.forEach(bank -> ids.add(bank.id()));

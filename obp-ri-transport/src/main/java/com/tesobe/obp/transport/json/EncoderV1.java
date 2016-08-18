@@ -114,6 +114,13 @@ import static java.util.Objects.nonNull;
     return json != null ? json.toString() : JSONObject.NULL.toString();
   }
 
+  @Override public String inboundContext(InboundContext inboundContext)
+  {
+    JSONObject json = json(inboundContext);
+
+    return json != null ? json.toString() : JSONObject.NULL.toString();
+  }
+
   @Override public String banks(List<Bank> banks)
   {
     JSONArray result = new JSONArray();
@@ -172,6 +179,30 @@ import static java.util.Objects.nonNull;
     }
 
     return null;
+  }
+
+  protected JSONObject json(InboundContext inboundContext)
+  {
+    if(nonNull(inboundContext))
+    {
+      return new InboundContextEncoder(inboundContext).toJson();
+    }
+
+    return null;
+  }
+
+  protected void json(InboundContext inboundContext, JSONArray result)
+  {
+    if(nonNull(inboundContext))
+    {
+      JSONObject json = json(inboundContext);
+
+      result.put(json != null ? json : JSONObject.NULL);
+    }
+    else
+    {
+      result.put(JSONObject.NULL);
+    }
   }
 
   private void json(Transaction t, JSONArray result)

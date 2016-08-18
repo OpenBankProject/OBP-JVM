@@ -90,7 +90,7 @@ import java.util.Optional;
    *                              The exception may be delayed until the
    *                              iterable is dereferenced.
    */
-  Iterable<Bank> getBanks(OutboundContext outboundContext) throws InterruptedException, DecoderException;
+  BanksWrapper getBanks(OutboundContext outboundContext) throws InterruptedException, DecoderException;
 
   Optional<Transaction> getTransaction(String bankId, String accountId, String transactionId, OutboundContext outboundContext) throws InterruptedException, DecoderException;
 

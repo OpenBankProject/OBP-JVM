@@ -38,6 +38,8 @@ public interface Encoder
 
   String banks(List<Bank> bs);
 
+  String inboundContext(InboundContext inboundContext);
+
   String error(String message);
 
   String notFound();

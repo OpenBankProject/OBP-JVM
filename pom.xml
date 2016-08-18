@@ -2,7 +2,7 @@
 <!--
   ~ Copyright (c) TESOBE Ltd. 2016. All rights reserved.
   ~
-  ~ Use of this source code is governed by a GNU AFFERO license
+  ~ Use of this originatingSource code is governed by a GNU AFFERO license
   ~ that can be found in the LICENSE file.
   ~
   -->
@@ -19,7 +19,7 @@
   <name>The Open Bank Project</name>
 
   <description>
-    The Open Bank Project is an open source API and App store for banks that
+    The Open Bank Project is an open originatingSource API and App store for banks that
     empowers financial institutions to securely and rapidly enhance their
     digital offerings using an ecosystem of 3rd party applications and services.
   </description>
@@ -84,7 +84,7 @@
 
   <properties>
     <maven.build.timestamp.format>yyyy.MM.dd-HH:mm</maven.build.timestamp.format>
-    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.originatingSource>1.8</maven.compiler.originatingSource>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.deploy.skip>false</maven.deploy.skip>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -122,7 +122,7 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.3</version>
           <configuration>
-            <source>${maven.compiler.source}</source>
+            <originatingSource>${maven.compiler.originatingSource}</originatingSource>
             <target>${maven.compiler.target}</target>
           </configuration>
         </plugin>
@@ -245,7 +245,7 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-source-plugin</artifactId>
+          <artifactId>maven-originatingSource-plugin</artifactId>
           <version>3.0.0</version>
           <executions>
             <execution>
@@ -324,7 +324,7 @@
         <artifactId>maven-resources-plugin</artifactId>
       </plugin>
       <plugin>
-        <artifactId>maven-source-plugin</artifactId>
+        <artifactId>maven-originatingSource-plugin</artifactId>
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>

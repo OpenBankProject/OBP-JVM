@@ -66,7 +66,7 @@ Git
 
   git show --stat <commitish>
   git show --stat HEAD^^..HEAD
-  git show --stat --source HEAD^^..HEAD
+  git show --stat --originatingSource HEAD^^..HEAD
   git diff-tree --name-only -r HEAD^^..HEAD
   git log --stat HEAD^..HEAD
 
