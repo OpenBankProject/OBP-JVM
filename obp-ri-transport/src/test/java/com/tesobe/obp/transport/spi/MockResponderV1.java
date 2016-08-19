@@ -8,16 +8,16 @@
 
 package com.tesobe.obp.transport.spi;
 
-import com.tesobe.obp.transport.Account;
-import com.tesobe.obp.transport.Bank;
-import com.tesobe.obp.transport.Transaction;
-import com.tesobe.obp.transport.User;
+import com.tesobe.obp.transport.*;
 import com.tesobe.obp.util.ImplGen;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresent;
 import static java.util.Collections.emptyList;
@@ -179,7 +179,25 @@ class MockResponderV1 extends ResponderV1
     banks.add(ImplGen.generate(Bank.class, 1));
     banks.add(ImplGen.generate(Bank.class, 2));
 
-    return e.banks(banks);
+    Instant instant = Instant.ofEpochMilli(1437404400000L);
+    LocalDate date = instant.atZone(ZoneOffset.UTC).toLocalDate();
+    ZoneId tz = ZoneId.of("Europe/London");
+    LocalTime time = LocalTime.parse("21:00");
+    ZonedDateTime zdt = ZonedDateTime.of(date, time, tz);
+
+    InboundContext inboundContext = new InboundContext(new Source(zdt, "source origin"), "inbound context");
+
+    BanksWrapper banksWrapper = new BanksWrapper(banks, Optional.of(inboundContext));
+
+    JSONObject response = new JSONObject().put("response", new JSONObject()
+                                                        .put("inboundContext", new JSONObject()
+                                                                .put("source", new JSONObject()
+                                                                  .put("timestamp", inboundContext.source.timestamp)
+                                                                .put("originatingSource", inboundContext.source.originatingSource))
+                                                        .put("message", inboundContext.message))
+    .put("banks", e.banksToJSONArray(banks)));
+
+    return response.toString();
   }
 
   @Override

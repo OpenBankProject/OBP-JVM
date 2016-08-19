@@ -8,6 +8,7 @@
 package com.tesobe.obp.transport.spi;
 
 import com.tesobe.obp.transport.*;
+import org.json.JSONArray;
 
 import java.util.List;
 
@@ -37,6 +38,8 @@ public interface Encoder
   String bank(Bank b);
 
   String banks(List<Bank> bs);
+
+  JSONArray banksToJSONArray(List<Bank> banks);
 
   String inboundContext(InboundContext inboundContext);
 

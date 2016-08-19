@@ -88,6 +88,13 @@ import static java.util.Objects.nonNull;
     return new RequestBuilder(name);
   }
 
+//  @Override public String banksWrapper(BanksWrapper banksWrapper)
+//  {
+//    JSONObject json = json(a);
+//
+//    return json != null ? json.toString() : JSONObject.NULL.toString();
+//  }
+
   @Override public String account(Account a)
   {
     JSONObject json = json(a);
@@ -132,6 +139,28 @@ import static java.util.Objects.nonNull;
 
     return result.toString();
   }
+
+  @Override public JSONArray banksToJSONArray(List<Bank> banks)
+  {
+    JSONArray result = new JSONArray();
+
+    if(nonNull(banks))
+    {
+      banks.forEach(bank -> json(bank, result));
+    }
+
+    return result;
+  }
+
+//  protected JSONObject json(BanksWrapper banksWrapper)
+//  {
+//    if(nonNull(banksWrapper))
+//    {
+//      return new AccountEncoder(a).toJson();
+//    }
+//
+//    return null;
+//  }
 
   protected JSONObject json(Account a)
   {

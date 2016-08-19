@@ -155,6 +155,18 @@ import static java.util.Objects.nonNull;
         return result.toString();
     }
 
+    @Override public JSONArray banksToJSONArray(List<Bank> banks)
+    {
+        JSONArray result = new JSONArray();
+
+        if(nonNull(banks))
+        {
+            banks.forEach(bank -> json(bank, result));
+        }
+
+        return result;
+    }
+
     protected JSONObject json(Account a)
     {
         if(nonNull(a))

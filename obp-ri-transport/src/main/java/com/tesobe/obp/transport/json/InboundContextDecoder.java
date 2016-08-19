@@ -18,11 +18,12 @@ import static java.util.Objects.nonNull;
  */
 public final class InboundContextDecoder
 {
-    public static InboundContext inboundContextFromJsonObject(JSONObject inboundContext)
+    public static InboundContext inboundContextFromJsonObject(JSONObject response)
     {
-        if(nonNull(inboundContext))
+        if(nonNull(response))
         {
-            JSONObject inboundContextObject = inboundContext.optJSONObject("inboundContext");
+            JSONObject responseObject = response.optJSONObject("response");
+            JSONObject inboundContextObject = responseObject.optJSONObject("inboundContext");
             JSONObject sourceObject = inboundContextObject.optJSONObject("source");
 
             return new InboundContext(SourceDecoder.sourceFromJsonObject(sourceObject), inboundContextObject.optString("message"));

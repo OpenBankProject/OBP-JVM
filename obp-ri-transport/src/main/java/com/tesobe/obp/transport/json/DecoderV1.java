@@ -189,6 +189,12 @@ import static java.util.Objects.nonNull;
       return Collections::emptyIterator;
     }
 
+    //get the banks objects from json
+    JSONObject responseObject = new JSONObject(response);
+    JSONObject responseObjectInner = responseObject.optJSONObject("response");
+    JSONArray banksObject = responseObjectInner.optJSONArray("banks");
+    String banks = banksObject.toString();
+
     return () -> new Iterator<Bank>()
     {
       @Override public boolean hasNext()
@@ -208,7 +214,7 @@ import static java.util.Objects.nonNull;
         return new BankDecoder(JSONObject.class.cast(next));
       }
 
-      final Iterator<Object> iterator = array(response).iterator();
+      final Iterator<Object> iterator = array(banks).iterator();
     };
   }
 
