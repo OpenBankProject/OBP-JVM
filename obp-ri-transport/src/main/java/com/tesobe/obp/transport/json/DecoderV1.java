@@ -114,7 +114,10 @@ import static java.util.Objects.nonNull;
     {
       try
       {
-        JSONObject account = new JSONObject(response);
+        //get the account objects from json
+        JSONObject responseObject = new JSONObject(response);
+        JSONObject responseObjectInner = responseObject.optJSONObject("response");
+        JSONObject account = responseObjectInner.optJSONObject("account");
 
         return Optional.of(new AccountDecoder(account));
       }
@@ -136,6 +139,12 @@ import static java.util.Objects.nonNull;
       return Collections::emptyIterator;
     }
 
+    //get the accounts objects from json
+    JSONObject responseObject = new JSONObject(response);
+    JSONObject responseObjectInner = responseObject.optJSONObject("response");
+    JSONArray accountsObject = responseObjectInner.optJSONArray("accounts");
+    String accounts = accountsObject.toString();
+
     return () -> new Iterator<Account>()
     {
       @Override public boolean hasNext()
@@ -155,7 +164,7 @@ import static java.util.Objects.nonNull;
         return new AccountDecoder(JSONObject.class.cast(next));
       }
 
-      final Iterator<Object> iterator = array(response).iterator();
+      final Iterator<Object> iterator = array(accounts).iterator();
     };
   }
 
@@ -167,7 +176,10 @@ import static java.util.Objects.nonNull;
     {
       try
       {
-        JSONObject bank = new JSONObject(response);
+        //get the bank object from json
+        JSONObject responseObject = new JSONObject(response);
+        JSONObject responseObjectInner = responseObject.optJSONObject("response");
+        JSONObject bank = responseObjectInner.optJSONObject("bank");
 
         return Optional.of(new BankDecoder(bank));
       }
@@ -226,9 +238,12 @@ import static java.util.Objects.nonNull;
     {
       try
       {
-        JSONObject bank = new JSONObject(response);
+        //get the transaction objects from json
+        JSONObject responseObject = new JSONObject(response);
+        JSONObject responseObjectInner = responseObject.optJSONObject("response");
+        JSONObject transaction = responseObjectInner.optJSONObject("transaction");
 
-        return Optional.of(new TransactionDecoder(bank));
+        return Optional.of(new TransactionDecoder(transaction));
       }
       catch(JSONException e)
       {
@@ -247,6 +262,12 @@ import static java.util.Objects.nonNull;
     {
       return Collections::emptyIterator;
     }
+
+    //get the transactions objects from json
+    JSONObject responseObject = new JSONObject(response);
+    JSONObject responseObjectInner = responseObject.optJSONObject("response");
+    JSONArray transactionsObject = responseObjectInner.optJSONArray("transactions");
+    String transactions = transactionsObject.toString();
 
     return () -> new Iterator<Transaction>()
     {
@@ -267,7 +288,7 @@ import static java.util.Objects.nonNull;
         return new TransactionDecoder(JSONObject.class.cast(next));
       }
 
-      final Iterator<Object> iterator = array(response).iterator();
+      final Iterator<Object> iterator = array(transactions).iterator();
     };
   }
 
@@ -279,9 +300,12 @@ import static java.util.Objects.nonNull;
     {
       try
       {
-        JSONObject bank = new JSONObject(response);
+        //get the user objects from json
+        JSONObject responseObject = new JSONObject(response);
+        JSONObject responseObjectInner = responseObject.optJSONObject("response");
+        JSONObject user = responseObjectInner.optJSONObject("user");
 
-        return Optional.of(new UserDecoder(bank));
+        return Optional.of(new UserDecoder(user));
       }
       catch(JSONException e)
       {

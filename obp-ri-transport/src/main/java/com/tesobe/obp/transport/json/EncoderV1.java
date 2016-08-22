@@ -102,6 +102,11 @@ import static java.util.Objects.nonNull;
     return json != null ? json.toString() : JSONObject.NULL.toString();
   }
 
+  @Override public JSONObject accountToJSONObject(Account a)
+  {
+    return json(a);
+  }
+
   @Override public String accounts(List<Account> accounts)
   {
     JSONArray result = new JSONArray();
@@ -114,11 +119,28 @@ import static java.util.Objects.nonNull;
     return result.toString();
   }
 
+  @Override public JSONArray accountsToJSONArray(List<Account> accounts)
+  {
+    JSONArray result = new JSONArray();
+
+    if(nonNull(accounts))
+    {
+      accounts.forEach(account -> json(account, result));
+    }
+
+    return result;
+  }
+
   @Override public String bank(Bank b)
   {
     JSONObject json = json(b);
 
     return json != null ? json.toString() : JSONObject.NULL.toString();
+  }
+
+  @Override public JSONObject bankToJSONObject(Bank b)
+  {
+    return json(b);
   }
 
   @Override public String inboundContext(InboundContext inboundContext)
@@ -276,6 +298,11 @@ import static java.util.Objects.nonNull;
     return json != null ? json.toString() : JSONObject.NULL.toString();
   }
 
+  @Override public JSONObject transactionToJSONObject(Transaction t)
+  {
+    return json(t);
+  }
+
   @Override public String transactions(List<Transaction> ts)
   {
     JSONArray result = new JSONArray();
@@ -288,11 +315,28 @@ import static java.util.Objects.nonNull;
     return result.toString();
   }
 
+  @Override public JSONArray transactionsToJSONArray(List<Transaction> ts)
+  {
+    JSONArray result = new JSONArray();
+
+    if(nonNull(ts))
+    {
+      ts.forEach(transaction -> json(transaction, result));
+    }
+
+    return result;
+  }
+
   @Override public String user(User u)
   {
     JSONObject json = json(u);
 
     return json != null ? json.toString() : JSONObject.NULL.toString();
+  }
+
+  @Override public JSONObject userToJSONObject(User u)
+  {
+    return json(u);
   }
 
   @Override public String error(String message)

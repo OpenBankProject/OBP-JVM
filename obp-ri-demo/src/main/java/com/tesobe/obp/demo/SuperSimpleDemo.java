@@ -78,7 +78,7 @@ public class SuperSimpleDemo
 
     OutboundContext outboundContext = new OutboundContext(null, null, null);
 
-    Optional<Bank> bank = connector.getBank("my-bank", outboundContext);
+    Optional<Bank> bank = connector.getBank("my-bank", outboundContext).bank;
 
     System.out.println(bank);
   }

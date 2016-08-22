@@ -10,11 +10,11 @@ package com.tesobe.obp.transport;
 import java.util.Optional;
 
 public class TransactionsWrapper {
-    public Iterable<Transaction> transaction;
+    public Iterable<Transaction> transactions;
     public Optional<InboundContext> inboundContext;
 
-    public TransactionsWrapper(Iterable<Transaction> transaction, Optional<InboundContext> inboundContext) {
-        this.transaction = transaction;
+    public TransactionsWrapper(Iterable<Transaction> transactions, Optional<InboundContext> inboundContext) {
+        this.transactions = transactions;
         this.inboundContext = inboundContext;
     }
 }

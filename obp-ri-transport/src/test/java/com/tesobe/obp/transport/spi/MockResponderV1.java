@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresent;
 import static java.util.Collections.emptyList;
@@ -131,7 +130,25 @@ class MockResponderV1 extends ResponderV1
 
     assertThat(r.userId(), isPresent());
 
-    return e.user(ImplGen.generate(User.class, 1, "email", r.userId().get()));
+    Instant instant = Instant.ofEpochMilli(1437404400000L);
+    LocalDate date = instant.atZone(ZoneOffset.UTC).toLocalDate();
+    ZoneId tz = ZoneId.of("Europe/London");
+    LocalTime time = LocalTime.parse("21:00");
+    ZonedDateTime zdt = ZonedDateTime.of(date, time, tz);
+
+    InboundContext inboundContext = new InboundContext(new Source(zdt, "source origin"), "inbound context");
+
+    User user = ImplGen.generate(User.class, 1, "email", r.userId().get());
+
+    JSONObject response = new JSONObject().put("response", new JSONObject()
+            .put("inboundContext", new JSONObject()
+                    .put("source", new JSONObject()
+                            .put("timestamp", inboundContext.source.timestamp)
+                            .put("originatingSource", inboundContext.source.originatingSource))
+                    .put("message", inboundContext.message))
+            .put("user", e.userToJSONObject(user)));
+
+    return response.toString();
   }
 
   @Override
@@ -141,8 +158,25 @@ class MockResponderV1 extends ResponderV1
 
     assertThat(r.accountId(), isPresent());
 
-    return e
-      .account(ImplGen.generate(Account.class, 1, "id", r.accountId().get()));
+    Instant instant = Instant.ofEpochMilli(1437404400000L);
+    LocalDate date = instant.atZone(ZoneOffset.UTC).toLocalDate();
+    ZoneId tz = ZoneId.of("Europe/London");
+    LocalTime time = LocalTime.parse("21:00");
+    ZonedDateTime zdt = ZonedDateTime.of(date, time, tz);
+
+    InboundContext inboundContext = new InboundContext(new Source(zdt, "source origin"), "inbound context");
+
+    Account account = ImplGen.generate(Account.class, 1, "id", r.accountId().get());
+
+    JSONObject response = new JSONObject().put("response", new JSONObject()
+            .put("inboundContext", new JSONObject()
+                    .put("source", new JSONObject()
+                            .put("timestamp", inboundContext.source.timestamp)
+                            .put("originatingSource", inboundContext.source.originatingSource))
+                    .put("message", inboundContext.message))
+            .put("account", e.accountToJSONObject(account)));
+
+    return response.toString();
   }
 
   @Override protected String getPublicAccounts(String packet, Decoder.Request r,
@@ -155,7 +189,23 @@ class MockResponderV1 extends ResponderV1
       accounts.add(ImplGen.generate(Account.class, 1, "bank", bankId));
       accounts.add(ImplGen.generate(Account.class, 2, "bank", bankId));
 
-      return e.accounts(accounts);
+      Instant instant = Instant.ofEpochMilli(1437404400000L);
+      LocalDate date = instant.atZone(ZoneOffset.UTC).toLocalDate();
+      ZoneId tz = ZoneId.of("Europe/London");
+      LocalTime time = LocalTime.parse("21:00");
+      ZonedDateTime zdt = ZonedDateTime.of(date, time, tz);
+
+      InboundContext inboundContext = new InboundContext(new Source(zdt, "source origin"), "inbound context");
+
+      JSONObject response = new JSONObject().put("response", new JSONObject()
+              .put("inboundContext", new JSONObject()
+                      .put("source", new JSONObject()
+                              .put("timestamp", inboundContext.source.timestamp)
+                              .put("originatingSource", inboundContext.source.originatingSource))
+                      .put("message", inboundContext.message))
+              .put("accounts", e.accountsToJSONArray(accounts)));
+
+      return response.toString();
 
     }).orElse(e.accounts(emptyList()));
   }
@@ -167,7 +217,25 @@ class MockResponderV1 extends ResponderV1
 
     assertThat(r.bankId(), isPresent());
 
-    return e.bank(ImplGen.generate(Bank.class, 1, "id", r.bankId().get()));
+    Instant instant = Instant.ofEpochMilli(1437404400000L);
+    LocalDate date = instant.atZone(ZoneOffset.UTC).toLocalDate();
+    ZoneId tz = ZoneId.of("Europe/London");
+    LocalTime time = LocalTime.parse("21:00");
+    ZonedDateTime zdt = ZonedDateTime.of(date, time, tz);
+
+    InboundContext inboundContext = new InboundContext(new Source(zdt, "source origin"), "inbound context");
+
+    Bank bank = ImplGen.generate(Bank.class, 1, "id", r.bankId().get());
+
+    JSONObject response = new JSONObject().put("response", new JSONObject()
+            .put("inboundContext", new JSONObject()
+                    .put("source", new JSONObject()
+                            .put("timestamp", inboundContext.source.timestamp)
+                            .put("originatingSource", inboundContext.source.originatingSource))
+                    .put("message", inboundContext.message))
+            .put("bank", e.bankToJSONObject(bank)));
+
+    return response.toString();
   }
 
   @Override protected String getPublicBanks(String packet, Encoder e)
@@ -186,8 +254,6 @@ class MockResponderV1 extends ResponderV1
     ZonedDateTime zdt = ZonedDateTime.of(date, time, tz);
 
     InboundContext inboundContext = new InboundContext(new Source(zdt, "source origin"), "inbound context");
-
-    BanksWrapper banksWrapper = new BanksWrapper(banks, Optional.of(inboundContext));
 
     JSONObject response = new JSONObject().put("response", new JSONObject()
                                                         .put("inboundContext", new JSONObject()
@@ -208,8 +274,25 @@ class MockResponderV1 extends ResponderV1
 
     assertThat(r.transactionId(), isPresent());
 
-    return e.transaction(
-      ImplGen.generate(Transaction.class, 1, "id", r.transactionId().get()));
+    Instant instant = Instant.ofEpochMilli(1437404400000L);
+    LocalDate date = instant.atZone(ZoneOffset.UTC).toLocalDate();
+    ZoneId tz = ZoneId.of("Europe/London");
+    LocalTime time = LocalTime.parse("21:00");
+    ZonedDateTime zdt = ZonedDateTime.of(date, time, tz);
+
+    InboundContext inboundContext = new InboundContext(new Source(zdt, "source origin"), "inbound context");
+
+    Transaction transaction = ImplGen.generate(Transaction.class, 1, "id", r.transactionId().get());
+
+    JSONObject response = new JSONObject().put("response", new JSONObject()
+            .put("inboundContext", new JSONObject()
+                    .put("source", new JSONObject()
+                            .put("timestamp", inboundContext.source.timestamp)
+                            .put("originatingSource", inboundContext.source.originatingSource))
+                    .put("message", inboundContext.message))
+            .put("transaction", e.transactionToJSONObject(transaction)));
+
+    return response.toString();
   }
 
   @Override
@@ -223,7 +306,23 @@ class MockResponderV1 extends ResponderV1
     transactions.add(ImplGen.generate(Transaction.class, 1));
     transactions.add(ImplGen.generate(Transaction.class, 2));
 
-    return e.transactions(transactions);
+    Instant instant = Instant.ofEpochMilli(1437404400000L);
+    LocalDate date = instant.atZone(ZoneOffset.UTC).toLocalDate();
+    ZoneId tz = ZoneId.of("Europe/London");
+    LocalTime time = LocalTime.parse("21:00");
+    ZonedDateTime zdt = ZonedDateTime.of(date, time, tz);
+
+    InboundContext inboundContext = new InboundContext(new Source(zdt, "source origin"), "inbound context");
+
+    JSONObject response = new JSONObject().put("response", new JSONObject()
+            .put("inboundContext", new JSONObject()
+                    .put("source", new JSONObject()
+                            .put("timestamp", inboundContext.source.timestamp)
+                            .put("originatingSource", inboundContext.source.originatingSource))
+                    .put("message", inboundContext.message))
+            .put("transactions", e.transactionsToJSONArray(transactions)));
+
+    return response.toString();
   }
 
   @Override
@@ -233,7 +332,25 @@ class MockResponderV1 extends ResponderV1
 
     assertThat(r.userId(), isPresent());
 
-    return e.user(ImplGen.generate(User.class, 1, "email", r.userId().get()));
+    Instant instant = Instant.ofEpochMilli(1437404400000L);
+    LocalDate date = instant.atZone(ZoneOffset.UTC).toLocalDate();
+    ZoneId tz = ZoneId.of("Europe/London");
+    LocalTime time = LocalTime.parse("21:00");
+    ZonedDateTime zdt = ZonedDateTime.of(date, time, tz);
+
+    InboundContext inboundContext = new InboundContext(new Source(zdt, "source origin"), "inbound context");
+
+    User user = ImplGen.generate(User.class, 1, "email", r.userId().get());
+
+    JSONObject response = new JSONObject().put("response", new JSONObject()
+            .put("inboundContext", new JSONObject()
+                    .put("source", new JSONObject()
+                            .put("timestamp", inboundContext.source.timestamp)
+                            .put("originatingSource", inboundContext.source.originatingSource))
+                    .put("message", inboundContext.message))
+            .put("user", e.userToJSONObject(user)));
+
+    return response.toString();
   }
 
   @Override

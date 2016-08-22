@@ -321,6 +321,51 @@ import static java.util.Objects.nonNull;
 //    }
 //  }
 
+    @Override public JSONObject userToJSONObject(User u)
+    {
+        return json(u);
+    }
+
+    @Override public JSONArray transactionsToJSONArray(List<Transaction> ts)
+    {
+        JSONArray result = new JSONArray();
+
+        if(nonNull(ts))
+        {
+            ts.forEach(transaction -> json(transaction, result));
+        }
+
+        return result;
+    }
+
+
+    @Override public JSONObject transactionToJSONObject(Transaction t)
+    {
+        return json(t);
+    }
+
+    @Override public JSONObject bankToJSONObject(Bank b)
+    {
+        return json(b);
+    }
+
+    @Override public JSONArray accountsToJSONArray(List<Account> accounts)
+    {
+        JSONArray result = new JSONArray();
+
+        if(nonNull(accounts))
+        {
+            accounts.forEach(account -> json(account, result));
+        }
+
+        return result;
+    }
+
+    @Override public JSONObject accountToJSONObject(Account a)
+    {
+        return json(a);
+    }
+
     @Override public String toString()
     {
         return getClass().getTypeName() + "-" + version;

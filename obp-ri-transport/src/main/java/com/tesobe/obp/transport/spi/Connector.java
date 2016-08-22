@@ -5,7 +5,6 @@ import com.tesobe.obp.transport.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -25,7 +24,7 @@ import java.util.UUID;
   }
 
   @Override
-  public Optional<Account> getAccount(String bankId, String accountId,
+  public AccountWrapper getAccount(String bankId, String accountId,
                                       OutboundContext outboundContext) throws InterruptedException, DecoderException
   {
     String id = UUID.randomUUID().toString();
@@ -34,11 +33,10 @@ import java.util.UUID;
 
     log.trace("{} {}", request, response);
 
-    return decoder.account(response);
+    return new AccountWrapper(decoder.account(response), decoder.inboundContext(response));
   }
 
-  @Override
-  public Iterable<Account> getAccounts(String bankId, OutboundContext outboundContext)
+  @Override public AccountsWrapper getAccounts(String bankId, OutboundContext outboundContext)
     throws InterruptedException, DecoderException
   {
     String id = UUID.randomUUID().toString();
@@ -47,10 +45,10 @@ import java.util.UUID;
 
     log.trace("{} {}", request, response);
 
-    return decoder.accounts(response);
+    return new AccountsWrapper(decoder.accounts(response), decoder.inboundContext(response));
   }
 
-  @Override public Optional<Bank> getBank(String bankId, OutboundContext outboundContext)
+  @Override public BankWrapper getBank(String bankId, OutboundContext outboundContext)
     throws InterruptedException, DecoderException
   {
     String id = UUID.randomUUID().toString();
@@ -59,7 +57,7 @@ import java.util.UUID;
 
     log.trace("{} {}", request, response);
 
-    return decoder.bank(response);
+    return new BankWrapper(decoder.bank(response), decoder.inboundContext(response));
   }
 
 
@@ -72,10 +70,10 @@ import java.util.UUID;
 
     log.trace("{} {}", request, response);
 
-    return new BanksWrapper(decoder.banks(response),decoder.inboundContext(response));
+    return new BanksWrapper(decoder.banks(response), decoder.inboundContext(response));
   }
 
-  @Override public Optional<Transaction> getTransaction(String bankId,
+  @Override public TransactionWrapper getTransaction(String bankId,
                                                         String accountId, String transactionId, OutboundContext outboundContext)
     throws InterruptedException, DecoderException
   {
@@ -85,10 +83,10 @@ import java.util.UUID;
 
     log.trace("{} {}", request, response);
 
-    return decoder.transaction(response);
+    return new TransactionWrapper(decoder.transaction(response), decoder.inboundContext(response));
   }
 
-  @Override public Iterable<Transaction> getTransactions(String bankId,
+  @Override public TransactionsWrapper getTransactions(String bankId,
                                                          String accountId, OutboundContext outboundContext)
     throws InterruptedException, DecoderException
   {
@@ -98,10 +96,10 @@ import java.util.UUID;
 
     log.trace("{} {}", request, response);
 
-    return decoder.transactions(response);
+    return new TransactionsWrapper(decoder.transactions(response), decoder.inboundContext(response));
   }
 
-  @Override public Optional<User> getUser(String userId, OutboundContext outboundContext)
+  @Override public UserWrapper getUser(String userId, OutboundContext outboundContext)
     throws InterruptedException, DecoderException
   {
     String id = UUID.randomUUID().toString();
@@ -110,7 +108,7 @@ import java.util.UUID;
 
     log.trace("{} {}", request, response);
 
-    return decoder.user(response);
+    return new UserWrapper(decoder.user(response), decoder.inboundContext(response));
   }
 
   protected final Transport.Version version;

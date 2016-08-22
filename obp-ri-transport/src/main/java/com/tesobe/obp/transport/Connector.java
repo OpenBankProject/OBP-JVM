@@ -9,8 +9,6 @@ package com.tesobe.obp.transport;
 
 import com.tesobe.obp.transport.spi.DecoderException;
 
-import java.util.Optional;
-
 /**
  * North side API.
  *
@@ -34,7 +32,7 @@ import java.util.Optional;
    * @throws InterruptedException Network trouble
    * @throws DecoderException     Invalid content in the network packet.
    */
-  Optional<Account> getAccount(String bankId, String accountId, OutboundContext outboundContext) throws InterruptedException, DecoderException;
+  AccountWrapper getAccount(String bankId, String accountId, OutboundContext outboundContext) throws InterruptedException, DecoderException;
 
   /**
    * All private accounts the user is explicitly linked to.
@@ -56,7 +54,7 @@ import java.util.Optional;
    *                              The exception may be delayed until the
    *                              iterable is dereferenced.
    */
-  Iterable<Account> getAccounts(String bankId, OutboundContext outboundContext) throws InterruptedException, DecoderException;
+  AccountsWrapper getAccounts(String bankId, OutboundContext outboundContext) throws InterruptedException, DecoderException;
 
   /**
    * @param bankId An invalid bank id means an empty result.
@@ -70,7 +68,7 @@ import java.util.Optional;
    * @throws InterruptedException Network trouble
    * @throws DecoderException     Invalid content in the network packet.
    */
-  Optional<Bank> getBank(String bankId, OutboundContext outboundContext) throws InterruptedException, DecoderException;
+  BankWrapper getBank(String bankId, OutboundContext outboundContext) throws InterruptedException, DecoderException;
 
   /**
    * All private banks the user is explicitly linked to.
@@ -92,11 +90,11 @@ import java.util.Optional;
    */
   BanksWrapper getBanks(OutboundContext outboundContext) throws InterruptedException, DecoderException;
 
-  Optional<Transaction> getTransaction(String bankId, String accountId, String transactionId, OutboundContext outboundContext) throws InterruptedException, DecoderException;
+  TransactionWrapper getTransaction(String bankId, String accountId, String transactionId, OutboundContext outboundContext) throws InterruptedException, DecoderException;
 
-  Iterable<Transaction> getTransactions(String bankId, String accountId, OutboundContext outboundContext) throws InterruptedException, DecoderException;
+  TransactionsWrapper getTransactions(String bankId, String accountId, OutboundContext outboundContext) throws InterruptedException, DecoderException;
 
-  Optional<User> getUser(String userId, OutboundContext outboundContext) throws InterruptedException, DecoderException;
+  UserWrapper getUser(String userId, OutboundContext outboundContext) throws InterruptedException, DecoderException;
 
 
 //  public class AccountId implements Serializable

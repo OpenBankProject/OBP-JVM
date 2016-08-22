@@ -9,6 +9,7 @@ package com.tesobe.obp.transport.spi;
 
 import com.tesobe.obp.transport.*;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -33,9 +34,15 @@ public interface Encoder
 
   String account(Account a);
 
+  JSONObject accountToJSONObject(Account a);
+
   String accounts(List<Account> as);
 
+  JSONArray accountsToJSONArray(List<Account> as);
+
   String bank(Bank b);
+
+  JSONObject bankToJSONObject(Bank b);
 
   String banks(List<Bank> bs);
 
@@ -49,9 +56,15 @@ public interface Encoder
 
   String transaction(Transaction t);
 
+  JSONObject transactionToJSONObject(Transaction t);
+
   String transactions(List<Transaction> ts);
 
+  JSONArray transactionsToJSONArray(List<Transaction> ts);
+
   String user(User u);
+
+  JSONObject userToJSONObject(User u);
 
   interface Request
   {

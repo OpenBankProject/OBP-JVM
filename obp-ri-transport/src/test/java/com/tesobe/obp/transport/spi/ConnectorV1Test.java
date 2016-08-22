@@ -75,8 +75,8 @@ public class ConnectorV1Test
     String tokenId = "token-x";
     OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
 
-    Optional<Account> account = connector
-      .getAccount(bankId, accountId, outboundContext);
+    AccountWrapper accountWrapper = connector.getAccount(bankId, accountId, outboundContext);
+    Optional<Account> account = accountWrapper.account;
 
     assertThat(account, hasValue(returns("id", "account-x")));
   }
@@ -89,7 +89,8 @@ public class ConnectorV1Test
     String tokenId = "token-x";
     OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
 
-    Iterable<Account> accounts = connector.getAccounts(bankId, outboundContext);
+    AccountsWrapper accountsWrapper = connector.getAccounts(bankId, outboundContext);
+    Iterable<Account> accounts = accountsWrapper.accounts;
     List<String> ids = new ArrayList<>();
 
     accounts.forEach(account -> assertThat(account.bank(), is(bankId)));
@@ -106,7 +107,8 @@ public class ConnectorV1Test
     String tokenId = "token-x";
     OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
 
-    Optional<Bank> bank = connector.getBank(bankId, outboundContext);
+    BankWrapper bankWrapper = connector.getBank(bankId, outboundContext);
+    Optional<Bank> bank = bankWrapper.bank;
 
     assertThat(bank, hasValue(returns("id", "bank-x")));
   }
@@ -137,8 +139,8 @@ public class ConnectorV1Test
     String tokenId = "token-x";
     OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
 
-    Optional<Transaction> transaction = connector
-      .getTransaction(bankId, accountId, transactionId, outboundContext);
+    TransactionWrapper transactionWrapper = connector.getTransaction(bankId, accountId, transactionId, outboundContext);
+    Optional<Transaction> transaction = transactionWrapper.transaction;
 
     assertThat(transaction, hasValue(returns("id", "transaction-x")));
   }
@@ -152,8 +154,8 @@ public class ConnectorV1Test
     String tokenId = "token-x";
     OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
 
-    Iterable<Transaction> transactions = connector
-      .getTransactions(bankId, accountId, outboundContext);
+    TransactionsWrapper transactionsWrapper = connector.getTransactions(bankId, accountId, outboundContext);
+    Iterable<Transaction> transactions = transactionsWrapper.transactions;
     List<String> ids = new ArrayList<>();
 
     transactions.forEach(bank -> ids.add(bank.id()));
@@ -168,7 +170,8 @@ public class ConnectorV1Test
     String tokenId = "token-x";
     OutboundContext outboundContext = new OutboundContext(new UserContext(userId), new ViewContext(viewId, true), new TokenContext(tokenId));
 
-    Optional<User> user = connector.getUser(userId, outboundContext);
+    UserWrapper userWrapper = connector.getUser(userId, outboundContext);
+    Optional<User> user = userWrapper.user;
 
     assertThat(user, hasValue(returns("email", userId)));
   }
