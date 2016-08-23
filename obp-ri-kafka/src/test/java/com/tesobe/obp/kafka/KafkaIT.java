@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
 //    public static void main(String[] ignored)
 //    {
 //      factory = Transport.defaultFactory().orElseThrow(RuntimeException::new);
-//      Receiver responder = new MockResponderV1(factory.decoder(),
+//      Receiver responder = new MockResponderV0(factory.decoder(),
 //        factory.encoder());
 //
 //      SimpleSouth south = new SimpleSouth("Request", "Response", responder);

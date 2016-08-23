@@ -29,296 +29,326 @@ import static java.util.Objects.nonNull;
  * @since 2016.0
  */
 @SuppressWarnings("WeakerAccess") public class DecoderV0
-        implements com.tesobe.obp.transport.spi.Decoder
+  implements com.tesobe.obp.transport.spi.Decoder
 {
-    public DecoderV0(Transport.Version v)
+  public DecoderV0(Transport.Version v)
+  {
+    version = v;
+  }
+
+  @Override public Request request(String request)
+  {
+    return new Request()
     {
-        version = v;
+      @Override public Optional<String> accountId()
+      {
+        return arguments == null
+               ? Optional.empty()
+               : white(arguments.optString("accountId", null));
+      }
+
+      @Override public Optional<String> bankId()
+      {
+        return arguments == null
+               ? Optional.empty()
+               : white(arguments.optString("bankId", null));
+      }
+
+      @Override public Optional<String> transactionId()
+      {
+        return arguments == null
+               ? Optional.empty()
+               : white(arguments.optString("transactionId", null));
+      }
+
+      @Override public Optional<String> userId()
+      {
+        return arguments == null
+               ? Optional.empty()
+               : white(arguments.optString("username", null));
+      }
+
+      /**
+       * @return null if absent or without value
+       */
+      @Override public String name()
+      {
+        return name;
+      }
+
+      @Override public String function()
+      {
+        return arguments.optString("function", null);
+      }
+
+      @Override public String raw()
+      {
+        return request;
+      }
+
+      @Override public String toString()
+      {
+        return json.toString();
+      }
+
+      JSONObject json = new JSONObject(request);
+      JSONObject arguments;
+      String name;
+
+      {
+        Iterator<String> keys = json.keys(); // Legacy api: only one key
+
+        name = keys.hasNext() ? keys.next() : null;
+        arguments = json.opt(name) instanceof JSONObject ? json
+          .getJSONObject(name) : null;
+      }
+    };
+  }
+
+  @Override public Optional<Account> account(String response)
+    throws DecoderException
+  {
+    log.trace("{} {}", version, String.valueOf(response));
+
+    if(nonNull(response) && !response.equals("null"))
+    {
+      try
+      {
+        //get the account objects from json
+        JSONObject responseObject = new JSONObject(response);
+        JSONObject responseObjectInner = responseObject.optJSONObject("response");
+        JSONObject account = responseObjectInner.optJSONObject("account");
+
+        return Optional.of(new AccountDecoder(account));
+      }
+      catch(JSONException e)
+      {
+        throw new DecoderException("Cannot decode: " + response);
+      }
     }
 
-    @Override public Request request(String request)
+    return Optional.empty();
+  }
+
+  @Override public Iterable<Account> accounts(String response)
+  {
+    log.trace("{} {}", version, String.valueOf(response));
+
+    if(isNull(response) || response.equals("null"))
     {
-        return new Request()
-        {
-            @Override public Optional<String> accountId()
-            {
-                return arguments == null
-                        ? Optional.empty()
-                        : white(arguments.optString("accountId", null));
-            }
-
-            @Override public Optional<String> bankId()
-            {
-                return arguments == null
-                        ? Optional.empty()
-                        : white(arguments.optString("bankId", null));
-            }
-
-            @Override public Optional<String> transactionId()
-            {
-                return arguments == null
-                        ? Optional.empty()
-                        : white(arguments.optString("transactionId", null));
-            }
-
-            @Override public Optional<String> userId()
-            {
-                return arguments == null
-                        ? Optional.empty()
-                        : white(arguments.optString("username", null));
-            }
-
-            /**
-             * @return null if absent or without value
-             */
-            @Override public String name()
-            {
-                return name;
-            }
-
-            @Override public String function()
-            {
-                return arguments.optString("function", null);
-            }
-
-            @Override public String raw()
-            {
-                return request;
-            }
-
-            @Override public String toString()
-            {
-                return json.toString();
-            }
-
-            JSONObject json = new JSONObject(request);
-            JSONObject arguments;
-            String name;
-
-            {
-                Iterator<String> keys = json.keys(); // Legacy api: only one key
-
-                name = keys.hasNext() ? keys.next() : null;
-                arguments = json.opt(name) instanceof JSONObject ? json
-                        .getJSONObject(name) : null;
-            }
-        };
+      return Collections::emptyIterator;
     }
 
-    @Override public Optional<Account> account(String response)
-            throws DecoderException
+    //get the accounts objects from json
+    JSONObject responseObject = new JSONObject(response);
+    JSONObject responseObjectInner = responseObject.optJSONObject("response");
+    JSONArray accountsObject = responseObjectInner.optJSONArray("accounts");
+    String accounts = accountsObject.toString();
+
+    return () -> new Iterator<Account>()
     {
-        log.trace("{} {}", version, String.valueOf(response));
+      @Override public boolean hasNext()
+      {
+        return iterator.hasNext();
+      }
 
-        if(nonNull(response) && !response.equals("null"))
+      @Override public Account next()
+      {
+        Object next = iterator.next();
+
+        if(!(next instanceof JSONObject))
         {
-            try
-            {
-                JSONObject account = new JSONObject(response);
-
-                return Optional.of(new AccountDecoder(account));
-            }
-            catch(JSONException e)
-            {
-                throw new DecoderException("Cannot decode: " + response);
-            }
+          throw new DecoderException(String.valueOf(next));
         }
 
-        return Optional.empty();
-    }
+        return new AccountDecoder(JSONObject.class.cast(next));
+      }
 
-    @Override public Iterable<Account> accounts(String response)
+      final Iterator<Object> iterator = array(accounts).iterator();
+    };
+  }
+
+  @Override public Optional<Bank> bank(String response)
+  {
+    log.trace("{} {}", version, String.valueOf(response));
+
+    if(nonNull(response) && !response.equals("null"))
     {
-        log.trace("{} {}", version, String.valueOf(response));
+      try
+      {
+        //get the bank object from json
+        JSONObject responseObject = new JSONObject(response);
+        JSONObject responseObjectInner = responseObject.optJSONObject("response");
+        JSONObject bank = responseObjectInner.optJSONObject("bank");
 
-        if(isNull(response) || response.equals("null"))
-        {
-            return Collections::emptyIterator;
-        }
-
-        return () -> new Iterator<Account>()
-        {
-            @Override public boolean hasNext()
-            {
-                return iterator.hasNext();
-            }
-
-            @Override public Account next()
-            {
-                Object next = iterator.next();
-
-                if(!(next instanceof JSONObject))
-                {
-                    throw new DecoderException(String.valueOf(next));
-                }
-
-                return new AccountDecoder(JSONObject.class.cast(next));
-            }
-
-            final Iterator<Object> iterator = array(response).iterator();
-        };
+        return Optional.of(new BankDecoder(bank));
+      }
+      catch(JSONException e)
+      {
+        throw new DecoderException("Cannot decode: " + response);
+      }
     }
 
-    @Override public Optional<Bank> bank(String response)
+    return Optional.empty();
+  }
+
+  @Override public Iterable<Bank> banks(String response)
+  {
+    log.trace("{} {}", version, String.valueOf(response));
+
+    if(isNull(response) || response.equals("null"))
     {
-        log.trace("{} {}", version, String.valueOf(response));
-
-        if(nonNull(response) && !response.equals("null"))
-        {
-            try
-            {
-                JSONObject bank = new JSONObject(response);
-
-                return Optional.of(new BankDecoder(bank));
-            }
-            catch(JSONException e)
-            {
-                throw new DecoderException("Cannot decode: " + response);
-            }
-        }
-
-        return Optional.empty();
+      return Collections::emptyIterator;
     }
 
-    @Override public Iterable<Bank> banks(String response)
+    //get the banks objects from json
+    JSONObject responseObject = new JSONObject(response);
+    JSONObject responseObjectInner = responseObject.optJSONObject("response");
+    JSONArray banksObject = responseObjectInner.optJSONArray("banks");
+    String banks = banksObject.toString();
+
+    return () -> new Iterator<Bank>()
     {
-        log.trace("{} {}", version, String.valueOf(response));
+      @Override public boolean hasNext()
+      {
+        return iterator.hasNext();
+      }
 
-        if(isNull(response) || response.equals("null"))
+      @Override public Bank next()
+      {
+        Object next = iterator.next();
+
+        if(!(next instanceof JSONObject))
         {
-            return Collections::emptyIterator;
+          throw new DecoderException(String.valueOf(next));
         }
 
-        return () -> new Iterator<Bank>()
-        {
-            @Override public boolean hasNext()
-            {
-                return iterator.hasNext();
-            }
+        return new BankDecoder(JSONObject.class.cast(next));
+      }
 
-            @Override public Bank next()
-            {
-                Object next = iterator.next();
+      final Iterator<Object> iterator = array(banks).iterator();
+    };
+  }
 
-                if(!(next instanceof JSONObject))
-                {
-                    throw new DecoderException(String.valueOf(next));
-                }
+  @Override public Optional<Transaction> transaction(String response)
+  {
+    log.trace("{} {}", version, String.valueOf(response));
 
-                return new BankDecoder(JSONObject.class.cast(next));
-            }
-
-            final Iterator<Object> iterator = array(response).iterator();
-        };
-    }
-
-    @Override public Optional<Transaction> transaction(String response)
+    if(nonNull(response) && !response.equals("null"))
     {
-        log.trace("{} {}", version, String.valueOf(response));
+      try
+      {
+        //get the transaction objects from json
+        JSONObject responseObject = new JSONObject(response);
+        JSONObject responseObjectInner = responseObject.optJSONObject("response");
+        JSONObject transaction = responseObjectInner.optJSONObject("transaction");
 
-        if(nonNull(response) && !response.equals("null"))
-        {
-            try
-            {
-                JSONObject bank = new JSONObject(response);
-
-                return Optional.of(new TransactionDecoder(bank));
-            }
-            catch(JSONException e)
-            {
-                throw new DecoderException("Cannot decode: " + response);
-            }
-        }
-
-        return Optional.empty();
+        return Optional.of(new TransactionDecoder(transaction));
+      }
+      catch(JSONException e)
+      {
+        throw new DecoderException("Cannot decode: " + response);
+      }
     }
 
-    @Override public Iterable<Transaction> transactions(String response)
+    return Optional.empty();
+  }
+
+  @Override public Iterable<Transaction> transactions(String response)
+  {
+    log.trace("{} {}", version, String.valueOf(response));
+
+    if(isNull(response) || response.equals("null"))
     {
-        log.trace("{} {}", version, String.valueOf(response));
-
-        if(isNull(response) || response.equals("null"))
-        {
-            return Collections::emptyIterator;
-        }
-
-        return () -> new Iterator<Transaction>()
-        {
-            @Override public boolean hasNext()
-            {
-                return iterator.hasNext();
-            }
-
-            @Override public Transaction next()
-            {
-                Object next = iterator.next();
-
-                if(!(next instanceof JSONObject))
-                {
-                    throw new DecoderException(String.valueOf(next));
-                }
-
-                return new TransactionDecoder(JSONObject.class.cast(next));
-            }
-
-            final Iterator<Object> iterator = array(response).iterator();
-        };
+      return Collections::emptyIterator;
     }
 
-    @Override public Optional<User> user(String response)
+    //get the transactions objects from json
+    JSONObject responseObject = new JSONObject(response);
+    JSONObject responseObjectInner = responseObject.optJSONObject("response");
+    JSONArray transactionsObject = responseObjectInner.optJSONArray("transactions");
+    String transactions = transactionsObject.toString();
+
+    return () -> new Iterator<Transaction>()
     {
-        log.trace("{} {}", version, String.valueOf(response));
+      @Override public boolean hasNext()
+      {
+        return iterator.hasNext();
+      }
 
-        if(nonNull(response) && !response.equals("null"))
+      @Override public Transaction next()
+      {
+        Object next = iterator.next();
+
+        if(!(next instanceof JSONObject))
         {
-            try
-            {
-                JSONObject bank = new JSONObject(response);
-
-                return Optional.of(new UserDecoder(bank));
-            }
-            catch(JSONException e)
-            {
-                throw new DecoderException("Cannot decode: " + response);
-            }
+          throw new DecoderException(String.valueOf(next));
         }
 
-        return Optional.empty();
-    }
+        return new TransactionDecoder(JSONObject.class.cast(next));
+      }
 
-    @Override public Optional<InboundContext> inboundContext(String response)
-            throws DecoderException
+      final Iterator<Object> iterator = array(transactions).iterator();
+    };
+  }
+
+  @Override public Optional<User> user(String response)
+  {
+    log.trace("{} {}", version, String.valueOf(response));
+
+    if(nonNull(response) && !response.equals("null"))
     {
-        log.trace("{} {}", version, String.valueOf(response));
+      try
+      {
+        //get the user objects from json
+        JSONObject responseObject = new JSONObject(response);
+        JSONObject responseObjectInner = responseObject.optJSONObject("response");
+        JSONObject user = responseObjectInner.optJSONObject("user");
 
-        if(nonNull(response) && !response.equals("null"))
-        {
-            try
-            {
-                JSONObject responseObject = new JSONObject(response);
-
-                return Optional.of(InboundContextDecoder.inboundContextFromJsonObject(responseObject));
-            }
-            catch(JSONException e)
-            {
-                throw new DecoderException("Cannot decode: " + response);
-            }
-        }
-
-        return null;
+        return Optional.of(new UserDecoder(user));
+      }
+      catch(JSONException e)
+      {
+        throw new DecoderException("Cannot decode: " + response);
+      }
     }
 
-    protected JSONArray array(String json) throws DecoderException
+    return Optional.empty();
+  }
+
+  @Override public Optional<InboundContext> inboundContext(String response)
+          throws DecoderException
+  {
+    log.trace("{} {}", version, String.valueOf(response));
+
+    if(nonNull(response) && !response.equals("null"))
     {
-        try
-        {
-            return new JSONArray(json);
-        }
-        catch(JSONException e)
-        {
-            throw new DecoderException(json);
-        }
+      try
+      {
+        JSONObject responseObject = new JSONObject(response);
+
+        return Optional.of(InboundContextDecoder.inboundContextFromJsonObject(responseObject));
+      }
+      catch(JSONException e)
+      {
+        throw new DecoderException("Cannot decode: " + response);
+      }
     }
+
+    return null;
+  }
+
+  protected JSONArray array(String json) throws DecoderException
+  {
+    try
+    {
+      return new JSONArray(json);
+    }
+    catch(JSONException e)
+    {
+      throw new DecoderException(json);
+    }
+  }
 
 //  @Override public Iterable<Connector.Bank> banks(String response)
 //  {
@@ -359,11 +389,11 @@ import static java.util.Objects.nonNull;
 //    return Collections.emptyList();
 //  }
 
-    @Override public String toString()
-    {
-        return getClass().getTypeName() + "-" + version;
-    }
+  @Override public String toString()
+  {
+    return getClass().getTypeName() + "-" + version;
+  }
 
-    final Transport.Version version;
-    static final Logger log = LoggerFactory.getLogger(DecoderV0.class);
+  final Transport.Version version;
+  static final Logger log = LoggerFactory.getLogger(DecoderV0.class);
 }

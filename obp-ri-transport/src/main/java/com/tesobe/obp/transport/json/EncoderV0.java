@@ -25,290 +25,329 @@ import static java.util.Objects.nonNull;
  * @since 2016.0
  */
 @SuppressWarnings("WeakerAccess") public class EncoderV0
-        implements com.tesobe.obp.transport.spi.Encoder
+  implements com.tesobe.obp.transport.spi.Encoder
 {
-    public EncoderV0(Transport.Version v)
+  public EncoderV0(Transport.Version v)
+  {
+    version = v;
+  }
+
+  @Override public Request getUser(String userId, OutboundContext outboundContext)
+  {
+    return request("request")
+            .arguments(outboundContext, "function", "getUser", "version", version.toString(), "username", userId);
+  }
+
+  @Override public Request getBanks(OutboundContext outboundContext)
+  {
+    return request("request")
+            .arguments(outboundContext, "function", "getBanks", "version", version.toString());
+  }
+
+  @Override
+  public Request getTransaction(String bankId, String accountId,
+                                String transactionId, OutboundContext outboundContext)
+  {
+    return request("request")
+            .arguments(outboundContext, "function", "getTransaction", "version", version.toString(),
+                    "accountId", accountId, "bankId", bankId, "transactionId", transactionId);
+  }
+
+  @Override
+  public Request getTransactions(String bankId, String accountId,
+                                 OutboundContext outboundContext)
+  {
+    return request("request")
+            .arguments(outboundContext, "function", "getTransactions", "version", version.toString(),
+                    "bankId", bankId, "accountId", accountId);
+  }
+
+  @Override public Request getAccount(OutboundContext outboundContext, String bankId,
+                                      String accountId)
+  {
+    return request("request")
+            .arguments(outboundContext, "function", "getBankAccount", "version", version.toString(),
+                    "bankId", bankId, "accountId", accountId);
+  }
+
+  @Override public Request getAccounts(OutboundContext outboundContext, String bankId)
+  {
+    return request("request")
+            .arguments(outboundContext, "function", "getBankAccounts", "version", version.toString(), "bankId", bankId);
+  }
+
+  @Override public Request getBank(OutboundContext outboundContext, String bankId)
+  {
+    return request("request")
+            .arguments(outboundContext, "function", "getBank", "version", version.toString(), "bankId", bankId);
+  }
+
+
+  protected RequestBuilder request(String name)
+  {
+    return new RequestBuilder(name);
+  }
+
+//  @Override public String banksWrapper(BanksWrapper banksWrapper)
+//  {
+//    JSONObject json = json(a);
+//
+//    return json != null ? json.toString() : JSONObject.NULL.toString();
+//  }
+
+  @Override public String account(Account a)
+  {
+    JSONObject json = json(a);
+
+    return json != null ? json.toString() : JSONObject.NULL.toString();
+  }
+
+  @Override public JSONObject accountToJSONObject(Account a)
+  {
+    return json(a);
+  }
+
+  @Override public String accounts(List<Account> accounts)
+  {
+    JSONArray result = new JSONArray();
+
+    if(nonNull(accounts))
     {
-        version = v;
+      accounts.forEach(account -> json(account, result));
     }
 
-    @Override public Request getUser(String userId, OutboundContext context)
+    return result.toString();
+  }
+
+  @Override public JSONArray accountsToJSONArray(List<Account> accounts)
+  {
+    JSONArray result = new JSONArray();
+
+    if(nonNull(accounts))
     {
-        return request("getUser").arguments("username", userId);
+      accounts.forEach(account -> json(account, result));
     }
 
-    @Override public Request getBanks(OutboundContext context)
+    return result;
+  }
+
+  @Override public String bank(Bank b)
+  {
+    JSONObject json = json(b);
+
+    return json != null ? json.toString() : JSONObject.NULL.toString();
+  }
+
+  @Override public JSONObject bankToJSONObject(Bank b)
+  {
+    return json(b);
+  }
+
+  @Override public String inboundContext(InboundContext inboundContext)
+  {
+    JSONObject json = json(inboundContext);
+
+    return json != null ? json.toString() : JSONObject.NULL.toString();
+  }
+
+  @Override public String banks(List<Bank> banks)
+  {
+    JSONArray result = new JSONArray();
+
+    if(nonNull(banks))
     {
-        if (context != null && context.user != null){
-            return request("getBanks").arguments("username", context.user.userId);
-        } else {
-            return request("getBanks");
-        }
+      banks.forEach(bank -> json(bank, result));
     }
 
-    @Override
-    public Request getTransaction(String bankId, String accountId,
-                                  String transactionId, OutboundContext context)
+    return result.toString();
+  }
+
+  @Override public JSONArray banksToJSONArray(List<Bank> banks)
+  {
+    JSONArray result = new JSONArray();
+
+    if(nonNull(banks))
     {
-        if (context != null && context.user != null){
-            return request("getTransaction")
-                    .arguments("username", context.user.userId, "accountId", accountId, "bankId", bankId,
-                            "transactionId", transactionId);
-        } else {
-            return request("getTransaction")
-                    .arguments("bankId", bankId, "accountId", accountId, "transactionId", transactionId);
-        }
+      banks.forEach(bank -> json(bank, result));
     }
 
-    @Override
-    public Request getTransactions(String bankId, String accountId,
-                                   OutboundContext context)
+    return result;
+  }
+
+//  protected JSONObject json(BanksWrapper banksWrapper)
+//  {
+//    if(nonNull(banksWrapper))
+//    {
+//      return new AccountEncoder(a).toJson();
+//    }
+//
+//    return null;
+//  }
+
+  protected JSONObject json(Account a)
+  {
+    if(nonNull(a))
     {
-        if (context != null && context.user != null) {
-            return request("getTransactions")
-                    .arguments("bankId", bankId, "accountId", accountId, "userId", context.user.userId);
-        } else {
-            return request("getTransactions")
-                    .arguments("bankId", bankId, "accountId", accountId);
-        }
+      return new AccountEncoder(a).toJson();
     }
 
-    @Override public Request getAccount(OutboundContext context, String bankId,
-                                        String accountId)
+    return null;
+  }
+
+  protected void json(Account a, JSONArray result)
+  {
+    if(nonNull(a))
     {
-        if (context != null && context.user != null) {
-            return request("getBankAccount")
-                    .arguments("username", context.user.userId, "bankId", bankId, "accountId", accountId);
-        } else {
-            return request("getBankAccount")
-                    .arguments("bankId", bankId, "accountId", accountId);
-        }
+      JSONObject json = json(a);
+
+      result.put(json != null ? json : JSONObject.NULL);
+    }
+    else
+    {
+      result.put(JSONObject.NULL);
+    }
+  }
+
+  protected void json(Bank b, JSONArray result)
+  {
+    if(nonNull(b))
+    {
+      JSONObject json = json(b);
+
+      result.put(json != null ? json : JSONObject.NULL);
+    }
+    else
+    {
+      result.put(JSONObject.NULL);
+    }
+  }
+
+  protected JSONObject json(Bank b)
+  {
+    if(nonNull(b))
+    {
+      return new BankEncoder(b).toJson();
     }
 
-    @Override public Request getAccounts(OutboundContext context, String bankId)
+    return null;
+  }
+
+  protected JSONObject json(InboundContext inboundContext)
+  {
+    if(nonNull(inboundContext))
     {
-        if (context != null && context.user != null) {
-            return request("getBankAccounts")
-                    .arguments("username", context.user.userId, "bankId", bankId);
-        } else {
-            return request("getBankAccounts").arguments("bankId", bankId);
-        }
+      return new InboundContextEncoder(inboundContext).toJson();
     }
 
-    @Override public Request getBank(OutboundContext context, String bankId)
+    return null;
+  }
+
+  protected void json(InboundContext inboundContext, JSONArray result)
+  {
+    if(nonNull(inboundContext))
     {
-        if (context != null && context.user != null) {
-            return request("getBank").arguments("username", context.user.userId, "bankId", bankId);
-        } else {
-            return request("getBank").arguments("bankId", bankId);
-        }
+      JSONObject json = json(inboundContext);
+
+      result.put(json != null ? json : JSONObject.NULL);
+    }
+    else
+    {
+      result.put(JSONObject.NULL);
+    }
+  }
+
+  private void json(Transaction t, JSONArray result)
+  {
+    if(nonNull(t))
+    {
+      JSONObject json = json(t);
+
+      result.put(json != null ? json : JSONObject.NULL);
+    }
+    else
+    {
+      result.put(JSONObject.NULL);
+    }
+  }
+
+  protected JSONObject json(Transaction t)
+  {
+    if(nonNull(t))
+    {
+      return new TransactionEncoder(t).toJson();
     }
 
+    return null;
+  }
 
-    protected RequestBuilder request(String name)
+  protected JSONObject json(User u)
+  {
+    if(nonNull(u))
     {
-        return new RequestBuilder(name);
+      return new UserEncoder(u).toJson();
     }
 
-    @Override public String account(Account a)
-    {
-        JSONObject json = json(a);
+    return null;
+  }
 
-        return json != null ? json.toString() : JSONObject.NULL.toString();
+
+  @Override public String transaction(Transaction t)
+  {
+    JSONObject json = json(t);
+
+    return json != null ? json.toString() : JSONObject.NULL.toString();
+  }
+
+  @Override public JSONObject transactionToJSONObject(Transaction t)
+  {
+    return json(t);
+  }
+
+  @Override public String transactions(List<Transaction> ts)
+  {
+    JSONArray result = new JSONArray();
+
+    if(nonNull(ts))
+    {
+      ts.forEach(transaction -> json(transaction, result));
     }
 
-    @Override public String accounts(List<Account> accounts)
+    return result.toString();
+  }
+
+  @Override public JSONArray transactionsToJSONArray(List<Transaction> ts)
+  {
+    JSONArray result = new JSONArray();
+
+    if(nonNull(ts))
     {
-        JSONArray result = new JSONArray();
-
-        if(nonNull(accounts))
-        {
-            accounts.forEach(account -> json(account, result));
-        }
-
-        return result.toString();
+      ts.forEach(transaction -> json(transaction, result));
     }
 
-    @Override public String bank(Bank b)
-    {
-        JSONObject json = json(b);
+    return result;
+  }
 
-        return json != null ? json.toString() : JSONObject.NULL.toString();
-    }
+  @Override public String user(User u)
+  {
+    JSONObject json = json(u);
 
-    @Override public String inboundContext(InboundContext inboundContext)
-    {
-        JSONObject json = json(inboundContext);
+    return json != null ? json.toString() : JSONObject.NULL.toString();
+  }
 
-        return json != null ? json.toString() : JSONObject.NULL.toString();
-    }
+  @Override public JSONObject userToJSONObject(User u)
+  {
+    return json(u);
+  }
 
-    @Override public String banks(List<Bank> banks)
-    {
-        JSONArray result = new JSONArray();
+  @Override public String error(String message)
+  {
+    return new JSONObject().put("error", message).toString();
+  }
 
-        if(nonNull(banks))
-        {
-            banks.forEach(bank -> json(bank, result));
-        }
-
-        return result.toString();
-    }
-
-    @Override public JSONArray banksToJSONArray(List<Bank> banks)
-    {
-        JSONArray result = new JSONArray();
-
-        if(nonNull(banks))
-        {
-            banks.forEach(bank -> json(bank, result));
-        }
-
-        return result;
-    }
-
-    protected JSONObject json(Account a)
-    {
-        if(nonNull(a))
-        {
-            return new AccountEncoder(a).toJson();
-        }
-
-        return null;
-    }
-
-    protected void json(Account a, JSONArray result)
-    {
-        if(nonNull(a))
-        {
-            JSONObject json = json(a);
-
-            result.put(json != null ? json : JSONObject.NULL);
-        }
-        else
-        {
-            result.put(JSONObject.NULL);
-        }
-    }
-
-    protected void json(Bank b, JSONArray result)
-    {
-        if(nonNull(b))
-        {
-            JSONObject json = json(b);
-
-            result.put(json != null ? json : JSONObject.NULL);
-        }
-        else
-        {
-            result.put(JSONObject.NULL);
-        }
-    }
-
-    protected JSONObject json(Bank b)
-    {
-        if(nonNull(b))
-        {
-            return new BankEncoder(b).toJson();
-        }
-
-        return null;
-    }
-
-    protected JSONObject json(InboundContext inboundContext)
-    {
-        if(nonNull(inboundContext))
-        {
-            return new InboundContextEncoder(inboundContext).toJson();
-        }
-
-        return null;
-    }
-
-    protected void json(InboundContext inboundContext, JSONArray result)
-    {
-        if(nonNull(inboundContext))
-        {
-            JSONObject json = json(inboundContext);
-
-            result.put(json != null ? json : JSONObject.NULL);
-        }
-        else
-        {
-            result.put(JSONObject.NULL);
-        }
-    }
-
-    private void json(Transaction t, JSONArray result)
-    {
-        if(nonNull(t))
-        {
-            JSONObject json = json(t);
-
-            result.put(json != null ? json : JSONObject.NULL);
-        }
-        else
-        {
-            result.put(JSONObject.NULL);
-        }
-    }
-
-    protected JSONObject json(Transaction t)
-    {
-        if(nonNull(t))
-        {
-            return new TransactionEncoder(t).toJson();
-        }
-
-        return null;
-    }
-
-    protected JSONObject json(User u)
-    {
-        if(nonNull(u))
-        {
-            return new UserEncoder(u).toJson();
-        }
-
-        return null;
-    }
-
-
-    @Override public String transaction(Transaction t)
-    {
-        JSONObject json = json(t);
-
-        return json != null ? json.toString() : JSONObject.NULL.toString();
-    }
-
-    @Override public String transactions(List<Transaction> ts)
-    {
-        JSONArray result = new JSONArray();
-
-        if(nonNull(ts))
-        {
-            ts.forEach(transaction -> json(transaction, result));
-        }
-
-        return result.toString();
-    }
-
-    @Override public String user(User u)
-    {
-        JSONObject json = json(u);
-
-        return json != null ? json.toString() : JSONObject.NULL.toString();
-    }
-
-    @Override public String error(String message)
-    {
-        return new JSONObject().put("error", message).toString();
-    }
-
-    @Override public String notFound()
-    {
-        return JSONObject.NULL.toString();
-    }
+  @Override public String notFound()
+  {
+    return JSONObject.NULL.toString();
+  }
 
 
 //  protected void put(JSONArray result, Connector.Bank b)
@@ -321,93 +360,55 @@ import static java.util.Objects.nonNull;
 //    }
 //  }
 
-    @Override public JSONObject userToJSONObject(User u)
+  @Override public String toString()
+  {
+    return getClass().getTypeName() + "-" + version;
+  }
+
+  final Transport.Version version;
+
+  static final Logger log = LoggerFactory.getLogger(EncoderV0.class);
+
+  class RequestBuilder implements Request
+  {
+    public RequestBuilder(String name)
     {
-        return json(u);
-    }
+      this.name = name;
 
-    @Override public JSONArray transactionsToJSONArray(List<Transaction> ts)
-    {
-        JSONArray result = new JSONArray();
-
-        if(nonNull(ts))
-        {
-            ts.forEach(transaction -> json(transaction, result));
-        }
-
-        return result;
-    }
-
-
-    @Override public JSONObject transactionToJSONObject(Transaction t)
-    {
-        return json(t);
-    }
-
-    @Override public JSONObject bankToJSONObject(Bank b)
-    {
-        return json(b);
-    }
-
-    @Override public JSONArray accountsToJSONArray(List<Account> accounts)
-    {
-        JSONArray result = new JSONArray();
-
-        if(nonNull(accounts))
-        {
-            accounts.forEach(account -> json(account, result));
-        }
-
-        return result;
-    }
-
-    @Override public JSONObject accountToJSONObject(Account a)
-    {
-        return json(a);
+      request.put(name, JSONObject.NULL);
     }
 
     @Override public String toString()
     {
-        return getClass().getTypeName() + "-" + version;
+      log.trace("{} {}", version, request);
+
+      return request.toString();
     }
 
-    final Transport.Version version;
-
-    static final Logger log = LoggerFactory.getLogger(EncoderV0.class);
-
-    class RequestBuilder implements Request
+    public Request arguments(OutboundContext outboundContext, String... kv)
     {
-        public RequestBuilder(String name)
-        {
-            this.name = name;
+      for(int i = 0; i < kv.length - 1; i += 2)
+      {
+        arguments.put(kv[i], kv[i + 1]);
+      }
 
-            request.put(name, JSONObject.NULL);
-        }
+      // Add the outbound context
+      arguments.put("outboundContext", new JSONObject()
+              .put("user", outboundContext.user != null ? new JSONObject().put("userId", outboundContext.user.userId) : JSONObject.NULL)
+              .put("view", outboundContext.view != null ? new JSONObject().put("viewId", outboundContext.view.viewId)
+                      .put("isPublic", outboundContext.view.isPublic) : JSONObject.NULL)
+              .put("token", outboundContext.token != null ? new JSONObject().put("tokenId", outboundContext.token.tokenId) :JSONObject.NULL));
 
-        @Override public String toString()
-        {
-            log.trace("{} {}", version, request);
+      if(request.opt(name) == JSONObject.NULL)
+      {
+        request.put(name, arguments);
+      }
 
-            return request.toString();
-        }
-
-        public Request arguments(String... kv)
-        {
-            for(int i = 0; i < kv.length - 1; i += 2)
-            {
-                arguments.put(kv[i], kv[i + 1]);
-            }
-
-            if(request.opt(name) == JSONObject.NULL)
-            {
-                request.put(name, arguments);
-            }
-
-            return this;
-        }
-
-        final String name;
-        final JSONObject arguments = new JSONObject();
-        final JSONObject request = new JSONObject();
+      return this;
     }
+
+    final String name;
+    final JSONObject arguments = new JSONObject();
+    final JSONObject request = new JSONObject();
+  }
 }

@@ -8,14 +8,13 @@
 
 package com.tesobe.obp.transport.spi;
 
-import com.tesobe.obp.transport.Account;
-import com.tesobe.obp.transport.Bank;
-import com.tesobe.obp.transport.Transaction;
-import com.tesobe.obp.transport.User;
+import com.tesobe.obp.transport.*;
 import com.tesobe.obp.util.ImplGen;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,194 +34,330 @@ import static org.junit.Assert.assertThat;
 @SuppressWarnings({"WeakerAccess", "OptionalGetWithoutIsPresent"})
 class MockResponderV0 extends ResponderV0
 {
-    public MockResponderV0(Decoder decoder, Encoder encoder)
-    {
-        super(decoder, encoder);
-    }
+  public MockResponderV0(Decoder decoder, Encoder encoder)
+  {
+    super(decoder, encoder);
+  }
 
-    @Override protected String getPrivateAccount(String packet, Decoder.Request r,
-            Encoder e)
-    {
-        log.trace("{}", packet);
+  @Override protected String getPrivateAccount(String packet, Decoder.Request r,
+    Encoder e)
+  {
+    log.trace("{}", packet);
 
-        assertThat(r.accountId(), isPresent());
-        assertThat(r.userId(), isPresent());
+    assertThat(r.accountId(), isPresent());
+    assertThat(r.userId(), isPresent());
 
-        return e
-                .account(ImplGen.generate(Account.class, 1, "id", r.accountId().get()));
-    }
+    return e
+      .account(ImplGen.generate(Account.class, 1, "id", r.accountId().get()));
+  }
 
-    @Override
-    protected String getPrivateAccounts(String packet, Decoder.Request r,
-                                        Encoder e)
-    {
-        log.trace("{}", packet);
+  @Override
+  protected String getPrivateAccounts(String packet, Decoder.Request r,
+    Encoder e)
+  {
+    log.trace("{}", packet);
 
-        assertThat(r.userId(), isPresent());
-        assertThat(r.bankId(), isPresent());
+    assertThat(r.userId(), isPresent());
+    assertThat(r.bankId(), isPresent());
 
-        List<Account> accounts = new ArrayList<>();
-        String bankId = r.bankId().get();
+    List<Account> accounts = new ArrayList<>();
+    String bankId = r.bankId().get();
 
-        accounts.add(ImplGen.generate(Account.class, 1, "bank", bankId));
-        accounts.add(ImplGen.generate(Account.class, 2, "bank", bankId));
+    accounts.add(ImplGen.generate(Account.class, 1, "bank", bankId));
+    accounts.add(ImplGen.generate(Account.class, 2, "bank", bankId));
 
-        return e.accounts(accounts);
-    }
+    return e.accounts(accounts);
+  }
 
-    @Override
-    protected String getPrivateBank(String packet, Decoder.Request r, Encoder e)
-    {
-        log.trace("{}", packet);
+  @Override
+  protected String getPrivateBank(String packet, Decoder.Request r, Encoder e)
+  {
+    log.trace("{}", packet);
 
-        assertThat(r.userId(), isPresent());
-        assertThat(r.bankId(), isPresent());
+    assertThat(r.userId(), isPresent());
+    assertThat(r.bankId(), isPresent());
 
-        return e.bank(ImplGen.generate(Bank.class, 1, "id", r.bankId().get()));
-    }
+    return e.bank(ImplGen.generate(Bank.class, 1, "id", r.bankId().get()));
+  }
 
-    @Override
-    protected String getPrivateBanks(String packet, Decoder.Request r, Encoder e)
-    {
-        log.trace("{}", packet);
+  @Override
+  protected String getPrivateBanks(String packet, Decoder.Request r, Encoder e)
+  {
+    log.trace("{}", packet);
 
-        assertThat(r.userId(), isPresent());
+    assertThat(r.userId(), isPresent());
 
-        List<Bank> banks = new ArrayList<>();
+    List<Bank> banks = new ArrayList<>();
 
-        banks.add(ImplGen.generate(Bank.class, 1));
-        banks.add(ImplGen.generate(Bank.class, 2));
+    banks.add(ImplGen.generate(Bank.class, 1));
+    banks.add(ImplGen.generate(Bank.class, 2));
 
-        return e.banks(banks);
-    }
+    return e.banks(banks);
+  }
 
-    @Override
-    protected String getPrivateTransaction(String packet, Decoder.Request r,
-                                           Encoder e)
-    {
-        log.trace("{}", packet);
+  @Override
+  protected String getPrivateTransaction(String packet, Decoder.Request r,
+    Encoder e)
+  {
+    log.trace("{}", packet);
 
-        assertThat(r.transactionId(), isPresent());
+    assertThat(r.transactionId(), isPresent());
 
-        return e.transaction(
-                ImplGen.generate(Transaction.class, 1, "id", r.transactionId().get()));
-    }
+    return e.transaction(
+      ImplGen.generate(Transaction.class, 1, "id", r.transactionId().get()));
+  }
 
-    @Override
-    protected String getPrivateTransactions(String packet, Decoder.Request r,
-                                            Encoder e)
-    {
-        log.trace("{}", packet);
+  @Override
+  protected String getPrivateTransactions(String packet, Decoder.Request r,
+    Encoder e)
+  {
+    log.trace("{}", packet);
 
-        assertThat(r.userId(), isPresent());
+    assertThat(r.userId(), isPresent());
 
-        List<Transaction> transactions = new ArrayList<>();
+    List<Transaction> transactions = new ArrayList<>();
 
-        transactions.add(ImplGen.generate(Transaction.class, 1));
-        transactions.add(ImplGen.generate(Transaction.class, 2));
+    transactions.add(ImplGen.generate(Transaction.class, 1));
+    transactions.add(ImplGen.generate(Transaction.class, 2));
 
-        return e.transactions(transactions);
-    }
+    return e.transactions(transactions);
+  }
 
-    @Override
-    protected String getPrivateUser(String packet, Decoder.Request r, Encoder e)
-    {
-        log.trace("{}", packet);
+  @Override
+  protected String getPrivateUser(String packet, Decoder.Request r, Encoder e)
+  {
+    log.trace("{}", packet);
 
-        assertThat(r.userId(), isPresent());
+    assertThat(r.userId(), isPresent());
 
-        return e.user(ImplGen.generate(User.class, 1, "email", r.userId().get()));
-    }
+    Instant instant = Instant.ofEpochMilli(1437404400000L);
+    LocalDate date = instant.atZone(ZoneOffset.UTC).toLocalDate();
+    ZoneId tz = ZoneId.of("Europe/London");
+    LocalTime time = LocalTime.parse("21:00");
+    ZonedDateTime zdt = ZonedDateTime.of(date, time, tz);
 
-    @Override
-    protected String getPublicAccount(String packet, Decoder.Request r, Encoder e)
-    {
-        log.trace("{}", packet);
+    InboundContext inboundContext = new InboundContext(new Source(zdt, "source origin"), "inbound context");
 
-        assertThat(r.accountId(), isPresent());
+    User user = ImplGen.generate(User.class, 1, "email", r.userId().get());
 
-        return e
-                .account(ImplGen.generate(Account.class, 1, "id", r.accountId().get()));
-    }
+    JSONObject response = new JSONObject().put("response", new JSONObject()
+            .put("inboundContext", new JSONObject()
+                    .put("source", new JSONObject()
+                            .put("timestamp", inboundContext.source.timestamp)
+                            .put("originatingSource", inboundContext.source.originatingSource))
+                    .put("message", inboundContext.message))
+            .put("user", e.userToJSONObject(user)));
 
-    @Override protected String getPublicAccounts(String packet, Decoder.Request r,
-                                                 Encoder e)
-    {
-        return r.bankId().map(bankId -> {
+    return response.toString();
+  }
 
-            List<Account> accounts = new ArrayList<>();
+  @Override
+  protected String getPublicAccount(String packet, Decoder.Request r, Encoder e)
+  {
+    log.trace("{}", packet);
 
-            accounts.add(ImplGen.generate(Account.class, 1, "bank", bankId));
-            accounts.add(ImplGen.generate(Account.class, 2, "bank", bankId));
+    assertThat(r.accountId(), isPresent());
 
-            return e.accounts(accounts);
+    Instant instant = Instant.ofEpochMilli(1437404400000L);
+    LocalDate date = instant.atZone(ZoneOffset.UTC).toLocalDate();
+    ZoneId tz = ZoneId.of("Europe/London");
+    LocalTime time = LocalTime.parse("21:00");
+    ZonedDateTime zdt = ZonedDateTime.of(date, time, tz);
 
-        }).orElse(e.accounts(emptyList()));
-    }
+    InboundContext inboundContext = new InboundContext(new Source(zdt, "source origin"), "inbound context");
 
-    @Override
-    protected String getPublicBank(String packet, Decoder.Request r, Encoder e)
-    {
-        log.trace("{}", packet);
+    Account account = ImplGen.generate(Account.class, 1, "id", r.accountId().get());
 
-        assertThat(r.bankId(), isPresent());
+    JSONObject response = new JSONObject().put("response", new JSONObject()
+            .put("inboundContext", new JSONObject()
+                    .put("source", new JSONObject()
+                            .put("timestamp", inboundContext.source.timestamp)
+                            .put("originatingSource", inboundContext.source.originatingSource))
+                    .put("message", inboundContext.message))
+            .put("account", e.accountToJSONObject(account)));
 
-        return e.bank(ImplGen.generate(Bank.class, 1, "id", r.bankId().get()));
-    }
+    return response.toString();
+  }
 
-    @Override protected String getPublicBanks(String packet, Encoder e)
-    {
-        log.trace("{}", packet);
+  @Override protected String getPublicAccounts(String packet, Decoder.Request r,
+    Encoder e)
+  {
+    return r.bankId().map(bankId -> {
 
-        List<Bank> banks = new ArrayList<>();
+      List<Account> accounts = new ArrayList<>();
 
-        banks.add(ImplGen.generate(Bank.class, 1));
-        banks.add(ImplGen.generate(Bank.class, 2));
+      accounts.add(ImplGen.generate(Account.class, 1, "bank", bankId));
+      accounts.add(ImplGen.generate(Account.class, 2, "bank", bankId));
 
-        return e.banks(banks);
-    }
+      Instant instant = Instant.ofEpochMilli(1437404400000L);
+      LocalDate date = instant.atZone(ZoneOffset.UTC).toLocalDate();
+      ZoneId tz = ZoneId.of("Europe/London");
+      LocalTime time = LocalTime.parse("21:00");
+      ZonedDateTime zdt = ZonedDateTime.of(date, time, tz);
 
-    @Override
-    protected String getPublicTransaction(String packet, Decoder.Request r,
-                                          Encoder e)
-    {
-        log.trace("{}", packet);
+      InboundContext inboundContext = new InboundContext(new Source(zdt, "source origin"), "inbound context");
 
-        assertThat(r.transactionId(), isPresent());
+      JSONObject response = new JSONObject().put("response", new JSONObject()
+              .put("inboundContext", new JSONObject()
+                      .put("source", new JSONObject()
+                              .put("timestamp", inboundContext.source.timestamp)
+                              .put("originatingSource", inboundContext.source.originatingSource))
+                      .put("message", inboundContext.message))
+              .put("accounts", e.accountsToJSONArray(accounts)));
 
-        return e.transaction(
-                ImplGen.generate(Transaction.class, 1, "id", r.transactionId().get()));
-    }
+      return response.toString();
 
-    @Override
-    protected String getPublicTransactions(String packet, Decoder.Request r,
-                                           Encoder e)
-    {
-        log.trace("{}", packet);
+    }).orElse(e.accounts(emptyList()));
+  }
 
-        List<Transaction> transactions = new ArrayList<>();
+  @Override
+  protected String getPublicBank(String packet, Decoder.Request r, Encoder e)
+  {
+    log.trace("{}", packet);
 
-        transactions.add(ImplGen.generate(Transaction.class, 1));
-        transactions.add(ImplGen.generate(Transaction.class, 2));
+    assertThat(r.bankId(), isPresent());
 
-        return e.transactions(transactions);
-    }
+    Instant instant = Instant.ofEpochMilli(1437404400000L);
+    LocalDate date = instant.atZone(ZoneOffset.UTC).toLocalDate();
+    ZoneId tz = ZoneId.of("Europe/London");
+    LocalTime time = LocalTime.parse("21:00");
+    ZonedDateTime zdt = ZonedDateTime.of(date, time, tz);
 
-    @Override
-    protected String getPublicUser(String packet, Decoder.Request r, Encoder e)
-    {
-        log.trace("{}", packet);
+    InboundContext inboundContext = new InboundContext(new Source(zdt, "source origin"), "inbound context");
 
-        assertThat(r.userId(), isPresent());
+    Bank bank = ImplGen.generate(Bank.class, 1, "id", r.bankId().get());
 
-        return e.user(ImplGen.generate(User.class, 1, "email", r.userId().get()));
-    }
+    JSONObject response = new JSONObject().put("response", new JSONObject()
+            .put("inboundContext", new JSONObject()
+                    .put("source", new JSONObject()
+                            .put("timestamp", inboundContext.source.timestamp)
+                            .put("originatingSource", inboundContext.source.originatingSource))
+                    .put("message", inboundContext.message))
+            .put("bank", e.bankToJSONObject(bank)));
 
-    @Override
-    protected String savePrivateTransaction(String packet, Decoder.Request r,
-                                            Encoder e)
-    {
-        return e.error("Not implemented");
-    }
-    static final Logger log = LoggerFactory.getLogger(MockResponderV1.class);
+    return response.toString();
+  }
+
+  @Override protected String getPublicBanks(String packet, Encoder e)
+  {
+    log.trace("{}", packet);
+
+    List<Bank> banks = new ArrayList<>();
+
+    banks.add(ImplGen.generate(Bank.class, 1));
+    banks.add(ImplGen.generate(Bank.class, 2));
+
+    Instant instant = Instant.ofEpochMilli(1437404400000L);
+    LocalDate date = instant.atZone(ZoneOffset.UTC).toLocalDate();
+    ZoneId tz = ZoneId.of("Europe/London");
+    LocalTime time = LocalTime.parse("21:00");
+    ZonedDateTime zdt = ZonedDateTime.of(date, time, tz);
+
+    InboundContext inboundContext = new InboundContext(new Source(zdt, "source origin"), "inbound context");
+
+    JSONObject response = new JSONObject().put("response", new JSONObject()
+                                                        .put("inboundContext", new JSONObject()
+                                                                .put("source", new JSONObject()
+                                                                  .put("timestamp", inboundContext.source.timestamp)
+                                                                .put("originatingSource", inboundContext.source.originatingSource))
+                                                        .put("message", inboundContext.message))
+    .put("banks", e.banksToJSONArray(banks)));
+
+    return response.toString();
+  }
+
+  @Override
+  protected String getPublicTransaction(String packet, Decoder.Request r,
+    Encoder e)
+  {
+    log.trace("{}", packet);
+
+    assertThat(r.transactionId(), isPresent());
+
+    Instant instant = Instant.ofEpochMilli(1437404400000L);
+    LocalDate date = instant.atZone(ZoneOffset.UTC).toLocalDate();
+    ZoneId tz = ZoneId.of("Europe/London");
+    LocalTime time = LocalTime.parse("21:00");
+    ZonedDateTime zdt = ZonedDateTime.of(date, time, tz);
+
+    InboundContext inboundContext = new InboundContext(new Source(zdt, "source origin"), "inbound context");
+
+    Transaction transaction = ImplGen.generate(Transaction.class, 1, "id", r.transactionId().get());
+
+    JSONObject response = new JSONObject().put("response", new JSONObject()
+            .put("inboundContext", new JSONObject()
+                    .put("source", new JSONObject()
+                            .put("timestamp", inboundContext.source.timestamp)
+                            .put("originatingSource", inboundContext.source.originatingSource))
+                    .put("message", inboundContext.message))
+            .put("transaction", e.transactionToJSONObject(transaction)));
+
+    return response.toString();
+  }
+
+  @Override
+  protected String getPublicTransactions(String packet, Decoder.Request r,
+    Encoder e)
+  {
+    log.trace("{}", packet);
+
+    List<Transaction> transactions = new ArrayList<>();
+
+    transactions.add(ImplGen.generate(Transaction.class, 1));
+    transactions.add(ImplGen.generate(Transaction.class, 2));
+
+    Instant instant = Instant.ofEpochMilli(1437404400000L);
+    LocalDate date = instant.atZone(ZoneOffset.UTC).toLocalDate();
+    ZoneId tz = ZoneId.of("Europe/London");
+    LocalTime time = LocalTime.parse("21:00");
+    ZonedDateTime zdt = ZonedDateTime.of(date, time, tz);
+
+    InboundContext inboundContext = new InboundContext(new Source(zdt, "source origin"), "inbound context");
+
+    JSONObject response = new JSONObject().put("response", new JSONObject()
+            .put("inboundContext", new JSONObject()
+                    .put("source", new JSONObject()
+                            .put("timestamp", inboundContext.source.timestamp)
+                            .put("originatingSource", inboundContext.source.originatingSource))
+                    .put("message", inboundContext.message))
+            .put("transactions", e.transactionsToJSONArray(transactions)));
+
+    return response.toString();
+  }
+
+  @Override
+  protected String getPublicUser(String packet, Decoder.Request r, Encoder e)
+  {
+    log.trace("{}", packet);
+
+    assertThat(r.userId(), isPresent());
+
+    Instant instant = Instant.ofEpochMilli(1437404400000L);
+    LocalDate date = instant.atZone(ZoneOffset.UTC).toLocalDate();
+    ZoneId tz = ZoneId.of("Europe/London");
+    LocalTime time = LocalTime.parse("21:00");
+    ZonedDateTime zdt = ZonedDateTime.of(date, time, tz);
+
+    InboundContext inboundContext = new InboundContext(new Source(zdt, "source origin"), "inbound context");
+
+    User user = ImplGen.generate(User.class, 1, "email", r.userId().get());
+
+    JSONObject response = new JSONObject().put("response", new JSONObject()
+            .put("inboundContext", new JSONObject()
+                    .put("source", new JSONObject()
+                            .put("timestamp", inboundContext.source.timestamp)
+                            .put("originatingSource", inboundContext.source.originatingSource))
+                    .put("message", inboundContext.message))
+            .put("user", e.userToJSONObject(user)));
+
+    return response.toString();
+  }
+
+  @Override
+  protected String savePrivateTransaction(String packet, Decoder.Request r,
+    Encoder e)
+  {
+    return e.error("Not implemented");
+  }
+  static final Logger log = LoggerFactory.getLogger(MockResponderV0.class);
 }

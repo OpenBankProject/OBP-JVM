@@ -30,7 +30,7 @@ public class DecoderTest
 //    assertTrue(deepEquals(account, decoded));
 //  }
 //
-//  private EncoderV1 encL = new EncoderV1(Transport.Version.v0);
-//  private DecoderV1 deL = new DecoderV1(Transport.Version.v0);
+//  private EncoderV0 encL = new EncoderV0(Transport.Version.v0);
+//  private DecoderV0 deL = new DecoderV0(Transport.Version.v0);
 //  private static Connector.Bank noBank = null;
 }

@@ -8,9 +8,7 @@
 package com.tesobe.obp.transport;
 
 import com.tesobe.obp.transport.json.DecoderV0;
-import com.tesobe.obp.transport.json.DecoderV1;
 import com.tesobe.obp.transport.json.EncoderV0;
-import com.tesobe.obp.transport.json.EncoderV1;
 import com.tesobe.obp.transport.spi.Connector;
 import com.tesobe.obp.transport.spi.Decoder;
 import com.tesobe.obp.transport.spi.Encoder;
@@ -109,7 +107,7 @@ import static com.tesobe.obp.transport.Transport.Encoding.json;
 
   public enum Version
   {
-    v0, v1
+    v0
   }
 
   public enum Encoding
@@ -128,9 +126,7 @@ import static com.tesobe.obp.transport.Transport.Encoding.json;
     EnumMap<Version, Encoder> es = new EnumMap<>(Version.class);
 
     ds.put(Version.v0, new DecoderV0(Version.v0));
-    ds.put(Version.v1, new DecoderV1(Version.v1));
     es.put(Version.v0, new EncoderV0(Version.v0));
-    es.put(Version.v1, new EncoderV1(Version.v1));
 
     decoders.put(json, ds);
     encoders.put(json, es);

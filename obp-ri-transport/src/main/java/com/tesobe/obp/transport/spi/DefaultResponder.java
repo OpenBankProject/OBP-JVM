@@ -9,7 +9,7 @@
 package com.tesobe.obp.transport.spi;
 
 /**
- * Implements {@link ResponderV1}'s abstract methods without functionality
+ * Implements {@link ResponderV0}'s abstract methods without functionality
  * returning {@code "null"} or {@code "[]"}.
  */
 public class DefaultResponder extends ResponderV0
