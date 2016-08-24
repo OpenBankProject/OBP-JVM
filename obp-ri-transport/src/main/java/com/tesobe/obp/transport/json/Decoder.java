@@ -72,6 +72,41 @@ import static java.util.Objects.nonNull;
                : white(arguments.optString("username", null));
       }
 
+      @Override public Optional<String> amount()
+      {
+        return arguments == null
+               ? Optional.empty()
+               : white(arguments.optString("amount", null));
+      }
+
+      @Override public Optional<String> currency()
+      {
+        return arguments == null
+               ? Optional.empty()
+               : white(arguments.optString("currency", null));
+      }
+
+      @Override public Optional<String> otherAccountId()
+      {
+        return arguments == null
+               ? Optional.empty()
+               : white(arguments.optString("otherAccountId", null));
+      }
+
+      @Override public Optional<String> otherAccountCurrency()
+      {
+        return arguments == null
+               ? Optional.empty()
+               : white(arguments.optString("otherAccountCurrency", null));
+      }
+
+      @Override public Optional<String> transactionType()
+      {
+        return arguments == null
+               ? Optional.empty()
+               : white(arguments.optString("transactionType", null));
+      }
+
       /**
        * @return null if absent or without value
        */
@@ -209,6 +244,25 @@ import static java.util.Objects.nonNull;
 
       final Iterator<Object> iterator = array(response).iterator();
     };
+  }
+
+  @Override public Optional<String> transactionId(String response)
+  {
+    log.trace("{} {}", version, String.valueOf(response));
+
+    if(nonNull(response) && !response.equals("null"))
+    {
+      try
+      {
+        return Optional.of(response);
+      }
+      catch(JSONException e)
+      {
+        throw new DecoderException("Cannot decode: " + response);
+      }
+    }
+
+    return Optional.empty();
   }
 
   @Override public Optional<Transaction> transaction(String response)

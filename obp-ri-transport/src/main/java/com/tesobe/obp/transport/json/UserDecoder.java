@@ -11,7 +11,7 @@ package com.tesobe.obp.transport.json;
 import com.tesobe.obp.transport.User;
 import org.json.JSONObject;
 
-class UserDecoder implements User
+@SuppressWarnings("WeakerAccess") class UserDecoder implements User
 {
   public UserDecoder(JSONObject user)
   {
@@ -31,6 +31,11 @@ class UserDecoder implements User
   @Override public String password()
   {
     return json.optString("password", null);
+  }
+
+  @Override public String toString()
+  {
+    return json.toString();
   }
 
   private final JSONObject json;

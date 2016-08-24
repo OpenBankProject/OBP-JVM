@@ -29,6 +29,8 @@ public interface Decoder
 
   Iterable<Bank> banks(String response) throws DecoderException;
 
+  Optional<String> transactionId(String response);
+
   Optional<Transaction> transaction(String response);
 
   Iterable<Transaction> transactions(String response);
@@ -48,5 +50,15 @@ public interface Decoder
     Optional<String> transactionId();
 
     Optional<String> userId();
+
+    Optional<String> amount();
+
+    Optional<String> currency();
+
+    Optional<String> otherAccountId();
+
+    Optional<String> otherAccountCurrency();
+
+    Optional<String> transactionType();
   }
 }

@@ -44,7 +44,11 @@ public interface Encoder
 
   Request getPublicTransactions(String bankId, String accountId);
 
-  Request getPublicUser(String userId);
+  Request getUser(String userId);
+
+  Request saveTransaction(String userId, String accountId, String currency,
+    String amount, String otherAccountId, String otherAccountCurrency,
+    String transactionType);
 
   String account(Account a);
 
@@ -63,6 +67,8 @@ public interface Encoder
   String transactions(List<Transaction> ts);
 
   String user(User u);
+
+  String transactionId(String s);
 
   interface Request
   {

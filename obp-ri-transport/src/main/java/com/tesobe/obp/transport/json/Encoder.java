@@ -56,7 +56,7 @@ import static java.util.Objects.nonNull;
       .arguments("bankId", bankId, "accountId", accountId);
   }
 
-  @Override public Request getPublicUser(String userId)
+  @Override public Request getUser(String userId)
   {
     return request("getUser").arguments("username", userId);
   }
@@ -115,6 +115,18 @@ import static java.util.Objects.nonNull;
   @Override public Request getPublicBank(String bankId)
   {
     return request("getBank").arguments("bankId", bankId);
+  }
+
+
+  @Override public Request saveTransaction(String userId, String accountId,
+    String currency, String amount, String otherAccountId,
+    String otherAccountCurrency, String transactionType)
+  {
+    return request("saveTransaction")
+      .arguments("username", userId, "accountId", accountId, "currency",
+        currency, "amount", amount, "otherAccountId", otherAccountId,
+        "otherAccountCurrency", otherAccountCurrency, "transactionType",
+        transactionType);
   }
 
   protected RequestBuilder request(String name)
@@ -267,6 +279,11 @@ import static java.util.Objects.nonNull;
     JSONObject json = json(u);
 
     return json != null ? json.toString() : JSONObject.NULL.toString();
+  }
+
+  @Override public String transactionId(String s)
+  {
+    return s;
   }
 
   @Override public String error(String message)

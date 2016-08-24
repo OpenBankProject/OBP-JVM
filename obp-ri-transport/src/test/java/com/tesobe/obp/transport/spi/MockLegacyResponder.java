@@ -222,7 +222,17 @@ class MockLegacyResponder extends LegacyResponder
   protected String savePrivateTransaction(String packet, Decoder.Request r,
     Encoder e)
   {
-    return e.error("Not implemented");
+    log.trace("{}", packet);
+
+    assertThat(r.accountId(), isPresent());
+    assertThat(r.amount(), isPresent());
+    assertThat(r.currency(), isPresent());
+    assertThat(r.otherAccountId(), isPresent());
+    assertThat(r.otherAccountCurrency(), isPresent());
+    assertThat(r.transactionType(), isPresent());
+    assertThat(r.userId(), isPresent());
+
+    return e.transactionId("tid-x");
   }
   static final Logger log = LoggerFactory.getLogger(MockLegacyResponder.class);
 }

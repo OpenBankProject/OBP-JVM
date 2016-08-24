@@ -230,6 +230,23 @@ public class LegacyConnectorTest
     assertThat(user, hasValue(returns("email", userId)));
   }
 
+  @Test public void saveTransaction() throws Exception
+  {
+    String userId = "user-x";
+    String accountId = "account-x";
+    String currency = "currency-x";
+    String amount = "amount-x";
+    String otherAccountId = "account-y";
+    String otherAccountCurrency = "currency-y";
+    String transactionType = "type-x";
+
+    Optional<String> tid = connector
+      .saveTransaction(userId, accountId, currency, amount, otherAccountId,
+        otherAccountCurrency, transactionType);
+
+    assertThat(tid, hasValue("tid-x"));
+  }
+
   private Connector connector;
   private ExecutorService service;
 }

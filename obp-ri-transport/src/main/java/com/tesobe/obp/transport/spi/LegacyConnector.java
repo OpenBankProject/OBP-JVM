@@ -175,7 +175,8 @@ import java.util.UUID;
     String accountId) throws InterruptedException, DecoderException
   {
     String id = UUID.randomUUID().toString();
-    String request = encoder.getPublicTransactions(bankId, accountId).toString();
+    String request = encoder.getPublicTransactions(bankId, accountId)
+      .toString();
     String response = sender.send(new Message(id, request));
 
     log.trace("{} {}", request, response);
@@ -187,12 +188,29 @@ import java.util.UUID;
     throws InterruptedException, DecoderException
   {
     String id = UUID.randomUUID().toString();
-    String request = encoder.getPublicUser(userId).toString();
+    String request = encoder.getUser(userId).toString();
     String response = sender.send(new Message(id, request));
 
     log.trace("{} {}", request, response);
 
     return decoder.user(response);
+  }
+
+  @Override
+  public Optional<String> saveTransaction(String userId, String accountId,
+    String currency, String amount, String otherAccountId,
+    String otherAccountCurrency, String transactionType)
+    throws InterruptedException
+  {
+    String id = UUID.randomUUID().toString();
+    String request = encoder
+      .saveTransaction(userId, accountId, currency, amount, otherAccountId,
+        otherAccountCurrency, transactionType).toString();
+    String response = sender.send(new Message(id, request));
+
+    log.trace("{} {}", request, response);
+
+    return decoder.transactionId(response);
   }
 
   protected final Transport.Version version;
