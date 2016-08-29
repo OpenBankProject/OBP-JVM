@@ -15,12 +15,53 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 /**
  * Match against the return value of a method call.
  */
 @SuppressWarnings("WeakerAccess") public final class MethodMatcher
 {
+  public static <T> Matcher<T> isPresent(Object expected)
+  {
+    return returns("isPresent", expected);
+  }
+
+  public static <T> Matcher<T> get(Object expected)
+  {
+    return returns("get", expected);
+  }
+
+  /**
+   * Match the return value of a method call on the asserted object.
+   *
+   * @param method method to call
+   * @param expected the value to check against
+   * @param <T> the method's owner's type
+   *
+   * @return both null, or equals
+   */
+  public static <T> Matcher<T> optionallyReturns(String method, Object expected)
+  {
+    return new TypeSafeMatcher<T>()
+    {
+      @Override public void describeTo(Description description)
+      {
+        description
+          .appendText(expected + " (return value of " + method + "())");
+      }
+
+      @Override protected boolean matchesSafely(T item)
+      {
+        @SuppressWarnings("unchecked") Optional<Object> optional
+          = (Optional<Object>)item;
+
+        return optional != null && optional.isPresent() && match(optional.get(),
+          method, expected);
+      }
+    };
+  }
+
   /**
    * Match the return value of a method call on the asserted object.
    *

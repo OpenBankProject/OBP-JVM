@@ -12,18 +12,37 @@ import org.junit.Test;
 
 import java.util.Optional;
 
-import static com.github.npathai.hamcrestopt.OptionalMatchers.hasValue;
-import static com.tesobe.obp.util.MethodMatcher.returns;
-import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
 @SuppressWarnings("WeakerAccess") public class MethodMatcherTest
 {
-  @Test public void id() throws Exception
+  @Test public void optionallyReturns()
   {
-    class A { public String id() { return "id"; }}
+    assertThat(Optional.of("a"),
+      MethodMatcher.optionallyReturns("toString", "a"));
+  }
 
-    assertThat(new A().id(), equalTo("id"));
-    assertThat(Optional.of(new A()), hasValue(returns("id", "id")));
+  @Test public void returns()
+  {
+    Optional<Integer> answer = Optional.of(42);
+
+    assertThat(answer, MethodMatcher.returns("isPresent", true));
+    assertThat(answer, MethodMatcher.returns("get", 42));
+  }
+
+  @Test public void isPresent()
+  {
+    assertThat(Optional.of(42), MethodMatcher.isPresent(true));
+    assertThat(Optional.empty(), MethodMatcher.isPresent(false));
+  }
+
+  @Test public void get()
+  {
+    assertThat(Optional.of(42), MethodMatcher.get(42));
+  }
+
+  @Test(expected = AssertionError.class) public void getOnEmpty()
+  {
+    assertThat(Optional.empty(), MethodMatcher.get(42));
   }
 }
