@@ -7,8 +7,25 @@
  */
 package com.tesobe.obp.transport.json;
 
+import org.junit.Test;
+
+import java.util.Optional;
+
 public class DecoderTest
 {
+  @Test public void foo()
+  {
+    System.out.println(foo(Optional.of(42), Optional.of("foo")));
+    System.out.println(foo(Optional.empty(), Optional.of("foo")));
+    System.out.println(foo(Optional.of(42), Optional.empty()));
+    System.out.println(foo(Optional.empty(), Optional.empty()));
+  }
+
+  Optional<String> foo(Optional<Integer> a, Optional<String> b)
+  {
+    return a.flatMap(i -> b.map(s -> s + i));
+  }
+
 //  @Test public void banks() throws Exception
 //  {
 //    Connector.Bank bank = new Connector.Bank("id", "1", "2", "3", "4");
@@ -22,7 +39,8 @@ public class DecoderTest
 //
 //  @Test public void accounts() throws Exception
 //  {
-//    Connector.Account account = new Connector.Account("id", "1", "2", "3", "4",
+//    Connector.Account account = new Connector.Account("id", "1", "2", "3",
+// "4",
 //      "5", "6", "7");
 //    Connector.Account decoded = deL.account(encL.account(account))
 //      .orElseThrow(RuntimeException::new);

@@ -351,45 +351,6 @@ import static java.util.Objects.nonNull;
     }
   }
 
-//  @Override public Iterable<Connector.Bank> banks(String response)
-//  {
-//    List<Connector.Bank> result = new ArrayList<>();
-//
-//    log.trace(String.valueOf(response));
-//
-//    if(nonNull(response))
-//    {
-//      JSONArray array = new JSONArray(response);
-//
-//      for(Object bank : array)
-//      {
-//        if(bank instanceof JSONObject)
-//        {
-//          JSONObject b = (JSONObject)bank;
-//
-//          // @formatter:off
-//          result.add(new Connector.Bank(
-//            b.optString("id", null),
-//            b.optString("short_name", null),
-//            b.optString("full_name", null),
-//            b.optString("logo", null),
-//            b.optString("website", null)));
-//          // @formatter:on
-//        }
-//      }
-//    }
-//
-//    return result;
-//  }
-
-//  /**
-//   * @return en empty iterable
-//   */
-//  @Override public Iterable<Connector.Bank> banks()
-//  {
-//    return Collections.emptyList();
-//  }
-
   @Override public String toString()
   {
     return getClass().getTypeName() + "-" + version;

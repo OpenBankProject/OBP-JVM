@@ -29,9 +29,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
 
-import static com.github.npathai.hamcrestopt.OptionalMatchers.hasValue;
 import static com.tesobe.obp.transport.Transport.Encoding.json;
 import static com.tesobe.obp.transport.Transport.Version.legacy;
+import static com.tesobe.obp.util.MethodMatcher.optionallyReturns;
 import static com.tesobe.obp.util.MethodMatcher.returns;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -86,7 +86,7 @@ public class LegacyConnectorTest
     Optional<Account> account = connector
       .getPrivateAccount(bankId, accountId, userId);
 
-    assertThat(account, hasValue(returns("id", "account-x")));
+    assertThat(account, optionallyReturns("id", "account-x"));
   }
 
   @Test public void getPrivateAccounts() throws Exception
@@ -110,7 +110,7 @@ public class LegacyConnectorTest
 
     Optional<Bank> bank = connector.getPrivateBank(bankId, userId);
 
-    assertThat(bank, hasValue(returns("id", "bank-x")));
+    assertThat(bank, optionallyReturns("id", "bank-x"));
   }
 
   @Test public void getPrivateBanks() throws Exception
@@ -135,7 +135,7 @@ public class LegacyConnectorTest
     Optional<Transaction> transaction = connector
       .getPrivateTransaction(bankId, accountId, transactionId, userId);
 
-    assertThat(transaction, hasValue(returns("id", "transaction-x")));
+    assertThat(transaction, optionallyReturns("id", "transaction-x"));
   }
 
   @Test public void getPrivateTransactions() throws Exception
@@ -160,7 +160,7 @@ public class LegacyConnectorTest
 
     Optional<Account> account = connector.getPublicAccount(bankId, accountId);
 
-    assertThat(account, hasValue(returns("id", "account-x")));
+    assertThat(account, optionallyReturns("id", "account-x"));
   }
 
   @Test public void getPublicAccounts() throws Exception
@@ -182,7 +182,7 @@ public class LegacyConnectorTest
 
     Optional<Bank> bank = connector.getPublicBank(bankId);
 
-    assertThat(bank, hasValue(returns("id", "bank-x")));
+    assertThat(bank, optionallyReturns("id", "bank-x"));
   }
 
   @Test public void getPublicBanks() throws Exception
@@ -204,7 +204,7 @@ public class LegacyConnectorTest
     Optional<Transaction> transaction = connector
       .getPublicTransaction(bankId, accountId, transactionId);
 
-    assertThat(transaction, hasValue(returns("id", "transaction-x")));
+    assertThat(transaction, optionallyReturns("id", "transaction-x"));
   }
 
   @Test public void getPublicTransactions() throws Exception
@@ -227,7 +227,7 @@ public class LegacyConnectorTest
 
     Optional<User> user = connector.getUser(userId);
 
-    assertThat(user, hasValue(returns("email", userId)));
+    assertThat(user, optionallyReturns("email", userId));
   }
 
   @Test public void saveTransaction() throws Exception
@@ -244,7 +244,7 @@ public class LegacyConnectorTest
       .saveTransaction(userId, accountId, currency, amount, otherAccountId,
         otherAccountCurrency, transactionType);
 
-    assertThat(tid, hasValue("tid-x"));
+    assertThat(tid, returns("get", "tid-x"));
   }
 
   private Connector connector;
