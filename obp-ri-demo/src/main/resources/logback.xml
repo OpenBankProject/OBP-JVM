@@ -12,8 +12,6 @@
     <encoder>
       <pattern>
         %-5level %d{HH:mm:ss.SSS} [%thread] %logger{30}.%M:%L - %msg%n
-<<<<<<< HEAD
-=======
       </pattern>
     </encoder>
   </appender>
@@ -22,7 +20,6 @@
     <encoder>
       <pattern>
         %-5level %d{HH:mm:ss.SSS} [%thread] %msg%n
->>>>>>> obp-jvm
       </pattern>
     </encoder>
   </appender>

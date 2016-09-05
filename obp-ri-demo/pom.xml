@@ -13,7 +13,6 @@
     <artifactId>obp-ri</artifactId>
     <groupId>com.tesobe.obp</groupId>
     <version>2016.0-SNAPSHOT</version>
-    <relativePath>../obp-ri/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 

@@ -10,6 +10,7 @@ package com.tesobe.obp.kafka;
 import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Connector;
 import com.tesobe.obp.transport.Transport;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,7 @@ import org.slf4j.LoggerFactory;
  *      north               |          south
  * </pre>
  */
-@SuppressWarnings("WeakerAccess") public class KafkaIT
+@SuppressWarnings("WeakerAccess") @Ignore public class KafkaIT
 {
 //  /**
 //   * {@link RemoteSouth} must be started for this to work.
