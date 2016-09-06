@@ -19,7 +19,9 @@ import java.util.List;
  */
 public interface Encoder
 {
-  Request getPrivateAccount(String userId, String bankId, String accountId);
+  Request getAccount(String bankId, String accountId);
+
+  Request getAccount(String userId, String bankId, String accountId);
 
   Request getPrivateAccounts(String userId, String bankId);
 
@@ -30,8 +32,6 @@ public interface Encoder
   Request getPrivateTransaction(String bankId, String accountId, String transactionId, String userId);
 
   Request getPrivateTransactions(String bankId, String accountId, String userId);
-
-  Request getPublicAccount(String bankId, String accountId);
 
   Request getPublicAccounts(String bankId);
 
@@ -59,8 +59,6 @@ public interface Encoder
   String banks(List<Bank> bs);
 
   String error(String message);
-
-  String notFound();
 
   String transaction(Transaction t);
 

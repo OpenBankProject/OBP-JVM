@@ -68,138 +68,21 @@ import static java.util.Objects.nonNull;
     return result;
   }
 
-  protected String getAccount(Decoder.Request r, Encoder e)
-  {
-    assert nonNull(r);
-    assert nonNull(e);
+  protected abstract String getAccount(Decoder.Request r, Encoder e);
 
-    log.trace("{} user id present? {}", r, r.userId().isPresent());
+  protected abstract String getAccounts(Decoder.Request r, Encoder e);
 
-    return r.userId().isPresent()
-      ? getPrivateAccount(r.raw(), r, e)
-      : getPublicAccount(r.raw(), r, e);
-  }
+  protected abstract String getBank(Decoder.Request r, Encoder e);
 
-  protected String getAccounts(Decoder.Request r, Encoder e)
-  {
-    assert nonNull(r);
-    assert nonNull(e);
+  protected abstract String getBanks(Decoder.Request r, Encoder e);
 
-    log.trace("{} user id present? {}", r, r.userId().isPresent());
+  protected abstract String getTransaction(Decoder.Request r, Encoder e);
 
-    return r.userId().isPresent()
-           ? getPrivateAccounts(r.raw(), r, e)
-           : getPublicAccounts(r.raw(), r, e);
-  }
+  protected abstract String getTransactions(Decoder.Request r, Encoder e);
 
-  protected String getBank(Decoder.Request r, Encoder e)
-  {
-    assert nonNull(r);
-    assert nonNull(e);
+  protected abstract String getUser(Decoder.Request r, Encoder e);
 
-    log.trace("{} user id present? {}", r, r.userId().isPresent());
-
-    return r.userId().isPresent()
-           ? getPrivateBank(r.raw(), r, e)
-           : getPublicBank(r.raw(), r, e);
-  }
-
-  protected String getBanks(Decoder.Request r, Encoder e)
-  {
-    assert nonNull(r);
-    assert nonNull(e);
-
-    log.trace("{} user id present? {}", r, r.userId().isPresent());
-
-    return r.userId().isPresent()
-           ? getPrivateBanks(r.raw(), r, e)
-           : getPublicBanks(r.raw(), e);
-  }
-
-  protected String getTransaction(Decoder.Request r, Encoder e)
-  {
-    assert nonNull(r);
-    assert nonNull(e);
-
-    log.trace("{} user id present? {}", r, r.userId().isPresent());
-
-    return r.userId().isPresent()
-           ? getPrivateTransaction(r.raw(), r, e)
-           : getPublicTransaction(r.raw(), r, e);
-  }
-
-  protected String getTransactions(Decoder.Request r, Encoder e)
-  {
-    assert nonNull(r);
-    assert nonNull(e);
-
-    log.trace("{} user id present? {}", r, r.userId().isPresent());
-
-    return r.userId().isPresent()
-           ? getPrivateTransactions(r.raw(), r, e)
-           : getPublicTransactions(r.raw(), r, e);
-  }
-
-  protected String getUser(Decoder.Request r, Encoder e)
-  {
-    assert nonNull(r);
-    assert nonNull(e);
-
-    log.trace("{} user id present? {}", r, r.userId().isPresent());
-
-    return r.userId().isPresent()
-           ? getPrivateUser(r.raw(), r, e)
-           : getPublicUser(r.raw(), r, e);
-  }
-
-  protected String saveTransaction(Decoder.Request r, Encoder e)
-  {
-    return savePrivateTransaction(r.raw(), r, e);
-  }
-
-  protected abstract String getPrivateAccount(String payload, Decoder.Request r,
-    Encoder e);
-
-  protected abstract String getPrivateAccounts(String payload,
-    Decoder.Request r, Encoder e);
-
-  protected abstract String getPrivateBank(String payload, Decoder.Request r,
-    Encoder e);
-
-  protected abstract String getPrivateBanks(String payload, Decoder.Request r,
-    Encoder e);
-
-  protected abstract String getPrivateTransaction(String payload,
-    Decoder.Request r, Encoder e);
-
-  protected abstract String getPrivateTransactions(String payload,
-    Decoder.Request r, Encoder e);
-
-  protected abstract String getPrivateUser(String payload, Decoder.Request r,
-    Encoder e);
-
-  protected abstract String getPublicAccount(String payload, Decoder.Request r,
-    Encoder e);
-
-  protected abstract String getPublicAccounts(String payload, Decoder.Request r,
-    Encoder e);
-
-  protected abstract String getPublicBank(String payload, Decoder.Request r,
-    Encoder e);
-
-  protected abstract String getPublicBanks(String payload, Encoder e);
-
-  protected abstract String getPublicTransaction(String payload,
-    Decoder.Request r, Encoder e);
-
-  protected abstract String getPublicTransactions(String payload,
-    Decoder.Request r, Encoder e);
-
-  protected abstract String getPublicUser(String payload, Decoder.Request r,
-    Encoder e);
-
-  protected abstract String savePrivateTransaction(String payload,
-    Decoder.Request r, Encoder e);
+  protected abstract String saveTransaction(Decoder.Request r, Encoder e);
 
   final Decoder decoder;
   final Encoder encoder;

@@ -38,21 +38,34 @@ import static java.util.Objects.isNull;
     super(d, e);
   }
 
-  @Override protected String getPrivateAccount(String packet, Decoder.Request r,
-    Encoder e)
+  /**
+   * Only returns an account if both userId and accountId are present.
+   *
+   * @param r request
+   * @param e response encoder
+   *
+   * @return encoded response
+   */
+  @Override protected String getAccount(Decoder.Request r, Encoder e)
   {
-    log.trace("{}", packet);
+    log.trace("{}", r.raw());
 
     return r.userId().flatMap(u -> r.accountId())
       .map(accountId -> e.account(generate(Account.class, 1, "id", accountId)))
-      .orElse(e.notFound());
+      .orElse(e.account(null));
   }
 
-  @Override
-  protected String getPrivateAccounts(String packet, Decoder.Request r,
-    Encoder e)
+  /**
+   * Only returns accounts if both userId and bankId are present.
+   *
+   * @param r request
+   * @param e response encoder
+   *
+   * @return encoded response
+   */
+  @Override protected String getAccounts(Decoder.Request r, Encoder e)
   {
-    log.trace("{}", packet);
+    log.trace("{}", r.raw());
 
     return r.userId().flatMap(u -> r.bankId()).map(bankId ->
     {
@@ -66,49 +79,71 @@ import static java.util.Objects.isNull;
     }).orElse(e.accounts(emptyList()));
   }
 
-  @Override
-  protected String getPrivateBank(String packet, Decoder.Request r, Encoder e)
+  /**
+   * Only returns a bank if bankId is present.
+   *
+   * @param r request
+   * @param e response encoder
+   *
+   * @return encoded response
+   */
+  @Override protected String getBank(Decoder.Request r, Encoder e)
   {
-    log.trace("{}", packet);
+    log.trace("{}", r.raw());
 
-    return r.userId().flatMap(u -> r.bankId())
+    return r.bankId()
       .map(bankId -> e.bank(generate(Bank.class, 1, "id", bankId)))
-      .orElse(e.notFound());
+      .orElse(e.bank(null));
   }
 
-  @Override
-  protected String getPrivateBanks(String packet, Decoder.Request r, Encoder e)
+  /**
+   * Always returns banks.
+   *
+   * @param r request
+   * @param e response encoder
+   *
+   * @return encoded response
+   */
+  @Override protected String getBanks(Decoder.Request r, Encoder e)
   {
-    log.trace("{}", packet);
+    log.trace("{}", r.raw());
 
-    return r.userId().map(userId ->
-    {
-      List<Bank> banks = new ArrayList<>();
+    List<Bank> banks = new ArrayList<>();
 
-      banks.add(generate(Bank.class, 1));
-      banks.add(generate(Bank.class, 2));
+    banks.add(generate(Bank.class, 1));
+    banks.add(generate(Bank.class, 2));
 
-      return e.banks(banks);
-
-    }).orElse(e.banks(emptyList()));
+    return e.banks(banks);
   }
 
-  @Override
-  protected String getPrivateTransaction(String packet, Decoder.Request r,
-    Encoder e)
+  /**
+   * Only returns a transaction if both userId and transactionId are present.
+   *
+   * @param r request
+   * @param e response encoder
+   *
+   * @return encoded response
+   */
+  @Override protected String getTransaction(Decoder.Request r, Encoder e)
   {
-    log.trace("{}", packet);
+    log.trace("{}", r.raw());
 
     return r.userId().flatMap(uid -> r.transactionId())
       .map(tid -> e.transaction(generate(Transaction.class, 1, "id", tid)))
-      .orElse(e.notFound());
+      .orElse(e.transaction(null));
   }
 
-  @Override
-  protected String getPrivateTransactions(String packet, Decoder.Request r,
-    Encoder e)
+  /**
+   * Only returns transactions if userId is present.
+   *
+   * @param r request
+   * @param e response encoder
+   *
+   * @return encoded response
+   */
+  @Override protected String getTransactions(Decoder.Request r, Encoder e)
   {
-    log.trace("{}", packet);
+    log.trace("{}", r.raw());
 
     return r.userId().map(userId ->
     {
@@ -122,99 +157,36 @@ import static java.util.Objects.isNull;
     }).orElse(e.transactions(emptyList()));
   }
 
-  @Override
-  protected String getPrivateUser(String packet, Decoder.Request r, Encoder e)
+  /**
+   * Only returns an user if userId is present.
+   *
+   * @param r request
+   * @param e response encoder
+   *
+   * @return encoded response
+   */
+  @Override protected String getUser(Decoder.Request r, Encoder e)
   {
-    log.trace("{}", packet);
+    log.trace("{}", r.raw());
 
     return r.userId()
       .map(userId -> e.user(generate(User.class, 1, "email", userId)))
-      .orElse(e.notFound());
+      .orElse(e.user(null));
   }
 
-  @Override
-  protected String getPublicAccount(String packet, Decoder.Request r, Encoder e)
+  /**
+   * Does nothing, return the same tid always.
+   *
+   * @param r request
+   * @param e response encoder
+   *
+   * @return encoded response
+   */
+  @Override protected String saveTransaction(Decoder.Request r, Encoder e)
   {
-    log.trace("{}", packet);
+    log.trace("{}", r.raw());
 
-    return r.accountId()
-      .map(accountId -> e.account(generate(Account.class, 1, "id", accountId)))
-      .orElse(e.notFound());
-  }
-
-  @Override protected String getPublicAccounts(String packet, Decoder.Request r,
-    Encoder e)
-  {
-    List<Account> accounts = new ArrayList<>();
-
-    accounts.add(generate(Account.class, 1));
-    accounts.add(generate(Account.class, 2));
-
-    return e.accounts(accounts);
-  }
-
-  @Override
-  protected String getPublicBank(String packet, Decoder.Request r, Encoder e)
-  {
-    log.trace("{}", packet);
-
-    return r.bankId()
-      .map(bankId -> e.bank(generate(Bank.class, 1, "id", bankId)))
-      .orElse(e.notFound());
-  }
-
-  @Override protected String getPublicBanks(String packet, Encoder e)
-  {
-    log.trace("{}", packet);
-
-    List<Bank> banks = new ArrayList<>();
-
-    banks.add(generate(Bank.class, 1));
-    banks.add(generate(Bank.class, 2));
-
-    return e.banks(banks);
-  }
-
-  @Override
-  protected String getPublicTransaction(String packet, Decoder.Request r,
-    Encoder e)
-  {
-    log.trace("{}", packet);
-
-    return r.transactionId()
-      .map(tid -> e.transaction(generate(Transaction.class, 1, "id", tid)))
-      .orElse(e.notFound());
-  }
-
-  @Override
-  protected String getPublicTransactions(String packet, Decoder.Request r,
-    Encoder e)
-  {
-    log.trace("{}", packet);
-
-    List<Transaction> transactions = new ArrayList<>();
-
-    transactions.add(generate(Transaction.class, 1));
-    transactions.add(generate(Transaction.class, 2));
-
-    return e.transactions(transactions);
-  }
-
-  @Override
-  protected String getPublicUser(String packet, Decoder.Request r, Encoder e)
-  {
-    log.trace("{}", packet);
-
-    return r.userId()
-      .map(userId -> e.user(generate(User.class, 1, "email", userId)))
-      .orElse(e.notFound());
-  }
-
-  @Override
-  protected String savePrivateTransaction(String packet, Decoder.Request r,
-    Encoder e)
-  {
-    return e.error("Not implemented");
+    return e.transactionId("tid-x");
   }
 
   final static Logger log = LoggerFactory.getLogger(DemoData.class);

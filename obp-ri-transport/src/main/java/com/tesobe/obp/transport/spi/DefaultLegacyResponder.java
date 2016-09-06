@@ -8,112 +8,97 @@
 
 package com.tesobe.obp.transport.spi;
 
+import static java.util.Objects.nonNull;
+
 /**
  * Implements {@link LegacyResponder}'s abstract methods without functionality
  * returning {@code "null"} or {@code "[]"}.
  */
-public class DefaultLegacyResponder extends LegacyResponder
+@SuppressWarnings("WeakerAccess") public class DefaultLegacyResponder
+  extends LegacyResponder
 {
   public DefaultLegacyResponder(Decoder d, Encoder e)
   {
     super(d, e);
   }
 
-  @Override
-  protected String getPrivateAccount(String payload, Decoder.Request r,
-    Encoder e)
+  @Override protected String getAccount(Decoder.Request r, Encoder e)
   {
-    return "null";
+    assert nonNull(r);
+    assert nonNull(e);
 
+    log.trace("{} user id present? {}", r, r.userId().isPresent());
+
+    return "null";
   }
 
-  @Override
-  protected String getPrivateAccounts(String payload, Decoder.Request r,
-    Encoder e)
+  @Override protected String getAccounts(Decoder.Request r, Encoder e)
   {
+    assert nonNull(r);
+    assert nonNull(e);
+
+    log.trace("{} user id present? {}", r, r.userId().isPresent());
+
     return "[]";
   }
 
-  @Override
-  protected String getPrivateBank(String payload, Decoder.Request r, Encoder e)
+  @Override protected String getBank(Decoder.Request r, Encoder e)
   {
+    assert nonNull(r);
+    assert nonNull(e);
+
+    log.trace("{} user id present? {}", r, r.userId().isPresent());
+
     return "null";
   }
 
-  @Override
-  protected String getPrivateBanks(String payload, Decoder.Request r, Encoder e)
+  @Override protected String getBanks(Decoder.Request r, Encoder e)
   {
+    assert nonNull(r);
+    assert nonNull(e);
+
+    log.trace("{} user id present? {}", r, r.userId().isPresent());
+
     return "[]";
   }
 
-  @Override
-  protected String getPrivateTransaction(String payload, Decoder.Request r,
-    Encoder e)
+  @Override protected String getTransaction(Decoder.Request r, Encoder e)
   {
+    assert nonNull(r);
+    assert nonNull(e);
+
+    log.trace("{} user id present? {}", r, r.userId().isPresent());
+
     return "null";
   }
 
-  @Override
-  protected String getPrivateTransactions(String payload, Decoder.Request r,
-    Encoder e)
+  @Override protected String getTransactions(Decoder.Request r, Encoder e)
   {
+    assert nonNull(r);
+    assert nonNull(e);
+
+    log.trace("{} user id present? {}", r, r.userId().isPresent());
+
     return "[]";
   }
 
-  @Override
-  protected String getPrivateUser(String payload, Decoder.Request r, Encoder e)
+  @Override protected String getUser(Decoder.Request r, Encoder e)
   {
+    assert nonNull(r);
+    assert nonNull(e);
+
+    log.trace("{} user id present? {}", r, r.userId().isPresent());
+
     return "null";
   }
 
-  @Override protected String getPublicAccount(String payload, Decoder.Request r,
-    Encoder e)
+  @Override protected String saveTransaction(Decoder.Request r, Encoder e)
   {
-    return "null";
-  }
+    assert nonNull(r);
+    assert nonNull(e);
 
-  @Override
-  protected String getPublicAccounts(String payload, Decoder.Request r,
-    Encoder e)
-  {
-    return "[]";
-  }
+    log.trace("{} user id present? {}", r, r.userId().isPresent());
 
-  @Override
-  protected String getPublicBank(String payload, Decoder.Request r, Encoder e)
-  {
-    return "null";
-  }
-
-  @Override protected String getPublicBanks(String payload, Encoder e)
-  {
-    return "[]";
-  }
-
-  @Override
-  protected String getPublicTransaction(String payload, Decoder.Request r,
-    Encoder e)
-  {
-    return "null";
-  }
-
-  @Override
-  protected String getPublicTransactions(String payload, Decoder.Request r,
-    Encoder e)
-  {
-    return "[]";
-  }
-
-  @Override
-  protected String getPublicUser(String payload, Decoder.Request r, Encoder e)
-  {
-    return "null";
-  }
-
-  @Override
-  protected String savePrivateTransaction(String payload, Decoder.Request r,
-    Encoder e)
-  {
     return "null";
   }
 }

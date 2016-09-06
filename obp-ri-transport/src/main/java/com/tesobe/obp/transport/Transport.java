@@ -90,11 +90,11 @@ import static com.tesobe.obp.transport.Transport.Version.legacy;
   public interface Factory
   {
     /**
-     * @param s not null
+     * @param s sender, must not be null
      *
      * @return Connector
      *
-     * @throw RuntimeException is sender is null
+     * @throws RuntimeException sender is null
      * @since 2016.0
      */
     Connector connector(Sender s);

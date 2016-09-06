@@ -22,9 +22,9 @@ import java.util.Optional;
  */
 @SuppressWarnings("WeakerAccess") public final class MethodMatcher
 {
-  public static <T> Matcher<T> isPresent(Object expected)
+  public static <T> Matcher<T> isPresent()
   {
-    return returns("isPresent", expected);
+    return returns("isPresent", true);
   }
 
   public static <T> Matcher<T> get(Object expected)

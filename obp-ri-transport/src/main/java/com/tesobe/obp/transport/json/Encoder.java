@@ -36,6 +36,19 @@ import static java.util.Objects.nonNull;
     version = v;
   }
 
+  @Override public Request getAccount(String bankId, String accountId)
+  {
+    return request("getBankAccount")
+      .arguments("bankId", bankId, "accountId", accountId);
+  }
+
+  @Override
+  public Request getAccount(String userId, String bankId, String accountId)
+  {
+    return request("getBankAccount")
+      .arguments("username", userId, "bankId", bankId, "accountId", accountId);
+  }
+
   @Override public Request getPublicBanks()
   {
     return request("getBanks");
@@ -83,22 +96,9 @@ import static java.util.Objects.nonNull;
       .arguments("bankId", bankId, "accountId", accountId, "userId", userId);
   }
 
-  @Override public Request getPublicAccount(String bankId, String accountId)
-  {
-    return request("getBankAccount")
-      .arguments("bankId", bankId, "accountId", accountId);
-  }
-
   @Override public Request getPublicAccounts(String bankId)
   {
     return request("getBankAccounts").arguments("bankId", bankId);
-  }
-
-  @Override public Request getPrivateAccount(String userId, String bankId,
-    String accountId)
-  {
-    return request("getBankAccount")
-      .arguments("username", userId, "bankId", bankId, "accountId", accountId);
   }
 
   @Override public Request getPrivateAccounts(String userId, String bankId)
@@ -138,7 +138,7 @@ import static java.util.Objects.nonNull;
   {
     JSONObject json = json(a);
 
-    return json != null ? json.toString() : JSONObject.NULL.toString();
+    return json != null ? json.toString() : notFound();
   }
 
   @Override public String accounts(List<Account> accounts)
@@ -157,7 +157,7 @@ import static java.util.Objects.nonNull;
   {
     JSONObject json = json(b);
 
-    return json != null ? json.toString() : JSONObject.NULL.toString();
+    return json != null ? json.toString() : notFound();
   }
 
   @Override public String banks(List<Bank> banks)
@@ -291,21 +291,10 @@ import static java.util.Objects.nonNull;
     return new JSONObject().put("error", message).toString();
   }
 
-  @Override public String notFound()
+  public String notFound()
   {
     return JSONObject.NULL.toString();
   }
-
-
-//  protected void put(JSONArray result, Connector.Bank b)
-//  {
-//    assert nonNull(result);
-//
-//    if(nonNull(b))
-//    {
-//      result.put(json(b));
-//    }
-//  }
 
   @Override public String toString()
   {

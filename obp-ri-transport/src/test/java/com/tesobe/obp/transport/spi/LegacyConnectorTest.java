@@ -33,8 +33,10 @@ import static com.tesobe.obp.transport.Transport.Encoding.json;
 import static com.tesobe.obp.transport.Transport.Version.legacy;
 import static com.tesobe.obp.util.MethodMatcher.optionallyReturns;
 import static com.tesobe.obp.util.MethodMatcher.returns;
+import static org.hamcrest.core.AnyOf.anyOf;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
 public class LegacyConnectorTest
@@ -77,52 +79,71 @@ public class LegacyConnectorTest
     service.shutdown();
   }
 
-  @Test public void getPrivateAccount() throws Exception
+  @Test public void getAccount() throws Exception
   {
     String accountId = "account-x";
     String bankId = "id-x";
     String userId = "user-x";
 
-    Optional<Account> account = connector
-      .getPrivateAccount(bankId, accountId, userId);
-
-    assertThat(account, optionallyReturns("id", "account-x"));
+    assertThat(connector.getAccount(bankId, accountId),
+      optionallyReturns("id", "account-x"));
+    assertThat(connector.getAccount(bankId, accountId, userId),
+      optionallyReturns("id", "account-x"));
   }
 
-  @Test public void getPrivateAccounts() throws Exception
+  @Test public void getAccounts() throws Exception
+  {
+    String bankId = "bank-x";
+    String userId = "user-x";
+    Iterable<Account> anonymous = connector.getAccounts(bankId);
+    Iterable<Account> owned = connector.getAccounts(bankId, userId);
+
+    assertThat(anonymous, notNullValue());
+    assertThat(owned, notNullValue());
+
+    anonymous.forEach(account ->
+    {
+      assertThat(account.bank(), is(bankId));
+      assertThat(account.id(), anyOf(is("id-1"), is("id-2")));
+    });
+
+    owned.forEach(account ->
+    {
+      assertThat(account.bank(), is(bankId));
+      assertThat(account.id(), anyOf(is("id-1"), is("id-2")));
+    });
+  }
+
+  @Test public void getBank() throws Exception
   {
     String bankId = "bank-x";
     String userId = "user-x";
 
-    Iterable<Account> accounts = connector.getPrivateAccounts(bankId, userId);
-    List<String> ids = new ArrayList<>();
-
-    accounts.forEach(account -> assertThat(account.bank(), is(bankId)));
-    accounts.forEach(account -> ids.add(account.id()));
-
-    assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
+    assertThat(connector.getBank(bankId), optionallyReturns("id", "bank-x"));
+    assertThat(connector.getBank(bankId, userId),
+      optionallyReturns("id", "bank-x"));
   }
 
-  @Test public void getPrivateBank() throws Exception
-  {
-    String bankId = "bank-x";
-    String userId = "user-x";
-
-    Optional<Bank> bank = connector.getPrivateBank(bankId, userId);
-
-    assertThat(bank, optionallyReturns("id", "bank-x"));
-  }
-
-  @Test public void getPrivateBanks() throws Exception
+  @Test public void getBanks() throws Exception
   {
     String userId = "user-x";
 
-    Iterable<Bank> banks = connector.getPrivateBanks(userId);
-    List<String> ids = new ArrayList<>();
+    Iterable<Bank> anonymous = connector.getBanks();
+    Iterable<Bank> owned = connector.getBanks(userId);
 
-    banks.forEach(bank -> ids.add(bank.id()));
+    assertThat(anonymous, notNullValue());
+    assertThat(owned, notNullValue());
 
-    assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
+    anonymous.forEach(bank ->
+    {
+      assertThat(bank.id(), anyOf(is("id-1"), is("id-2")));
+    });
+
+    owned.forEach(bank ->
+    {
+      assertThat(bank.id(), anyOf(is("id-1"), is("id-2")));
+    });
+
   }
 
   @Test public void getPrivateTransaction() throws Exception
@@ -133,7 +154,7 @@ public class LegacyConnectorTest
     String userId = "user-x";
 
     Optional<Transaction> transaction = connector
-      .getPrivateTransaction(bankId, accountId, transactionId, userId);
+      .getTransaction(bankId, accountId, transactionId, userId);
 
     assertThat(transaction, optionallyReturns("id", "transaction-x"));
   }
@@ -145,7 +166,7 @@ public class LegacyConnectorTest
     String userId = "user-x";
 
     Iterable<Transaction> transactions = connector
-      .getPrivateTransactions(bankId, accountId, userId);
+      .getTransactions(bankId, accountId, userId);
     List<String> ids = new ArrayList<>();
 
     transactions.forEach(bank -> ids.add(bank.id()));
@@ -153,44 +174,15 @@ public class LegacyConnectorTest
     assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
   }
 
-  @Test public void getPublicAccount() throws Exception
-  {
-    String bankId = "bank-x";
-    String accountId = "account-x";
-
-    Optional<Account> account = connector.getPublicAccount(bankId, accountId);
-
-    assertThat(account, optionallyReturns("id", "account-x"));
-  }
-
   @Test public void getPublicAccounts() throws Exception
   {
     String bankId = "bank-x";
 
-    Iterable<Account> accounts = connector.getPublicAccounts(bankId);
+    Iterable<Account> accounts = connector.getAccounts(bankId);
     List<String> ids = new ArrayList<>();
 
     accounts.forEach(account -> assertThat(account.bank(), is(bankId)));
     accounts.forEach(account -> ids.add(account.id()));
-
-    assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
-  }
-
-  @Test public void getPublicBank() throws Exception
-  {
-    String bankId = "bank-x";
-
-    Optional<Bank> bank = connector.getPublicBank(bankId);
-
-    assertThat(bank, optionallyReturns("id", "bank-x"));
-  }
-
-  @Test public void getPublicBanks() throws Exception
-  {
-    Iterable<Bank> banks = connector.getPublicBanks();
-    List<String> ids = new ArrayList<>();
-
-    banks.forEach(bank -> ids.add(bank.id()));
 
     assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
   }
@@ -202,7 +194,7 @@ public class LegacyConnectorTest
     String transactionId = "transaction-x";
 
     Optional<Transaction> transaction = connector
-      .getPublicTransaction(bankId, accountId, transactionId);
+      .getTransaction(bankId, accountId, transactionId);
 
     assertThat(transaction, optionallyReturns("id", "transaction-x"));
   }
@@ -213,7 +205,7 @@ public class LegacyConnectorTest
     String accountId = "account-x";
 
     Iterable<Transaction> transactions = connector
-      .getPublicTransactions(bankId, accountId);
+      .getTransactions(bankId, accountId);
     List<String> ids = new ArrayList<>();
 
     transactions.forEach(transaction -> ids.add(transaction.id()));

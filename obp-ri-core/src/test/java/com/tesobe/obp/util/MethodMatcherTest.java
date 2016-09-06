@@ -8,10 +8,13 @@
 
 package com.tesobe.obp.util;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import org.junit.Test;
 
 import java.util.Optional;
 
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
 @SuppressWarnings("WeakerAccess") public class MethodMatcherTest
@@ -26,14 +29,14 @@ import static org.junit.Assert.assertThat;
   {
     Optional<Integer> answer = Optional.of(42);
 
-    assertThat(answer, MethodMatcher.returns("isPresent", true));
-    assertThat(answer, MethodMatcher.returns("get", 42));
+    assertThat(answer, MethodMatcher.isPresent());
+    assertThat(answer, MethodMatcher.get(42));
   }
 
   @Test public void isPresent()
   {
-    assertThat(Optional.of(42), MethodMatcher.isPresent(true));
-    assertThat(Optional.empty(), MethodMatcher.isPresent(false));
+    assertThat(Optional.of(42), MethodMatcher.isPresent());
+    assertThat(Optional.empty(), not(MethodMatcher.isPresent()));
   }
 
   @Test public void get()
@@ -43,6 +46,11 @@ import static org.junit.Assert.assertThat;
 
   @Test(expected = AssertionError.class) public void getOnEmpty()
   {
+    if(MethodMatcher.log instanceof Logger) // avoid stack trace in console
+    {
+      Logger.class.cast(MethodMatcher.log).setLevel(Level.OFF);
+    }
+
     assertThat(Optional.empty(), MethodMatcher.get(42));
   }
 }

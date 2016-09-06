@@ -24,14 +24,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.github.npathai.hamcrestopt.OptionalMatchers.hasValue;
 import static com.tesobe.obp.transport.Transport.Encoding.json;
 import static com.tesobe.obp.transport.Transport.Version.legacy;
-import static com.tesobe.obp.util.MethodMatcher.returns;
+import static com.tesobe.obp.util.MethodMatcher.get;
+import static com.tesobe.obp.util.MethodMatcher.optionallyReturns;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
+/**
+ * Test compatibility with Scala.
+ */
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 public class LegacyResponderTest
 {
@@ -44,7 +47,7 @@ public class LegacyResponderTest
     responder = new MockLegacyResponder(decoder, factory.encoder());
   }
 
-  @Test public void getPrivateAccount() throws Exception
+  @Test public void getBankAccount() throws Exception
   {
     String id = UUID.randomUUID().toString();
     String accountId = "account-x";
@@ -56,10 +59,10 @@ public class LegacyResponderTest
     String response = responder.respond(new Message(id, request));
     Optional<Account> account = decoder.account(response);
 
-    assertThat(account, hasValue(returns("id", "account-x")));
+    assertThat(account, optionallyReturns("id", "account-x"));
   }
 
-  @Test public void getPrivateAccounts() throws Exception
+  @Test public void getBankAccounts() throws Exception
   {
     String id = UUID.randomUUID().toString();
     String bankId = "id-x";
@@ -77,7 +80,7 @@ public class LegacyResponderTest
     assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
   }
 
-  @Test public void getPrivateBank() throws Exception
+  @Test public void getBank() throws Exception
   {
     String id = UUID.randomUUID().toString();
     String bankId = "id-1";
@@ -88,10 +91,10 @@ public class LegacyResponderTest
     String response = responder.respond(new Message(id, request));
     Optional<Bank> bank = decoder.bank(response);
 
-    assertThat(bank, hasValue(returns("id", "id-1")));
+    assertThat(bank, optionallyReturns("id", "id-1"));
   }
 
-  @Test public void getPrivateBanks() throws Exception
+  @Test public void getBanks() throws Exception
   {
     String id = UUID.randomUUID().toString();
     String userId = "user-1";
@@ -106,7 +109,7 @@ public class LegacyResponderTest
     assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
   }
 
-  @Test public void getPrivateTransaction() throws Exception
+  @Test public void getTransaction() throws Exception
   {
     String id = UUID.randomUUID().toString();
     String accountId = "account-x";
@@ -120,10 +123,10 @@ public class LegacyResponderTest
     String response = responder.respond(new Message(id, request));
     Optional<Transaction> transaction = decoder.transaction(response);
 
-    assertThat(transaction, hasValue(returns("id", "transaction-x")));
+    assertThat(transaction, optionallyReturns("id", "transaction-x"));
   }
 
-  @Test public void getPrivateTransactions() throws Exception
+  @Test public void getTransactions() throws Exception
   {
     String id = UUID.randomUUID().toString();
     String accountId = "account-x";
@@ -147,7 +150,7 @@ public class LegacyResponderTest
    *
    * @throws Exception aua
    */
-  @Test public void getPrivateUser() throws Exception
+  @Test public void getUser() throws Exception
   {
     String id = UUID.randomUUID().toString();
     String userId = "user-x@example.com";
@@ -156,116 +159,10 @@ public class LegacyResponderTest
     String response = responder.respond(new Message(id, request));
     Optional<User> user = decoder.user(response);
 
-    assertThat(user, hasValue(returns("email", userId)));
+    assertThat(user, optionallyReturns("email", userId));
   }
 
-  @Test public void getPublicAccount() throws Exception
-  {
-    String id = UUID.randomUUID().toString();
-    String accountId = "account-x";
-    String bankId = "id-x";
-    String request = new JSONObject().put("getBankAccount",
-      new JSONObject().put("bankId", bankId).put("accountId", accountId))
-      .toString();
-    String response = responder.respond(new Message(id, request));
-    Optional<Account> account = decoder.account(response);
-
-    assertThat(account, hasValue(returns("id", "account-x")));
-  }
-
-  @Test public void getPublicAccounts() throws Exception
-  {
-    String id = UUID.randomUUID().toString();
-    String bankId = "id-x";
-    String request = new JSONObject()
-      .put("getBankAccounts", new JSONObject().put("bankId", bankId))
-      .toString();
-    String response = responder.respond(new Message(id, request));
-    Iterable<Account> accounts = decoder.accounts(response);
-    List<String> ids = new ArrayList<>();
-
-    accounts.forEach(account -> assertThat(account.bank(), is(bankId)));
-    accounts.forEach(account -> ids.add(account.id()));
-
-    assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
-  }
-
-  @Test public void getPublicBank() throws Exception
-  {
-    String id = UUID.randomUUID().toString();
-    String bankId = "id-1";
-    String request = new JSONObject()
-      .put("getBank", new JSONObject().put("bankId", bankId)).toString();
-    String response = responder.respond(new Message(id, request));
-    Optional<Bank> bank = decoder.bank(response);
-
-    assertThat(bank, hasValue(returns("id", "id-1")));
-  }
-
-  @Test public void getPublicBanks() throws Exception
-  {
-    String id = UUID.randomUUID().toString();
-    String request = "{\"getBanks\":{\"username\":\"\"}}";
-    String response = responder.respond(new Message(id, request));
-    Iterable<Bank> bank1s = decoder.banks(response);
-    List<String> ids = new ArrayList<>();
-
-    bank1s.forEach(bank -> ids.add(bank.id()));
-
-    assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
-  }
-
-  @Test public void getPublicTransaction() throws Exception
-  {
-    String id = UUID.randomUUID().toString();
-    String accountId = "account-x";
-    String bankId = "bank-x";
-    String transactionId = "transaction-x";
-    String request = new JSONObject().put("getTransaction",
-      new JSONObject().put("bankId", bankId).put("accountId", accountId)
-        .put("transactionId", transactionId)).toString();
-    String response = responder.respond(new Message(id, request));
-    Optional<Transaction> transaction = decoder.transaction(response);
-
-    assertThat(transaction, hasValue(returns("id", "transaction-x")));
-  }
-
-  @Test public void getPublicTransactions() throws Exception
-  {
-    String id = UUID.randomUUID().toString();
-    String accountId = "account-x";
-    String bankId = "bank-x";
-    String request = new JSONObject().put("getTransactions",
-      new JSONObject().put("bankId", bankId).put("accountId", accountId))
-      .toString();
-    String response = responder.respond(new Message(id, request));
-    Iterable<Transaction> transactions = decoder.transactions(response);
-    List<String> ids = new ArrayList<>();
-
-    transactions.forEach(t -> ids.add(t.id()));
-
-    assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
-  }
-
-  /**
-   * Username is the user requested. The session user should not be sent, as
-   * this is the anonymous variant.
-   *
-   * @throws Exception aua
-   */
-  @Test public void getPublicUser() throws Exception
-  {
-    String id = UUID.randomUUID().toString();
-    String userId = "user-x@example.com";
-    String request = new JSONObject()
-      .put("getUser", new JSONObject().put("username", userId)).toString();
-    String response = responder.respond(new Message(id, request));
-    Optional<User> user = decoder.user(response);
-
-    assertThat(user, hasValue(returns("email", userId)));
-  }
-
-  @Test public void savePrivateTransaction() throws Exception
+  @Test public void saveTransaction() throws Exception
   {
     String id = UUID.randomUUID().toString();
     String userId = "user-x";
@@ -275,22 +172,17 @@ public class LegacyResponderTest
     String otherAccountId = "account-y";
     String otherAccountCurrency = "currency-y";
     String transactionType = "type-x";
-    String request = new JSONObject()
-      .put("saveTransaction", new JSONObject()
-        .put("username", userId)
-        .put("accountId", accountId)
-        .put("currency", currency)
-        .put("amount", amount)
+    String request = new JSONObject().put("saveTransaction",
+      new JSONObject().put("username", userId).put("accountId", accountId)
+        .put("currency", currency).put("amount", amount)
         .put("otherAccountId", otherAccountId)
         .put("otherAccountCurrency", otherAccountCurrency)
-        .put("transactionType", transactionType)
-      ).toString();
+        .put("transactionType", transactionType)).toString();
     String response = responder.respond(new Message(id, request));
     Optional<String> tid = decoder.transactionId(response);
 
-    assertThat(tid, hasValue("tid-x"));
+    assertThat(tid, get("tid-x"));
   }
-
 
   private Decoder decoder;
   private Receiver responder;

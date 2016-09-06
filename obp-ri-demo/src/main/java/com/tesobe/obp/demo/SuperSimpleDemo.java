@@ -34,9 +34,7 @@ public class SuperSimpleDemo
 
     Receiver south = new DefaultLegacyResponder(decoder, encoder)
     {
-      @Override
-      protected String getPublicBank(String payload, Decoder.Request r,
-        Encoder e)
+      @Override protected String getBank(Decoder.Request r, Encoder e)
       {
         if(r.bankId().isPresent())
         {
@@ -60,12 +58,12 @@ public class SuperSimpleDemo
 
             @Override public String logo()
             {
-              return "https://example.org/logo.png";
+              return "https://example.org/my-bank/logo.png";
             }
 
             @Override public String url()
             {
-              return "https://example.org/";
+              return "https://example.org/my-bank/";
             }
           });
         }
@@ -79,8 +77,13 @@ public class SuperSimpleDemo
     Sender north = south::respond; // super simple transport layer
     Connector connector = factory.connector(north);
 
-    Optional<Bank> bank = connector.getPublicBank("my-bank");
+    String bankId = "my-bank";
+    Optional<Bank> bank = connector.getBank(bankId);
 
+    System.out.println();
+    System.out.print("connector.getBank(\"");
+    System.out.print(bankId);
+    System.out.print("\") \u2192 ");
     System.out.println(bank);
   }
 }

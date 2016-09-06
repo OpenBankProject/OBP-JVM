@@ -5,8 +5,9 @@
  * that can be found in the LICENSE file.
  *
  */
+
 package com.tesobe.obp.transport.json;
 
-public class DecoderTest
+public class EncoderTest
 {
 }

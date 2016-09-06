@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 
     Connector connector = factory.connector(north);
 
-    Iterable<Bank> banks = connector.getPublicBanks();
+    Iterable<Bank> banks = connector.getBanks();
 
     north.shutdown();
   }
