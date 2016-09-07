@@ -14,7 +14,7 @@
 
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri</artifactId>
-  <version>2.0-ALPHA2</version>
+  <version>2016.9-ALPHA3</version>
   <packaging>pom</packaging>
   <name>The Open Bank Project Reference Implementation</name>
 
@@ -107,7 +107,7 @@
     <junit.version>4.12</junit.version>
     <kafka.version>0.10.0.0</kafka.version>
     <logback.version>1.1.7</logback.version>
-    <obp.version>${project.version}</obp.version>
+    <obp-ri.version>${project.version}</obp-ri.version>
     <rest-assured.version>3.0.0</rest-assured.version>
     <slf4j.version>1.7.21</slf4j.version>
   </properties>

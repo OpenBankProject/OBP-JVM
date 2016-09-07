@@ -9,38 +9,35 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>obp-ri</artifactId>
     <groupId>com.tesobe.obp</groupId>
-    <version>2.0-ALPHA2</version>
+    <version>2016.9-ALPHA3</version>
   </parent>
-  <modelVersion>4.0.0</modelVersion>
 
   <artifactId>obp-ri-demo</artifactId>
   <name>obp-ri-demo</name>
+
   <description>
     TESOBE LTD.'s reference implementation of parts of the Open Bank Project.
   </description>
 
   <dependencies>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>obp-ri-transport</artifactId>
-    </dependency>
-    <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>com.tesobe.obp</groupId>
-      <artifactId>obp-ri-kafka</artifactId>
-      <version>2.0-ALPHA2</version>
-    </dependency>
-    <dependency>
       <groupId>com.sparkjava</groupId>
       <artifactId>spark-core</artifactId>
       <version>2.5</version>
+    </dependency>
+    <dependency>
+      <groupId>com.tesobe.obp</groupId>
+      <artifactId>obp-ri-kafka</artifactId>
+      <version>${obp-ri.version}</version>
     </dependency>
   </dependencies>
 

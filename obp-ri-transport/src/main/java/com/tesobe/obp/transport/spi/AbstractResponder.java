@@ -20,10 +20,10 @@ import static java.util.Objects.nonNull;
 /**
  * @since 2016.0
  */
-@SuppressWarnings("WeakerAccess") public abstract class LegacyResponder
+@SuppressWarnings("WeakerAccess") public abstract class AbstractResponder
   implements Receiver
 {
-  public LegacyResponder(Decoder d, Encoder e)
+  public AbstractResponder(Decoder d, Encoder e)
   {
     assert d != null;
     assert e != null;
@@ -88,5 +88,5 @@ import static java.util.Objects.nonNull;
   final Encoder encoder;
   static final Map<String, BiFunction<Decoder.Request, Encoder, String>> api
     = new HashMap<>();
-  static final Logger log = LoggerFactory.getLogger(LegacyResponder.class);
+  static final Logger log = LoggerFactory.getLogger(AbstractResponder.class);
 }

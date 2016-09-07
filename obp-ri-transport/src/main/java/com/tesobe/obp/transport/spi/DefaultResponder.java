@@ -11,13 +11,13 @@ package com.tesobe.obp.transport.spi;
 import static java.util.Objects.nonNull;
 
 /**
- * Implements {@link LegacyResponder}'s abstract methods without functionality
+ * Implements {@link AbstractResponder}'s abstract methods without functionality
  * returning {@code "null"} or {@code "[]"}.
  */
-@SuppressWarnings("WeakerAccess") public class DefaultLegacyResponder
-  extends LegacyResponder
+@SuppressWarnings("WeakerAccess") public class DefaultResponder
+  extends AbstractResponder
 {
-  public DefaultLegacyResponder(Decoder d, Encoder e)
+  public DefaultResponder(Decoder d, Encoder e)
   {
     super(d, e);
   }

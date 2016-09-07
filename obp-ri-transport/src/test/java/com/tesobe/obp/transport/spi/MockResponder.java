@@ -33,9 +33,9 @@ import static org.junit.Assert.assertThat;
  * returned item to allow the test to check for the id.
  */
 @SuppressWarnings({"WeakerAccess", "OptionalGetWithoutIsPresent"})
-class MockLegacyResponder extends LegacyResponder
+class MockResponder extends AbstractResponder
 {
-  public MockLegacyResponder(Decoder decoder, Encoder encoder)
+  public MockResponder(Decoder decoder, Encoder encoder)
   {
     super(decoder, encoder);
   }
@@ -131,5 +131,5 @@ class MockLegacyResponder extends LegacyResponder
     return e.transactionId("tid-x");
   }
 
-  static final Logger log = LoggerFactory.getLogger(MockLegacyResponder.class);
+  static final Logger log = LoggerFactory.getLogger(MockResponder.class);
 }

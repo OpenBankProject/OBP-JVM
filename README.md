@@ -10,7 +10,7 @@ Add a dependency
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-kafka</artifactId>
-  <version>2016.0-SNAPSHOT</version>
+  <version>2016.9-ALPHA3</version>
 </dependency>
 ```
 For testing also add
@@ -19,7 +19,7 @@ For testing also add
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-transport</artifactId>
-  <version>2016.0-SNAPSHOT</version>
+  <version>2016.9-ALPHA3</version>
   <classifier>tests</classifier>
 </dependency>
 ```
@@ -33,7 +33,9 @@ To build a connector that is called by OBP-API you need to do three things:
 
 #### Implementing the SPI
 
-If you want _(but there is no need to, see below)_ to do everything from scratch, all you need to implement is `com.tesobe.obp.transport.spi.Receiver`. It has one method:
+If you want _(but there is no need to, see below)_ to do everything from scratch, 
+all you need to implement is `com.tesobe.obp.transport.spi.Receiver`. 
+It has one method:
 
 ```java
 public interface Receiver
@@ -44,17 +46,21 @@ public interface Receiver
 
 The request has an **id** and a **payload**.
 The **id** is a `UUID` used to match the response to the request.
-The **payload** is a request by OBP-API encoded in the encoding you choose, or that was choosen for you. 
+The **payload** is a request by OBP-API encoded in the encoding you choose, or 
+that was choosen for you. 
 
 The possible requests depend on the version of the SPI you are using.
 
-For the `Version.legacy` the possible requests are listed in `com.tesobe.obp.transport.spi.LegacyResponder`. 
-The **LegacyResponder** implements **Receiver** and has an abstract method for each request.
+For the `Version.legacy` the possible requests are listed 
+in `com.tesobe.obp.transport.spi.AbstractResponder`. 
+The **AbstractResponder** implements **Receiver** and has an abstract method for 
+each request.
 
-You need to subclass **LegacyResponder** and implement these methods. This is an example for one of them:
+You need to subclass **AbstractResponder** and implement these methods. 
+This is an example for one of them:
 
 ```java
-protected abstract String getPrivateBank(String payload, Decoder.Request r, Encoder e);
+protected abstract String getBank(Decoder.Request r, Encoder e);
 ```
 
 The first argument **payload** is the verbatim request as taken from the message.
@@ -65,19 +71,24 @@ The second argument, of type **Decoder.Request** is used to decode the request.
 
 The third argument, of type **Encode** is used to encode the response.
 
-Every request is implemented by `com.tesobe.obp.transport.spi.MockLegacyResponder` used to test
-the **LegacyResonder**. The Demo gives a more complete example: `com.tesobe.obp.demo.south.DemoData`.
-A third test worth looking at because it implements the **North** and **South** sides is: `com.tesobe.obp.transport.spi.LegacyConnectorTest`.
+Every request is implemented by `com.tesobe.obp.transport.spi.MockResponder` 
+used to test the **AbstractResonder**. 
+The Demo gives a more complete example: `com.tesobe.obp.demo.south.DemoData`.
+A third test worth looking at because it implements the **North** and **South** 
+sides is: `com.tesobe.obp.transport.spi.ConnectorTest`.
 
-To get you started, you may use `com.tesobe.obp.transport.spi.DefaultLegacyResponder`.
-It has a no-op implementation of every method in LegacyResponder.
+To get you started, you may use `com.tesobe.obp.transport.spi.DefaultResponder`.
+It has a no-op implementation of every method in AbstractResponder.
 
 ### Implementing the North
 
 (Look at `com.tesobe.obp.demo.SuperSimpleDemo` while you are reading this chapter)
 
-The connector `com.tesobe.obp.transport.Connector` lists the methods you can call to communicate with external parties, the south. 
-To optain a connector you need to implement `com.tesobe.obp.transport.Sender` and:
+The connector `com.tesobe.obp.transport.Connector` lists the methods you can 
+call to communicate with external parties, the south. 
+
+To optain a connector you need to implement `com.tesobe.obp.transport.Sender` 
+and:
 
 ```java
 import com.tesobe.obp.transport.Transport;
@@ -89,15 +100,17 @@ MySender sender = MySender(decoder, encoder);
 Connector connector = factory.connector(sender);
 ```
 
-The sender send messages to the south and receives the responses.
-If the south is local to the north, the sender only has one method to call on **MyResponder**, an implementation of `com.tesobe.obp.transport.spi.Receiver`:
+The sender sends messages to the south and receives the responses.
+If the south is local to the north, the sender only has one method to call on 
+**MyResponder**, an implementation of `com.tesobe.obp.transport.spi.Receiver`:
 
 ```java
 MyResponder responder = new MyResponder(decoder, encoder);
 Sender = request -> responder.respond(request);
 ```
 
-For a simple but complete implementation of **Receiver** for testing see `com.tesobe.obp.transport.spi.MockLegacyResponder`.
+For a simple but complete implementation of **Receiver** for testing see 
+`com.tesobe.obp.transport.spi.MockResponder`.
 
 Now, to use the **connector** simply call the methods, for example:
 
@@ -108,7 +121,8 @@ String userId = "...";
 Optional<Bank> bank = connector.getPrivateBank(bankId, userId);
 ```
 
-Examples for all methods in the connector are here: `com.tesobe.obp.transport.spi.LegacyConnectorTest `.
+Examples for all methods in the connector are here: 
+`com.tesobe.obp.transport.spi.ConnectorTest`.
 
 ### Implementing Encoders and Decoders
 

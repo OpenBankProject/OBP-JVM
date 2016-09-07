@@ -9,7 +9,7 @@ package com.tesobe.obp.transport;
 
 import com.tesobe.obp.transport.spi.Decoder;
 import com.tesobe.obp.transport.spi.Encoder;
-import com.tesobe.obp.transport.spi.LegacyConnector;
+import com.tesobe.obp.transport.spi.DefaultConnector;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -74,7 +74,7 @@ import static com.tesobe.obp.transport.Transport.Version.legacy;
 
   static Connector connector(Version v, Encoder e, Decoder d, Sender s)
   {
-    return new LegacyConnector(v, e, d, s);
+    return new DefaultConnector(v, e, d, s);
   }
 
   static Decoder decoder(Version v, Encoding e)

@@ -36,7 +36,7 @@ import static org.junit.Assert.assertThat;
  * Test compatibility with Scala.
  */
 @SuppressWarnings("OptionalGetWithoutIsPresent")
-public class LegacyResponderTest
+public class ResponderTest
 {
   @Before public void setup()
   {
@@ -44,7 +44,7 @@ public class LegacyResponderTest
       .orElseThrow(RuntimeException::new);
 
     decoder = factory.decoder();
-    responder = new MockLegacyResponder(decoder, factory.encoder());
+    responder = new MockResponder(decoder, factory.encoder());
   }
 
   @Test public void getBankAccount() throws Exception

@@ -49,12 +49,12 @@ import static java.util.Objects.nonNull;
       .arguments("username", userId, "bankId", bankId, "accountId", accountId);
   }
 
-  @Override public Request getPublicBanks()
+  @Override public Request getBanks()
   {
     return request("getBanks");
   }
 
-  @Override public Request getPublicTransaction(String bankId, String accountId,
+  @Override public Request getTransaction(String bankId, String accountId,
     String transactionId)
   {
     return request("getTransaction")
@@ -62,8 +62,7 @@ import static java.util.Objects.nonNull;
         transactionId);
   }
 
-  @Override
-  public Request getPublicTransactions(String bankId, String accountId)
+  @Override public Request getTransactions(String bankId, String accountId)
   {
     return request("getTransactions")
       .arguments("bankId", bankId, "accountId", accountId);
@@ -74,13 +73,12 @@ import static java.util.Objects.nonNull;
     return request("getUser").arguments("username", userId);
   }
 
-  @Override public Request getPrivateBanks(String userId)
+  @Override public Request getBanks(String userId)
   {
     return request("getBanks").arguments("username", userId);
   }
 
-  @Override
-  public Request getPrivateTransaction(String bankId, String accountId,
+  @Override public Request getTransaction(String bankId, String accountId,
     String transactionId, String userId)
   {
     return request("getTransaction")
@@ -89,30 +87,29 @@ import static java.util.Objects.nonNull;
   }
 
   @Override
-  public Request getPrivateTransactions(String bankId, String accountId,
-    String userId)
+  public Request getTransactions(String bankId, String accountId, String userId)
   {
     return request("getTransactions")
       .arguments("bankId", bankId, "accountId", accountId, "userId", userId);
   }
 
-  @Override public Request getPublicAccounts(String bankId)
+  @Override public Request getAccounts(String bankId)
   {
     return request("getBankAccounts").arguments("bankId", bankId);
   }
 
-  @Override public Request getPrivateAccounts(String userId, String bankId)
+  @Override public Request getAccounts(String userId, String bankId)
   {
     return request("getBankAccounts")
       .arguments("username", userId, "bankId", bankId);
   }
 
-  @Override public Request getPrivateBank(String userId, String bankId)
+  @Override public Request getBank(String userId, String bankId)
   {
     return request("getBank").arguments("username", userId, "bankId", bankId);
   }
 
-  @Override public Request getPublicBank(String bankId)
+  @Override public Request getBank(String bankId)
   {
     return request("getBank").arguments("bankId", bankId);
   }

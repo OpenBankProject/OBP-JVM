@@ -27,8 +27,8 @@
   <logger name="ch.qos.logback" level="error"/>
 
   <logger name="com.tesobe.obp" level="trace"/>
-  <logger name="com.tesobe.obp.transport.spi.LegacyConnector" level="trace"/>
-  <logger name="com.tesobe.obp.transport.spi.LegacyResponder" level="trace"/>
+  <logger name="com.tesobe.obp.transport.spi.DefaultConnector" level="trace"/>
+  <logger name="com.tesobe.obp.transport.spi.AbstractResponder" level="trace"/>
 
   <logger name="com.tesobe.obp.transport.spi.LoggingReceiver" level="info"
     additivity="false">

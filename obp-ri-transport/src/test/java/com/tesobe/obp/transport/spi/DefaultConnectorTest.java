@@ -39,13 +39,13 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
-public class LegacyConnectorTest
+public class DefaultConnectorTest
 {
   @Before public void setup()
   {
     Transport.Factory factory = Transport.factory(legacy, json)
       .orElseThrow(RuntimeException::new);
-    Receiver responder = new MockLegacyResponder(factory.decoder(),
+    Receiver responder = new MockResponder(factory.decoder(),
       factory.encoder());
     final BlockingQueue<String> in = new SynchronousQueue<>();
     final BlockingQueue<Message> out = new SynchronousQueue<>();

@@ -23,26 +23,26 @@ public interface Encoder
 
   Request getAccount(String userId, String bankId, String accountId);
 
-  Request getPrivateAccounts(String userId, String bankId);
+  Request getAccounts(String bankId);
 
-  Request getPrivateBank(String userId, String bankId);
+  Request getAccounts(String userId, String bankId);
 
-  Request getPrivateBanks(String userId);
+  Request getBank(String bankId);
 
-  Request getPrivateTransaction(String bankId, String accountId, String transactionId, String userId);
+  Request getBank(String userId, String bankId);
 
-  Request getPrivateTransactions(String bankId, String accountId, String userId);
+  Request getBanks();
 
-  Request getPublicAccounts(String bankId);
+  Request getBanks(String userId);
 
-  Request getPublicBank(String bankId);
+  Request getTransaction(String bankId, String accountId, String transactionId);
 
-  Request getPublicBanks();
+  Request getTransaction(String bankId, String accountId, String transactionId,
+    String userId);
 
-  Request getPublicTransaction(String bankId, String accountId,
-    String transactionId);
+  Request getTransactions(String bankId, String accountId, String userId);
 
-  Request getPublicTransactions(String bankId, String accountId);
+  Request getTransactions(String bankId, String accountId);
 
   Request getUser(String userId);
 

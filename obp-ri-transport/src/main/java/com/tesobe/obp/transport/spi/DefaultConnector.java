@@ -20,10 +20,10 @@ import java.util.UUID;
  *
  * @since 2016.0
  */
-@SuppressWarnings("WeakerAccess") public class LegacyConnector
+@SuppressWarnings("WeakerAccess") public class DefaultConnector
   implements Connector
 {
-  public LegacyConnector(Transport.Version v, Encoder e, Decoder d, Sender s)
+  public DefaultConnector(Transport.Version v, Encoder e, Decoder d, Sender s)
   {
     decoder = d;
     encoder = e;
@@ -37,7 +37,7 @@ import java.util.UUID;
     String request = encoder.getAccount(userId, bankId, accountId).toString();
     String response = sender.send(new Message("id", request));
 
-    log.trace("{} {}", request, response);
+    log.trace("{} \u2192 {}", request, response);
 
     return decoder.account(response);
   }
@@ -49,7 +49,7 @@ import java.util.UUID;
     String request = encoder.getAccount(bankId, accountId).toString();
     String response = sender.send(new Message(id, request));
 
-    log.trace("{} {}", request, response);
+    log.trace("{} \u2192 {}", request, response);
 
     return decoder.account(response);
   }
@@ -58,10 +58,10 @@ import java.util.UUID;
   @Override public Iterable<Account> getAccounts(String bankId, String userId)
     throws InterruptedException, DecoderException
   {
-    String request = encoder.getPrivateAccounts(userId, bankId).toString();
+    String request = encoder.getAccounts(userId, bankId).toString();
     String response = sender.send(new Message("id", request));
 
-    log.trace("{} {}", request, response);
+    log.trace("{} \u2192 {}", request, response);
 
     return decoder.accounts(response);
   }
@@ -69,10 +69,10 @@ import java.util.UUID;
   @Override public Optional<Bank> getBank(String bankId, String userId)
     throws InterruptedException, DecoderException
   {
-    String request = encoder.getPrivateBank(userId, bankId).toString();
+    String request = encoder.getBank(userId, bankId).toString();
     String response = sender.send(new Message("id", request));
 
-    log.trace("{} {}", request, response);
+    log.trace("{} \u2192 {}", request, response);
 
     return decoder.bank(response);
   }
@@ -82,39 +82,39 @@ import java.util.UUID;
     throws InterruptedException, DecoderException
   {
     String id = UUID.randomUUID().toString();
-    String request = encoder.getPrivateBanks(userId).toString();
+    String request = encoder.getBanks(userId).toString();
     String response = sender.send(new Message(id, request));
 
-    log.trace("{} {}", request, response);
+    log.trace("{} \u2192 {}", request, response);
 
     return decoder.banks(response);
   }
 
-  @Override public Optional<Transaction> getTransaction(String bankId,
-    String accountId, String transactionId, String userId)
+  @Override
+  public Optional<Transaction> getTransaction(String bankId, String accountId,
+    String transactionId, String userId)
     throws InterruptedException, DecoderException
   {
     String id = UUID.randomUUID().toString();
     String request = encoder
-      .getPrivateTransaction(bankId, accountId, transactionId, userId)
-      .toString();
+      .getTransaction(bankId, accountId, transactionId, userId).toString();
     String response = sender.send(new Message(id, request));
 
-    log.trace("{} {}", request, response);
+    log.trace("{} \u2192 {}", request, response);
 
     return decoder.transaction(response);
   }
 
-  @Override public Iterable<Transaction> getTransactions(String bankId,
-    String accountId, String userId)
-    throws InterruptedException, DecoderException
+  @Override
+  public Iterable<Transaction> getTransactions(String bankId, String accountId,
+    String userId) throws InterruptedException, DecoderException
   {
     String id = UUID.randomUUID().toString();
-    String request = encoder.getPrivateTransactions(bankId, accountId, userId)
+    String request = encoder.getTransactions(bankId, accountId, userId)
       .toString();
     String response = sender.send(new Message(id, request));
 
-    log.trace("{} {}", request, response);
+    log.trace("{} \u2192 {}", request, response);
 
     return decoder.transactions(response);
   }
@@ -122,10 +122,11 @@ import java.util.UUID;
   @Override public Iterable<Account> getAccounts(String bankId)
     throws InterruptedException, DecoderException
   {
-    String request = encoder.getPublicAccounts(bankId).toString();
-    String response = sender.send(new Message("id", request));
+    String id = UUID.randomUUID().toString();
+    String request = encoder.getAccounts(bankId).toString();
+    String response = sender.send(new Message(id, request));
 
-    log.trace("{} {}", request, response);
+    log.trace("{} \u2192 {}", request, response);
 
     return decoder.accounts(response);
   }
@@ -134,10 +135,10 @@ import java.util.UUID;
     throws InterruptedException
   {
     String id = UUID.randomUUID().toString();
-    String request = encoder.getPublicBank(bankId).toString();
+    String request = encoder.getBank(bankId).toString();
     String response = sender.send(new Message(id, request));
 
-    log.trace("{} {}", request, response);
+    log.trace("{} \u2192 {}", request, response);
 
     return decoder.bank(response);
   }
@@ -146,37 +147,37 @@ import java.util.UUID;
     throws InterruptedException, DecoderException
   {
     String id = UUID.randomUUID().toString();
-    String request = encoder.getPublicBanks().toString();
+    String request = encoder.getBanks().toString();
     String response = sender.send(new Message(id, request));
 
-    log.trace("{} {}", request, response);
+    log.trace("{} \u2192 {}", request, response);
 
     return decoder.banks(response);
   }
 
-  @Override public Optional<Transaction> getTransaction(String bankId,
-    String accountId, String transactionId)
-    throws InterruptedException, DecoderException
+  @Override
+  public Optional<Transaction> getTransaction(String bankId, String accountId,
+    String transactionId) throws InterruptedException, DecoderException
   {
     String id = UUID.randomUUID().toString();
-    String request = encoder
-      .getPublicTransaction(bankId, accountId, transactionId).toString();
+    String request = encoder.getTransaction(bankId, accountId, transactionId)
+      .toString();
     String response = sender.send(new Message(id, request));
 
-    log.trace("{} {}", request, response);
+    log.trace("{} \u2192 {}", request, response);
 
     return decoder.transaction(response);
   }
 
-  @Override public Iterable<Transaction> getTransactions(String bankId,
-    String accountId) throws InterruptedException, DecoderException
+  @Override
+  public Iterable<Transaction> getTransactions(String bankId, String accountId)
+    throws InterruptedException, DecoderException
   {
     String id = UUID.randomUUID().toString();
-    String request = encoder.getPublicTransactions(bankId, accountId)
-      .toString();
+    String request = encoder.getTransactions(bankId, accountId).toString();
     String response = sender.send(new Message(id, request));
 
-    log.trace("{} {}", request, response);
+    log.trace("{} \u2192 {}", request, response);
 
     return decoder.transactions(response);
   }
@@ -188,7 +189,7 @@ import java.util.UUID;
     String request = encoder.getUser(userId).toString();
     String response = sender.send(new Message(id, request));
 
-    log.trace("{} {}", request, response);
+    log.trace("{} \u2192 {}", request, response);
 
     return decoder.user(response);
   }
@@ -205,7 +206,7 @@ import java.util.UUID;
         otherAccountCurrency, transactionType).toString();
     String response = sender.send(new Message(id, request));
 
-    log.trace("{} {}", request, response);
+    log.trace("{} \u2192 {}", request, response);
 
     return decoder.transactionId(response);
   }
@@ -216,5 +217,5 @@ import java.util.UUID;
   protected final Sender sender;
 
   protected static final Logger log = LoggerFactory
-    .getLogger(LegacyConnector.class);
+    .getLogger(DefaultConnector.class);
 }
