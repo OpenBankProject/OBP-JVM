@@ -114,7 +114,6 @@ import static java.util.Objects.nonNull;
     return request("getBank").arguments("bankId", bankId);
   }
 
-
   @Override public Request saveTransaction(String userId, String accountId,
     String currency, String amount, String otherAccountId,
     String otherAccountCurrency, String transactionType)

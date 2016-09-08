@@ -82,6 +82,16 @@ import java.util.Optional;
   Iterable<Account> getAccounts(String bankId, String userId)
     throws InterruptedException, DecoderException;
 
+  /**
+   * Anonymous request for a bank.
+   *
+   * @param bankId sent to the south as is, even if it is null
+   *
+   * @return empty if the bankId is invalid
+   *
+   * @throws InterruptedException Network trouble
+   * @throws DecoderException     Invalid content in the network packet.
+   */
   Optional<Bank> getBank(String bankId)
     throws InterruptedException, DecoderException;
 
