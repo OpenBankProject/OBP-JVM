@@ -7,6 +7,8 @@
  */
 package com.tesobe.obp.transport;
 
+import com.tesobe.obp.transport.json.DecoderSep1026;
+import com.tesobe.obp.transport.json.EncoderSep1026;
 import com.tesobe.obp.transport.spi.Decoder;
 import com.tesobe.obp.transport.spi.Encoder;
 import com.tesobe.obp.transport.spi.DefaultConnector;
@@ -17,6 +19,7 @@ import java.util.Optional;
 
 import static com.tesobe.obp.transport.Transport.Encoding.json;
 import static com.tesobe.obp.transport.Transport.Version.legacy;
+import static com.tesobe.obp.transport.Transport.Version.sep2016;
 
 /**
  * Transport manages the different versions of the transport api.
@@ -106,7 +109,7 @@ import static com.tesobe.obp.transport.Transport.Version.legacy;
 
   public enum Version
   {
-    legacy
+    legacy, sep2016
   }
 
   public enum Encoding
@@ -125,7 +128,10 @@ import static com.tesobe.obp.transport.Transport.Version.legacy;
     EnumMap<Version, Encoder> es = new EnumMap<>(Version.class);
 
     ds.put(legacy, new com.tesobe.obp.transport.json.Decoder(legacy));
+    ds.put(sep2016, new DecoderSep1026(sep2016));
+
     es.put(legacy, new com.tesobe.obp.transport.json.Encoder(legacy));
+    es.put(sep2016, new EncoderSep1026(sep2016));
 
     decoders.put(json, ds);
     encoders.put(json, es);

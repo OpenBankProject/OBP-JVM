@@ -30,7 +30,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
 
 import static com.tesobe.obp.transport.Transport.Encoding.json;
-import static com.tesobe.obp.transport.Transport.Version.legacy;
 import static com.tesobe.obp.util.MethodMatcher.optionallyReturns;
 import static com.tesobe.obp.util.MethodMatcher.returns;
 import static org.hamcrest.core.AnyOf.anyOf;
@@ -41,26 +40,26 @@ import static org.junit.Assert.assertThat;
 
 public class DefaultConnectorTest
 {
-  @Before public void setup()
+  @Before public void sep2016Connector()
   {
-    Transport.Factory factory = Transport.factory(legacy, json)
+    Transport.Factory factory = Transport
+      .factory(Transport.Version.sep2016, json)
       .orElseThrow(RuntimeException::new);
+
     Receiver responder = new MockResponder(factory.decoder(),
       factory.encoder());
     final BlockingQueue<String> in = new SynchronousQueue<>();
     final BlockingQueue<Message> out = new SynchronousQueue<>();
 
-    // sender
-    connector = factory.connector(request ->
+    // north: sender
+    sep2016 = factory.connector(request ->
     {
       out.put(request);
 
       return in.take();
     });
 
-    service = Executors.newSingleThreadExecutor();
-
-    // receiver
+    // south: receiver
     service.submit(new Callable<Void>()
     {
       @Override @SuppressWarnings({"InfiniteLoopStatement"}) public Void call()
@@ -74,9 +73,40 @@ public class DefaultConnectorTest
     });
   }
 
+  @Before public void defaultConnector()
+  {
+    Transport.Factory factory = Transport.defaultFactory();
+    Receiver responder = new MockResponder(factory.decoder(),
+      factory.encoder());
+    final BlockingQueue<String> in = new SynchronousQueue<>();
+    final BlockingQueue<Message> out = new SynchronousQueue<>();
+
+    // north: sender
+    legacy = factory.connector(request ->
+    {
+      out.put(request);
+
+      return in.take();
+    });
+
+    // south: receiver
+    service.submit(new Callable<Void>()
+    {
+      @Override @SuppressWarnings({"InfiniteLoopStatement"}) public Void call()
+        throws InterruptedException
+      {
+        for(; ; )
+        {
+          in.put(responder.respond(out.take()));
+        }
+      }
+    });
+  }
+
+
   @After public void shutdown()
   {
-    service.shutdown();
+    service.shutdownNow();
   }
 
   @Test public void getAccount() throws Exception
@@ -85,9 +115,14 @@ public class DefaultConnectorTest
     String bankId = "id-x";
     String userId = "user-x";
 
-    assertThat(connector.getAccount(bankId, accountId),
+    assertThat(legacy.getAccount(bankId, accountId),
       optionallyReturns("id", "account-x"));
-    assertThat(connector.getAccount(bankId, accountId, userId),
+    assertThat(legacy.getAccount(bankId, accountId, userId),
+      optionallyReturns("id", "account-x"));
+
+    assertThat(sep2016.getAccount(bankId, accountId),
+      optionallyReturns("id", "account-x"));
+    assertThat(sep2016.getAccount(bankId, accountId, userId),
       optionallyReturns("id", "account-x"));
   }
 
@@ -95,8 +130,29 @@ public class DefaultConnectorTest
   {
     String bankId = "bank-x";
     String userId = "user-x";
-    Iterable<Account> anonymous = connector.getAccounts(bankId);
-    Iterable<Account> owned = connector.getAccounts(bankId, userId);
+    Iterable<Account> anonymous;
+    Iterable<Account> owned;
+
+    anonymous = legacy.getAccounts(bankId);
+    owned = legacy.getAccounts(bankId, userId);
+
+    assertThat(anonymous, notNullValue());
+    assertThat(owned, notNullValue());
+
+    anonymous.forEach(account ->
+    {
+      assertThat(account.bank(), is(bankId));
+      assertThat(account.id(), anyOf(is("id-1"), is("id-2")));
+    });
+
+    owned.forEach(account ->
+    {
+      assertThat(account.bank(), is(bankId));
+      assertThat(account.id(), anyOf(is("id-1"), is("id-2")));
+    });
+
+    anonymous = sep2016.getAccounts(bankId);
+    owned = sep2016.getAccounts(bankId, userId);
 
     assertThat(anonymous, notNullValue());
     assertThat(owned, notNullValue());
@@ -119,8 +175,12 @@ public class DefaultConnectorTest
     String bankId = "bank-x";
     String userId = "user-x";
 
-    assertThat(connector.getBank(bankId), optionallyReturns("id", "bank-x"));
-    assertThat(connector.getBank(bankId, userId),
+    assertThat(legacy.getBank(bankId), optionallyReturns("id", "bank-x"));
+    assertThat(legacy.getBank(bankId, userId),
+      optionallyReturns("id", "bank-x"));
+
+    assertThat(sep2016.getBank(bankId), optionallyReturns("id", "bank-x"));
+    assertThat(sep2016.getBank(bankId, userId),
       optionallyReturns("id", "bank-x"));
   }
 
@@ -128,8 +188,27 @@ public class DefaultConnectorTest
   {
     String userId = "user-x";
 
-    Iterable<Bank> anonymous = connector.getBanks();
-    Iterable<Bank> owned = connector.getBanks(userId);
+    Iterable<Bank> anonymous;
+    Iterable<Bank> owned;
+
+    anonymous = legacy.getBanks();
+    owned = legacy.getBanks(userId);
+
+    assertThat(anonymous, notNullValue());
+    assertThat(owned, notNullValue());
+
+    anonymous.forEach(bank ->
+    {
+      assertThat(bank.id(), anyOf(is("id-1"), is("id-2")));
+    });
+
+    owned.forEach(bank ->
+    {
+      assertThat(bank.id(), anyOf(is("id-1"), is("id-2")));
+    });
+
+    anonymous = sep2016.getBanks();
+    owned = sep2016.getBanks(userId);
 
     assertThat(anonymous, notNullValue());
     assertThat(owned, notNullValue());
@@ -150,11 +229,16 @@ public class DefaultConnectorTest
   {
     String accountId = "account-x";
     String bankId = "bank-x";
-    String transactionId = "transaction-x";
+    String tid = "transaction-x";
     String userId = "user-x";
 
-    Optional<Transaction> transaction = connector
-      .getTransaction(bankId, accountId, transactionId, userId);
+    Optional<Transaction> transaction;
+
+    transaction = legacy.getTransaction(bankId, accountId, tid, userId);
+
+    assertThat(transaction, optionallyReturns("id", "transaction-x"));
+
+    transaction = sep2016.getTransaction(bankId, accountId, tid, userId);
 
     assertThat(transaction, optionallyReturns("id", "transaction-x"));
   }
@@ -165,7 +249,7 @@ public class DefaultConnectorTest
     String bankId = "bank-x";
     String userId = "user-x";
 
-    Iterable<Transaction> transactions = connector
+    Iterable<Transaction> transactions = legacy
       .getTransactions(bankId, accountId, userId);
     List<String> ids = new ArrayList<>();
 
@@ -178,7 +262,7 @@ public class DefaultConnectorTest
   {
     String bankId = "bank-x";
 
-    Iterable<Account> accounts = connector.getAccounts(bankId);
+    Iterable<Account> accounts = legacy.getAccounts(bankId);
     List<String> ids = new ArrayList<>();
 
     accounts.forEach(account -> assertThat(account.bank(), is(bankId)));
@@ -193,7 +277,7 @@ public class DefaultConnectorTest
     String accountId = "account-x";
     String transactionId = "transaction-x";
 
-    Optional<Transaction> transaction = connector
+    Optional<Transaction> transaction = legacy
       .getTransaction(bankId, accountId, transactionId);
 
     assertThat(transaction, optionallyReturns("id", "transaction-x"));
@@ -204,7 +288,7 @@ public class DefaultConnectorTest
     String bankId = "bank-x";
     String accountId = "account-x";
 
-    Iterable<Transaction> transactions = connector
+    Iterable<Transaction> transactions = legacy
       .getTransactions(bankId, accountId);
     List<String> ids = new ArrayList<>();
 
@@ -217,7 +301,7 @@ public class DefaultConnectorTest
   {
     String userId = "user-x@example.org";
 
-    Optional<User> user = connector.getUser(userId);
+    Optional<User> user = legacy.getUser(userId);
 
     assertThat(user, optionallyReturns("email", userId));
   }
@@ -232,13 +316,14 @@ public class DefaultConnectorTest
     String otherAccountCurrency = "currency-y";
     String transactionType = "type-x";
 
-    Optional<String> tid = connector
+    Optional<String> tid = legacy
       .saveTransaction(userId, accountId, currency, amount, otherAccountId,
         otherAccountCurrency, transactionType);
 
     assertThat(tid, returns("get", "tid-x"));
   }
 
-  private Connector connector;
-  private ExecutorService service;
+  private Connector legacy;
+  private Connector sep2016;
+  private ExecutorService service = Executors.newCachedThreadPool();
 }
