@@ -19,9 +19,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -34,7 +31,6 @@ import static com.tesobe.obp.util.MethodMatcher.optionallyReturns;
 import static com.tesobe.obp.util.MethodMatcher.returns;
 import static org.hamcrest.core.AnyOf.anyOf;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -115,15 +111,17 @@ public class DefaultConnectorTest
     String bankId = "id-x";
     String userId = "user-x";
 
-    assertThat(legacy.getAccount(bankId, accountId),
-      optionallyReturns("id", "account-x"));
-    assertThat(legacy.getAccount(bankId, accountId, userId),
-      optionallyReturns("id", "account-x"));
+    Optional<Account> anonymous;
+    Optional<Account> owned;
 
-    assertThat(sep2016.getAccount(bankId, accountId),
-      optionallyReturns("id", "account-x"));
-    assertThat(sep2016.getAccount(bankId, accountId, userId),
-      optionallyReturns("id", "account-x"));
+    anonymous = legacy.getAccount(bankId, accountId);
+    owned = legacy.getAccount(bankId, accountId, userId);
+
+    assertThat(anonymous, optionallyReturns("id", "account-x"));
+    assertThat(owned, optionallyReturns("id", "account-x"));
+
+    anonymous = sep2016.getAccount(bankId, accountId);
+    owned = sep2016.getAccount(bankId, accountId, userId);
   }
 
   @Test public void getAccounts() throws Exception
@@ -175,13 +173,20 @@ public class DefaultConnectorTest
     String bankId = "bank-x";
     String userId = "user-x";
 
-    assertThat(legacy.getBank(bankId), optionallyReturns("id", "bank-x"));
-    assertThat(legacy.getBank(bankId, userId),
-      optionallyReturns("id", "bank-x"));
+    Optional<Bank> anonymous;
+    Optional<Bank> owned;
 
-    assertThat(sep2016.getBank(bankId), optionallyReturns("id", "bank-x"));
-    assertThat(sep2016.getBank(bankId, userId),
-      optionallyReturns("id", "bank-x"));
+    anonymous = legacy.getBank(bankId);
+    owned = legacy.getBank(bankId, userId);
+
+    assertThat(anonymous, optionallyReturns("id", "bank-x"));
+    assertThat(owned, optionallyReturns("id", "bank-x"));
+
+    anonymous = sep2016.getBank(bankId);
+    owned = sep2016.getBank(bankId, userId);
+
+    assertThat(anonymous, optionallyReturns("id", "bank-x"));
+    assertThat(owned, optionallyReturns("id", "bank-x"));
   }
 
   @Test public void getBanks() throws Exception
@@ -225,76 +230,63 @@ public class DefaultConnectorTest
 
   }
 
-  @Test public void getPrivateTransaction() throws Exception
+  @Test public void getTransaction() throws Exception
   {
     String accountId = "account-x";
     String bankId = "bank-x";
     String tid = "transaction-x";
     String userId = "user-x";
 
-    Optional<Transaction> transaction;
+    Optional<Transaction> anonymous;
+    Optional<Transaction> owned;
 
-    transaction = legacy.getTransaction(bankId, accountId, tid, userId);
+    anonymous = legacy.getTransaction(bankId, accountId, tid);
+    owned = legacy.getTransaction(bankId, accountId, tid, userId);
 
-    assertThat(transaction, optionallyReturns("id", "transaction-x"));
+    assertThat(anonymous, optionallyReturns("id", "transaction-x"));
+    assertThat(owned, optionallyReturns("id", "transaction-x"));
 
-    transaction = sep2016.getTransaction(bankId, accountId, tid, userId);
+    anonymous = sep2016.getTransaction(bankId, accountId, tid);
+    owned = sep2016.getTransaction(bankId, accountId, tid, userId);
 
-    assertThat(transaction, optionallyReturns("id", "transaction-x"));
+    assertThat(anonymous, optionallyReturns("id", "transaction-x"));
+    assertThat(owned, optionallyReturns("id", "transaction-x"));
   }
 
-  @Test public void getPrivateTransactions() throws Exception
+  @Test public void getTransactions() throws Exception
   {
     String accountId = "account-x";
     String bankId = "bank-x";
     String userId = "user-x";
 
-    Iterable<Transaction> transactions = legacy
-      .getTransactions(bankId, accountId, userId);
-    List<String> ids = new ArrayList<>();
+    Iterable<Transaction> anonymous;
+    Iterable<Transaction> owned;
 
-    transactions.forEach(bank -> ids.add(bank.id()));
+    anonymous = legacy.getTransactions(bankId, accountId);
+    owned = legacy.getTransactions(bankId, accountId, userId);
 
-    assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
-  }
+    anonymous.forEach(transaction ->
+    {
+      assertThat(transaction.id(), anyOf(is("id-1"), is("id-2")));
+    });
 
-  @Test public void getPublicAccounts() throws Exception
-  {
-    String bankId = "bank-x";
+    owned.forEach(transaction ->
+    {
+      assertThat(transaction.id(), anyOf(is("id-1"), is("id-2")));
+    });
 
-    Iterable<Account> accounts = legacy.getAccounts(bankId);
-    List<String> ids = new ArrayList<>();
+    anonymous = sep2016.getTransactions(bankId, accountId);
+    owned = sep2016.getTransactions(bankId, accountId, userId);
 
-    accounts.forEach(account -> assertThat(account.bank(), is(bankId)));
-    accounts.forEach(account -> ids.add(account.id()));
+    anonymous.forEach(transaction ->
+    {
+      assertThat(transaction.id(), anyOf(is("id-1"), is("id-2")));
+    });
 
-    assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
-  }
-
-  @Test public void getPublicTransaction() throws Exception
-  {
-    String bankId = "bank-x";
-    String accountId = "account-x";
-    String transactionId = "transaction-x";
-
-    Optional<Transaction> transaction = legacy
-      .getTransaction(bankId, accountId, transactionId);
-
-    assertThat(transaction, optionallyReturns("id", "transaction-x"));
-  }
-
-  @Test public void getPublicTransactions() throws Exception
-  {
-    String bankId = "bank-x";
-    String accountId = "account-x";
-
-    Iterable<Transaction> transactions = legacy
-      .getTransactions(bankId, accountId);
-    List<String> ids = new ArrayList<>();
-
-    transactions.forEach(transaction -> ids.add(transaction.id()));
-
-    assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));
+    owned.forEach(transaction ->
+    {
+      assertThat(transaction.id(), anyOf(is("id-1"), is("id-2")));
+    });
   }
 
   @Test public void getUser() throws Exception

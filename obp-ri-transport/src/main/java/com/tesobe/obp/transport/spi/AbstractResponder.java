@@ -49,17 +49,24 @@ import static java.util.Objects.nonNull;
 
     if(nonNull(request))
     {
-      Decoder.Request decoded = decoder.request(request.payload);
-      String name = decoded.name();
-      BiFunction<Decoder.Request, Encoder, String> call = api.get(name);
+      try
+      {
+        Decoder.Request decoded = decoder.request(request.payload);
+        String name = decoded.name();
+        BiFunction<Decoder.Request, Encoder, String> call = api.get(name);
 
-      if(nonNull(call))
-      {
-        result = call.apply(decoded, encoder);
+        if(nonNull(call))
+        {
+          result = call.apply(decoded, encoder);
+        }
+        else
+        {
+          log.error("Not found: '{}'", name);
+        }
       }
-      else
+      catch(Exception e)
       {
-        log.error("Not found: '{}'", name);
+        log.error("{}", request, e);
       }
     }
 

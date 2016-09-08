@@ -66,18 +66,6 @@ import java.util.UUID;
     return decoder.accounts(response);
   }
 
-  @Override public Optional<Bank> getBank(String bankId, String userId)
-    throws InterruptedException, DecoderException
-  {
-    String request = encoder.getBank(userId, bankId).toString();
-    String response = sender.send(new Message("id", request));
-
-    log.trace("{} \u2192 {}", request, response);
-
-    return decoder.bank(response);
-  }
-
-
   @Override public Iterable<Bank> getBanks(String userId)
     throws InterruptedException, DecoderException
   {
@@ -136,6 +124,18 @@ import java.util.UUID;
   {
     String id = UUID.randomUUID().toString();
     String request = encoder.getBank(bankId).toString();
+    String response = sender.send(new Message(id, request));
+
+    log.trace("{} \u2192 {}", request, response);
+
+    return decoder.bank(response);
+  }
+
+  @Override public Optional<Bank> getBank(String bankId, String userId)
+    throws InterruptedException, DecoderException
+  {
+    String id = UUID.randomUUID().toString();
+    String request = encoder.getBank(userId, bankId).toString();
     String response = sender.send(new Message(id, request));
 
     log.trace("{} \u2192 {}", request, response);
