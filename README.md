@@ -57,11 +57,11 @@ that was choosen for you.
 The possible requests depend on the version of the SPI you are using.
 
 For the `Version.sep2016` the possible requests are listed 
-in `com.tesobe.obp.transport.spi.AbstractResponder`. 
-The **AbstractResponder** implements **Receiver** and has an abstract method for 
+in `com.tesobe.obp.transport.spi.AbstractReceiver`. 
+The **AbstractReceiver** implements **Receiver** and has an abstract method for 
 each request.
 
-You need to subclass **AbstractResponder** and implement these methods. 
+You need to subclass **AbstractReceiver** and implement these methods. 
 This is an example for one of them:
 
 ```java
@@ -76,14 +76,14 @@ The second argument, of type **Decoder.Request** is used to decode the request.
 
 The third argument, of type **Encode** is used to encode the response.
 
-Every request is implemented by `com.tesobe.obp.transport.spi.MockResponder` 
+Every request is implemented by `com.tesobe.obp.transport.spi.MockReceiver` 
 used to test the **AbstractResonder**. 
 The Demo gives a more complete example: `com.tesobe.obp.demo.south.DemoData`.
 A third test worth looking at because it implements the **North** and **South** 
 sides is: `com.tesobe.obp.transport.spi.ConnectorTest`.
 
-To get you started, you may use `com.tesobe.obp.transport.spi.DefaultResponder`.
-It has a no-op implementation of every method in AbstractResponder.
+To get you started, you may use `com.tesobe.obp.transport.spi.DefaultReceiver`.
+It has a no-op implementation of every method in AbstractReceiver.
 
 ### Implementing the North
 
@@ -107,15 +107,15 @@ Connector connector = factory.connector(sender);
 
 The sender sends messages to the south and receives the responses.
 If the south is local to the north, the sender only has one method to call on 
-**MyResponder**, an implementation of `com.tesobe.obp.transport.spi.Receiver`:
+**MyReceiver**, an implementation of `com.tesobe.obp.transport.spi.Receiver`:
 
 ```java
-MyResponder responder = new MyResponder(decoder, encoder);
-Sender = request -> responder.respond(request);
+MyReceiver receiver = new MyReceiver(decoder, encoder);
+Sender = request -> receiver.respond(request);
 ```
 
 For a simple but complete implementation of **Receiver** for testing see 
-`com.tesobe.obp.transport.spi.MockResponder`.
+`com.tesobe.obp.transport.spi.MockReceiver`.
 
 Now, to use the **connector** simply call the methods, for example:
 
