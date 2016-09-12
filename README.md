@@ -204,7 +204,7 @@ obp-ri-demo/src/main/resources/com/tesobe/obp/demo/south/producer.props
 Command line flags for the south demo
 
 ```
-java -jar obp-ri-demo/target/obp-ri-demo-2016.0-SNAPSHOT-jar-with-dependencies.jar -h
+java -jar obp-ri-demo/target/obp-ri-demo-2016.9-SNAPSHOT-jar-with-dependencies.jar -h
 Option                             Description
 ------                             -----------
 -?, -h, --help                     This message.
@@ -219,7 +219,7 @@ Option                             Description
 Start the south demo
 
 ```
-java -jar obp-ri-demo/target/obp-ri-demo-2016.0-SNAPSHOT-jar-with-dependencies.jar&
+java -jar obp-ri-demo/target/obp-ri-demo-2016.9-SNAPSHOT-jar-with-dependencies.jar&
 ```
 
 Try a request

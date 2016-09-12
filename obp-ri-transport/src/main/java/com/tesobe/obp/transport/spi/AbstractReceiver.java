@@ -13,17 +13,18 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
 
 import static java.util.Objects.nonNull;
 
 /**
- * @since 2016.0
+ * @since 2016.9
  */
-@SuppressWarnings("WeakerAccess") public abstract class AbstractResponder
+@SuppressWarnings("WeakerAccess") public abstract class AbstractReceiver
   implements Receiver
 {
-  public AbstractResponder(Decoder d, Encoder e)
+  public AbstractReceiver(Decoder d, Encoder e)
   {
     assert d != null;
     assert e != null;
@@ -31,37 +32,52 @@ import static java.util.Objects.nonNull;
     decoder = d;
     encoder = e;
 
-    api.put("getBank", this::getBank);
-    api.put("getBankAccount", this::getAccount);
-    api.put("getBankAccounts", this::getAccounts);
-    api.put("getBanks", this::getBanks);
-    api.put("getPublicAccounts", this::getAccounts);
-    api.put("getTransaction", this::getTransaction);
-    api.put("getTransactions", this::getTransactions);
-    api.put("getUser", this::getUser);
-    api.put("getUserAccounts", this::getAccounts);
-    api.put("saveTransaction", this::saveTransaction);
+    api.put("get account", this::getAccount);
+    api.put("get accounts", this::getAccounts);
+    api.put("get bank", this::getBank);
+    api.put("get banks", this::getBanks);
+    api.put("get transaction", this::getTransaction);
+    api.put("get transactions", this::getTransactions);
+    api.put("get user", this::getUser);
+    api.put("save transaction", this::saveTransaction);
   }
 
+  /**
+   * Decode request, find handler, return result.
+   * Version is ignored for now.
+   *
+   * @param request anything
+   *
+   * @return Error message if anything goes wrong
+   */
   @Override public String respond(Message request)
   {
-    String result = null;
+    String response = null;
 
     if(nonNull(request))
     {
       try
       {
-        Decoder.Request decoded = decoder.request(request.payload);
-        String name = decoded.name();
-        BiFunction<Decoder.Request, Encoder, String> call = api.get(name);
+        Optional<Decoder.Request> decoded = decoder.request(request.payload);
 
-        if(nonNull(call))
+        if(decoded.isPresent())
         {
-          result = call.apply(decoded, encoder);
+          String name = decoded.get().name();
+//          String version = decoded.get().version();
+          BiFunction<Decoder.Request, Encoder, String> call = api.get(name);
+
+          if(nonNull(call))
+          {
+            response = call.apply(decoded.get(), encoder);
+          }
+          else
+          {
+            log.error("Not found: '{}'", name);
+          }
         }
         else
         {
-          log.error("Not found: '{}'", name);
+          log.error("{}", request);
         }
       }
       catch(Exception e)
@@ -70,9 +86,14 @@ import static java.util.Objects.nonNull;
       }
     }
 
-    log.trace("{} \u2192 {}", request, result);
+    if(response == null)
+    {
+      response = encoder.error(String.valueOf(request));
+    }
 
-    return result;
+    log.trace("{} \u2192 {}", request, response);
+
+    return response;
   }
 
   protected abstract String getAccount(Decoder.Request r, Encoder e);
@@ -95,5 +116,5 @@ import static java.util.Objects.nonNull;
   final Encoder encoder;
   static final Map<String, BiFunction<Decoder.Request, Encoder, String>> api
     = new HashMap<>();
-  static final Logger log = LoggerFactory.getLogger(AbstractResponder.class);
+  static final Logger log = LoggerFactory.getLogger(AbstractReceiver.class);
 }

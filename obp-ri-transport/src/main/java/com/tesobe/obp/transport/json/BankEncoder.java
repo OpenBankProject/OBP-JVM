@@ -29,10 +29,10 @@ import org.json.JSONObject;
     @SuppressWarnings("UnnecessaryLocalVariable")
     JSONObject json = new JSONObject()
       .put("id", bank.id())
-      .put("short_name", bank.shortName())
-      .put("full_name", bank.fullName())
+      .put("short", bank.shortName())
+      .put("name", bank.fullName())
       .put("logo", bank.logo())
-      .put("website", bank.url());
+      .put("url", bank.url());
     // @formatter:on
 
     return json;

@@ -15,19 +15,19 @@ import com.tesobe.obp.transport.User;
 import java.util.Optional;
 
 /**
- * @since 2016.0
+ * @since 2016.9
  */
 public interface Decoder
 {
-  Request request(String request);
+  Optional<Request> request(String request);
 
-  Optional<Account> account(String response) throws DecoderException;
+  Optional<Account> account(String response) ;
 
   Iterable<Account> accounts(String response);
 
-  Optional<Bank> bank(String response) throws DecoderException;
+  Optional<Bank> bank(String response) ;
 
-  Iterable<Bank> banks(String response) throws DecoderException;
+  Iterable<Bank> banks(String response) ;
 
   Optional<String> transactionId(String response);
 
@@ -42,6 +42,8 @@ public interface Decoder
     String raw();
 
     String name();
+
+    String version();
 
     Optional<String> accountId();
 

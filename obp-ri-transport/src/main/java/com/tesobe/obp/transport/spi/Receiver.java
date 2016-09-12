@@ -10,9 +10,16 @@ package com.tesobe.obp.transport.spi;
 import com.tesobe.obp.transport.Message;
 
 /**
- * @since 2016.0
+ * @since 2016.9
  */
 @SuppressWarnings("WeakerAccess") public interface Receiver
 {
+  /**
+   * Respond to a request. On error, please respond with an error message.
+   *
+   * @param request anything
+   *
+   * @return should not return null to avoid exceptions
+   */
   String respond(Message request);
 }

@@ -6,7 +6,7 @@
  *
  */
 
-package com.tesobe.obp.util;
+package com.tesobe.obp.transport.json;
 
 import org.junit.Ignore;
 import org.junit.Test;

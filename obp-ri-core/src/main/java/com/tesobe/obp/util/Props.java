@@ -9,10 +9,12 @@ package com.tesobe.obp.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
- * @since 2016.0
+ * @since 2016.9
  */
 public class Props
 {
@@ -29,7 +31,16 @@ public class Props
 
   public Properties getProperties()
   {
-    return properties;
+    return new Properties(properties);
+  }
+
+  public Map<String, Object> toMap()
+  {
+    HashMap<String, Object> map = new HashMap<>();
+
+    properties.forEach((k, v) -> map.put(k.toString(), v));
+
+    return map;
   }
 
   private Properties properties = new Properties();

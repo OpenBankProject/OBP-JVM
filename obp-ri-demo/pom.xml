@@ -13,7 +13,7 @@
   <parent>
     <artifactId>obp-ri</artifactId>
     <groupId>com.tesobe.obp</groupId>
-    <version>2016.9-ALPHA4</version>
+    <version>2016.9-SNAPSHOT</version>
   </parent>
 
   <artifactId>obp-ri-demo</artifactId>

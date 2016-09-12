@@ -13,7 +13,7 @@ import com.tesobe.obp.transport.Connector;
 import com.tesobe.obp.transport.Sender;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.transport.spi.Decoder;
-import com.tesobe.obp.transport.spi.DefaultResponder;
+import com.tesobe.obp.transport.spi.DefaultReceiver;
 import com.tesobe.obp.transport.spi.Encoder;
 import com.tesobe.obp.transport.spi.Receiver;
 
@@ -32,7 +32,7 @@ public class SuperSimpleDemo
     Decoder decoder = factory.decoder();
     Encoder encoder = factory.encoder();
 
-    Receiver south = new DefaultResponder(decoder, encoder)
+    Receiver south = new DefaultReceiver(decoder, encoder)
     {
       @Override protected String getBank(Decoder.Request r, Encoder e)
       {

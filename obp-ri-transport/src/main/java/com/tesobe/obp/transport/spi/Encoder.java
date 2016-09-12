@@ -15,7 +15,7 @@ import com.tesobe.obp.transport.User;
 import java.util.List;
 
 /**
- * @since 2016.0
+ * @since 2016.9
  */
 public interface Encoder
 {

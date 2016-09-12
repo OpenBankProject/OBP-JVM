@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.concurrent.locks.LockSupport;
 
 /**
- * @since 2016.0
+ * @since 2016.9
  */
 @SuppressWarnings("WeakerAccess") public class South
 {
@@ -43,8 +43,8 @@ import java.util.concurrent.locks.LockSupport;
       Transport.Factory factory = Transport.defaultFactory();
       Receiver responder = new DemoData(factory.decoder(), factory.encoder());
       SimpleSouth south = new SimpleSouth(consumerTopic, producerTopic,
-        new Props(South.class, consumerProps).getProperties(),
-        new Props(South.class, producerProps).getProperties(),
+        new Props(South.class, consumerProps).toMap(),
+        new Props(South.class, producerProps).toMap(),
         new LoggingReceiver(responder));
 
       south.receive();

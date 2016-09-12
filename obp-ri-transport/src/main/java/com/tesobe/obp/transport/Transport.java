@@ -7,8 +7,6 @@
  */
 package com.tesobe.obp.transport;
 
-import com.tesobe.obp.transport.json.DecoderSep1026;
-import com.tesobe.obp.transport.json.EncoderSep1026;
 import com.tesobe.obp.transport.spi.Decoder;
 import com.tesobe.obp.transport.spi.Encoder;
 import com.tesobe.obp.transport.spi.DefaultConnector;
@@ -18,27 +16,26 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.tesobe.obp.transport.Transport.Encoding.json;
-import static com.tesobe.obp.transport.Transport.Version.legacy;
-import static com.tesobe.obp.transport.Transport.Version.sep2016;
+import static com.tesobe.obp.transport.Transport.Version.Sep2016;
 
 /**
  * Transport manages the different versions of the transport api.
  *
- * @since 2016.0
+ * @since 2016.9
  */
 @SuppressWarnings("WeakerAccess") public abstract class Transport
 {
   /**
-   * Uses {@link Version#legacy}, {@link Encoding#json}.
+   * Uses {@link Version#Sep2016}, {@link Encoding#json}.
    *
    * @return a factory that is always available
    *
-   * @since 2016.0
+   * @since 2016.9
    */
   public static Factory defaultFactory()
   {
     //noinspection OptionalGetWithoutIsPresent
-    return factory(Version.legacy, Encoding.json).get();
+    return factory(Version.Sep2016, Encoding.json).get();
   }
 
   /**
@@ -98,7 +95,7 @@ import static com.tesobe.obp.transport.Transport.Version.sep2016;
      * @return Connector
      *
      * @throws RuntimeException sender is null
-     * @since 2016.0
+     * @since 2016.9
      */
     Connector connector(Sender s);
 
@@ -109,7 +106,7 @@ import static com.tesobe.obp.transport.Transport.Version.sep2016;
 
   public enum Version
   {
-    legacy, sep2016
+    Sep2016
   }
 
   public enum Encoding
@@ -127,11 +124,9 @@ import static com.tesobe.obp.transport.Transport.Version.sep2016;
     EnumMap<Version, Decoder> ds = new EnumMap<>(Version.class);
     EnumMap<Version, Encoder> es = new EnumMap<>(Version.class);
 
-    ds.put(legacy, new com.tesobe.obp.transport.json.Decoder(legacy));
-    ds.put(sep2016, new DecoderSep1026(sep2016));
+    ds.put(Sep2016, new com.tesobe.obp.transport.json.Decoder(Sep2016));
 
-    es.put(legacy, new com.tesobe.obp.transport.json.Encoder(legacy));
-    es.put(sep2016, new EncoderSep1026(sep2016));
+    es.put(Sep2016, new com.tesobe.obp.transport.json.Encoder(Sep2016));
 
     decoders.put(json, ds);
     encoders.put(json, es);

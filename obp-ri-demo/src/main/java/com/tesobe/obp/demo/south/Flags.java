@@ -13,7 +13,7 @@ import joptsimple.OptionSpec;
 /**
  * Command line flags accepted by {@link South}.
  *
- * @since 2016.0
+ * @since 2016.9
  */
 class Flags extends Options
 {

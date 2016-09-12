@@ -21,17 +21,24 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.util.Collections;
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * @since 2016.0
+ * @since 2016.9
  */
 @SuppressWarnings("WeakerAccess") public class SimpleTransport implements Sender
 {
+  /**
+   * Use default properties for consumer and producer.
+   *
+   * @param consumerTopic required
+   * @param producerTopic required
+   */
   public SimpleTransport(String consumerTopic, String producerTopic)
   {
     this.consumerTopic = consumerTopic;
@@ -41,14 +48,40 @@ import java.util.concurrent.atomic.AtomicBoolean;
     producer = new KafkaProducer<>(producer());
   }
 
+  /**
+   * Use default properties for consumer and producer for those keys that are
+   * not provided as argument.
+   *
+   * @param consumerTopic required
+   * @param producerTopic required
+   * @param consumerProps override selected kafka config keys
+   * @param producerProps override selected kafka config keys
+   */
   public SimpleTransport(String consumerTopic, String producerTopic,
-    Properties consumerProps, Properties producerProps)
+    Map<String, Object> consumerProps, Map<String, Object> producerProps)
   {
     this.consumerTopic = consumerTopic;
     this.producerTopic = producerTopic;
 
-    consumer = new KafkaConsumer<>(consumerProps);
-    producer = new KafkaProducer<>(producerProps);
+    HashMap<String, Object> cp = new HashMap<>();
+    HashMap<String, Object> pp = new HashMap<>();
+
+    cp.putAll(consumer());
+
+    if(consumerProps != null)
+    {
+      cp.putAll(consumerProps);
+    }
+
+    pp.putAll(producer());
+
+    if(producerProps != null)
+    {
+      pp.putAll(producerProps);
+    }
+
+    consumer = new KafkaConsumer<>(cp);
+    producer = new KafkaProducer<>(pp);
   }
 
   @Override public String send(Message request) throws InterruptedException
@@ -65,13 +98,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
     log.trace("{} {} {}", producerTopic, key, value);
 
     producer.send(new ProducerRecord<>(producerTopic, key, value));
+
+    MDC.remove("kafka");
   }
 
   @SuppressWarnings("InfiniteLoopStatement") public void receive()
   {
     final String type = getClass().getSimpleName();
 
-    service.submit(new Callable<Void>()
+    service.submit(new Callable<Void>() // lambda fails to compile here
     {
       @Override public Void call()
       {
@@ -100,6 +135,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
         consumer.close();
 
+        MDC.remove("kafka");
+
         return null;
       }
     });
@@ -126,9 +163,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
    *
    * @return props to use for consumer when no properties file is given to ctor.
    */
-  protected Properties consumer()
+  protected Map<String, Object> consumer()
   {
-    Properties props = new Properties();
+    Map<String, Object> props = new HashMap<>();
 
     props.put("bootstrap.servers", "localhost:9092");
     props.put("group.id", "test");
@@ -145,9 +182,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
    *
    * @return props to use for producer when no properties file is given to ctor.
    */
-  protected Properties producer()
+  protected Map<String, Object> producer()
   {
-    Properties props = new Properties();
+    Map<String, Object> props = new HashMap<>();
 
     props.put("bootstrap.servers", "localhost:9092");
     props.put("acks", "all");

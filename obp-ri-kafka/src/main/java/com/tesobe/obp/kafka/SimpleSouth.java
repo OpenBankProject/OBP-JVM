@@ -10,10 +10,10 @@ package com.tesobe.obp.kafka;
 import com.tesobe.obp.transport.Message;
 import com.tesobe.obp.transport.spi.Receiver;
 
-import java.util.Properties;
+import java.util.Map;
 
 /**
- * @since 2016.0
+ * @since 2016.9
  */
 @SuppressWarnings("WeakerAccess") public class SimpleSouth
   extends SimpleTransport
@@ -26,7 +26,8 @@ import java.util.Properties;
   }
 
   public SimpleSouth(String consumerTopic, String producerTopic,
-    Properties consumerProps, Properties producerProps, Receiver r)
+    Map<String, Object> consumerProps, Map<String, Object> producerProps,
+    Receiver r)
   {
     super(consumerTopic, producerTopic, consumerProps, producerProps);
 

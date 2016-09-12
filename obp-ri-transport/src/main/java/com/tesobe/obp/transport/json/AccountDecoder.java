@@ -48,21 +48,17 @@ class AccountDecoder implements Account
 
   @Override public String currency()
   {
-    JSONObject balance = account.optJSONObject("balance");
-
-    return balance != null ? balance.optString("currency") : null;
+    return account.optString("currency", null);
   }
 
   @Override public String amount()
   {
-    JSONObject balance = account.optJSONObject("balance");
-
-    return balance != null ? balance.optString("amount") : null;
+    return account.optString("amount", null);
   }
 
   @Override public String iban()
   {
-    return account.optString("IBAN", null);
+    return account.optString("iban", null);
   }
 
   @Override public String toString()

@@ -43,13 +43,13 @@ public interface Transaction
   String account();
   String bank();
 
-  String name();
-  String account_number();
+  String otherId();
+  String otherAccount();
 
   String type();
   String description();
   ZonedDateTime posted();
   ZonedDateTime completed();
-  String new_balance();
+  String balance();
   String value();
 }

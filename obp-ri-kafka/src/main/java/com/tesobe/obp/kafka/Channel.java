@@ -15,7 +15,8 @@ import java.util.concurrent.SynchronousQueue;
 
 /**
  * Todo support for multiple producers.
- * @since 2016.0
+ *
+ * @since 2016.9
  */
 @SuppressWarnings("WeakerAccess") class Channel
 {

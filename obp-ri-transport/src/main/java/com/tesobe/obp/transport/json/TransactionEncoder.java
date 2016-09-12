@@ -9,7 +9,6 @@
 package com.tesobe.obp.transport.json;
 
 import com.tesobe.obp.transport.Transaction;
-import com.tesobe.obp.util.Json;
 import org.json.JSONObject;
 
 @SuppressWarnings("WeakerAccess") class TransactionEncoder
@@ -27,19 +26,17 @@ import org.json.JSONObject;
     @SuppressWarnings("UnnecessaryLocalVariable")
     JSONObject json = new JSONObject()
       .put("id", transaction.id())
-      .put("this_account", new JSONObject()
-        .put("id", transaction.account())
-        .put("bank", transaction.bank()))
-      .put("counterparty", new JSONObject()
-        .put("name", transaction.name())
-        .put("account_number", transaction.account_number()))
-      .put("details", new JSONObject()
-        .put("type", transaction.type())
-        .put("description", transaction.description())
-        .put("posted", Json.toJson(transaction.posted()))
-        .put("completed", Json.toJson(transaction.completed()))
-        .put("new_balance", transaction.new_balance())
-        .put("value", transaction.value()));
+      .put("account", transaction.account())
+      .put("bank", transaction.bank())
+      .put("other", new JSONObject()
+        .put("id", transaction.otherId())
+        .put("account", transaction.otherAccount()))
+      .put("type", transaction.type())
+      .put("description", transaction.description())
+      .put("posted", Json.toJson(transaction.posted()))
+      .put("completed", Json.toJson(transaction.completed()))
+      .put("balance", transaction.balance())
+      .put("value", transaction.value());
     // @formatter:on
 
     return json;

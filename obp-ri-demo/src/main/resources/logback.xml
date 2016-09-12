@@ -28,7 +28,7 @@
 
   <logger name="com.tesobe.obp" level="trace"/>
   <logger name="com.tesobe.obp.transport.spi.DefaultConnector" level="trace"/>
-  <logger name="com.tesobe.obp.transport.spi.AbstractResponder" level="trace"/>
+  <logger name="com.tesobe.obp.transport.spi.AbstractReceiver" level="trace"/>
 
   <logger name="com.tesobe.obp.transport.spi.LoggingReceiver" level="info"
     additivity="false">

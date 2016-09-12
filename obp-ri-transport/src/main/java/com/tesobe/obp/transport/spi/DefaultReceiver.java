@@ -11,13 +11,13 @@ package com.tesobe.obp.transport.spi;
 import static java.util.Objects.nonNull;
 
 /**
- * Implements {@link AbstractResponder}'s abstract methods without functionality
+ * Implements {@link AbstractReceiver}'s abstract methods without functionality
  * returning {@code "null"} or {@code "[]"}.
  */
-@SuppressWarnings("WeakerAccess") public class DefaultResponder
-  extends AbstractResponder
+@SuppressWarnings("WeakerAccess") public class DefaultReceiver
+  extends AbstractReceiver
 {
-  public DefaultResponder(Decoder d, Encoder e)
+  public DefaultReceiver(Decoder d, Encoder e)
   {
     super(d, e);
   }

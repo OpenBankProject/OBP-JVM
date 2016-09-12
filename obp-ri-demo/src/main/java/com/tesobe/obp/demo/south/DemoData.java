@@ -12,9 +12,9 @@ import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.User;
+import com.tesobe.obp.transport.spi.AbstractReceiver;
 import com.tesobe.obp.transport.spi.Decoder;
 import com.tesobe.obp.transport.spi.Encoder;
-import com.tesobe.obp.transport.spi.AbstractResponder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,8 +31,7 @@ import static java.lang.reflect.Proxy.newProxyInstance;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 
-@SuppressWarnings("WeakerAccess") public class DemoData extends
-  AbstractResponder
+@SuppressWarnings("WeakerAccess") class DemoData extends AbstractReceiver
 {
   public DemoData(Decoder d, Encoder e)
   {

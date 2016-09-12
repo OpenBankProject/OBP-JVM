@@ -5,7 +5,8 @@
  * that can be found in the LICENSE file.
  *
  */
-package com.tesobe.obp.util;
+
+package com.tesobe.obp.transport.json;
 
 import java.time.DateTimeException;
 import java.time.ZonedDateTime;
@@ -13,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 
 import static java.util.Objects.nonNull;
 
-@SuppressWarnings("WeakerAccess") public final class Json
+@SuppressWarnings("WeakerAccess")  final class Json
 {
   /**
    * Uses the format JavaScript Date uses: yyyy-MM-dd'T'HH:mm:ss.SSSZ.

@@ -7,14 +7,12 @@
  */
 package com.tesobe.obp.transport;
 
-import com.tesobe.obp.transport.spi.DecoderException;
-
 import java.util.Optional;
 
 /**
  * North side API.
  *
- * @since 2016.0
+ * @since 2016.9
  */
 @SuppressWarnings("WeakerAccess") public interface Connector
 {
@@ -32,10 +30,9 @@ import java.util.Optional;
    * returned.
    *
    * @throws InterruptedException Network trouble
-   * @throws DecoderException     Invalid content in the network packet.
    */
   Optional<Account> getAccount(String bankId, String accountId)
-    throws InterruptedException, DecoderException;
+    throws InterruptedException;
 
   /**
    * @param bankId An invalid bank id means an empty result.
@@ -51,21 +48,18 @@ import java.util.Optional;
    * returned.
    *
    * @throws InterruptedException Network trouble
-   * @throws DecoderException     Invalid content in the network packet.
    */
   Optional<Account> getAccount(String bankId, String accountId, String userId)
-    throws InterruptedException, DecoderException;
+    throws InterruptedException;
 
   Iterable<Account> getAccounts(String bankId)
-    throws InterruptedException, DecoderException;
+    throws InterruptedException;
 
   /**
    * All private accounts the user is explicitly linked to.
    * No public accounts that the user is not linked to will be returned.
    * The resulting iterable's {@code next()} will not produce {@code null} but
    * fields in the accounts returned may be {@code null}.
-   * A {@link DecoderException} can be thrown at any time because the decoding
-   * is done lazily during the iteration.
    *
    * @param bankId An invalid bank id means an empty result.
    * An all white space bank id is invalid.
@@ -75,12 +69,9 @@ import java.util.Optional;
    * @return The user's private banks or an empty result.
    *
    * @throws InterruptedException Network trouble
-   * @throws DecoderException     Invalid content in the network packet.
-   *                              The exception may be delayed until the
-   *                              iterable is dereferenced.
    */
   Iterable<Account> getAccounts(String bankId, String userId)
-    throws InterruptedException, DecoderException;
+    throws InterruptedException;
 
   /**
    * Anonymous request for a bank.
@@ -90,10 +81,9 @@ import java.util.Optional;
    * @return empty if the bankId is invalid
    *
    * @throws InterruptedException Network trouble
-   * @throws DecoderException     Invalid content in the network packet.
    */
   Optional<Bank> getBank(String bankId)
-    throws InterruptedException, DecoderException;
+    throws InterruptedException;
 
   /**
    * @param bankId An invalid bank id means an empty result.
@@ -105,10 +95,9 @@ import java.util.Optional;
    * If the bank is public but not linked to the user, empty will be returned.
    *
    * @throws InterruptedException Network trouble
-   * @throws DecoderException     Invalid content in the network packet.
    */
   Optional<Bank> getBank(String bankId, String userId)
-    throws InterruptedException, DecoderException;
+    throws InterruptedException;
 
   /**
    * Anonymously get banks.
@@ -116,17 +105,14 @@ import java.util.Optional;
    * @return
    *
    * @throws InterruptedException Network trouble
-   * @throws DecoderException     Invalid content in the network packet.
    */
-  Iterable<Bank> getBanks() throws InterruptedException, DecoderException;
+  Iterable<Bank> getBanks() throws InterruptedException;
 
   /**
    * All private banks the user is explicitly linked to.
    * No public banks that the user is not linked to will be returned.
    * The resulting iterable's {@code next()} will not produce {@code null} but
    * fields in the banks returned may be {@code null}.
-   * A {@link DecoderException} can be thrown at any time because the decoding
-   * is done lazily during the iteration.
    *
    * @param userId An invalid user id means an empty result.
    * An all white space user id is invalid.
@@ -134,28 +120,25 @@ import java.util.Optional;
    * @return The user's private banks or an empty result.
    *
    * @throws InterruptedException Network trouble
-   * @throws DecoderException     Invalid content in the network packet.
-   *                              The exception may be delayed until the
-   *                              iterable is dereferenced.
    */
   Iterable<Bank> getBanks(String userId)
-    throws InterruptedException, DecoderException;
+    throws InterruptedException;
 
   Optional<Transaction> getTransaction(String bankId, String accountId,
     String transactionId, String userId)
-    throws InterruptedException, DecoderException;
+    throws InterruptedException;
 
   Iterable<Transaction> getTransactions(String bankId, String accountId,
-    String userId) throws InterruptedException, DecoderException;
+    String userId) throws InterruptedException;
 
   Optional<Transaction> getTransaction(String bankId, String accountId,
-    String transactionId) throws InterruptedException, DecoderException;
+    String transactionId) throws InterruptedException;
 
   Iterable<Transaction> getTransactions(String bankId, String accountId)
-    throws InterruptedException, DecoderException;
+    throws InterruptedException;
 
   Optional<User> getUser(String userId)
-    throws InterruptedException, DecoderException;
+    throws InterruptedException;
 
   Optional<String> saveTransaction(String userId, String accountId,
     String currency, String amount, String otherAccountId,

@@ -14,7 +14,7 @@
 
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri</artifactId>
-  <version>2016.9-ALPHA4</version>
+  <version>2016.9-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>The Open Bank Project Reference Implementation</name>
 

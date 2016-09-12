@@ -7,10 +7,10 @@
  */
 package com.tesobe.obp.kafka;
 
-import java.util.Properties;
+import java.util.Map;
 
 /**
- * @since 2016.0
+ * @since 2016.9
  */
 @SuppressWarnings("WeakerAccess") public class SimpleNorth
   extends SimpleTransport
@@ -21,7 +21,7 @@ import java.util.Properties;
   }
 
   public SimpleNorth(String consumerTopic, String producerTopic,
-    Properties consumerProps, Properties producerProps)
+    Map<String, Object> consumerProps, Map<String, Object> producerProps)
   {
     super(consumerTopic, producerTopic, consumerProps, producerProps);
   }

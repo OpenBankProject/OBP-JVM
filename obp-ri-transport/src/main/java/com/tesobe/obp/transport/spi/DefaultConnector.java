@@ -18,7 +18,7 @@ import java.util.UUID;
 /**
  * Compatible to mid 2016 OBP-API.
  *
- * @since 2016.0
+ * @since 2016.9
  */
 @SuppressWarnings("WeakerAccess") public class DefaultConnector
   implements Connector
@@ -32,10 +32,11 @@ import java.util.UUID;
   }
 
   @Override public Optional<Account> getAccount(String bankId, String accountId,
-    String userId) throws InterruptedException, DecoderException
+    String userId) throws InterruptedException
   {
+    String id = UUID.randomUUID().toString();
     String request = encoder.getAccount(userId, bankId, accountId).toString();
-    String response = sender.send(new Message("id", request));
+    String response = sender.send(new Message(id, request));
 
     log.trace("{} \u2192 {}", request, response);
 
@@ -43,7 +44,7 @@ import java.util.UUID;
   }
 
   @Override public Optional<Account> getAccount(String bankId, String accountId)
-    throws InterruptedException, DecoderException
+    throws InterruptedException
   {
     String id = UUID.randomUUID().toString();
     String request = encoder.getAccount(bankId, accountId).toString();
@@ -56,7 +57,7 @@ import java.util.UUID;
 
 
   @Override public Iterable<Account> getAccounts(String bankId, String userId)
-    throws InterruptedException, DecoderException
+    throws InterruptedException
   {
     String request = encoder.getAccounts(userId, bankId).toString();
     String response = sender.send(new Message("id", request));
@@ -67,7 +68,7 @@ import java.util.UUID;
   }
 
   @Override public Iterable<Bank> getBanks(String userId)
-    throws InterruptedException, DecoderException
+    throws InterruptedException
   {
     String id = UUID.randomUUID().toString();
     String request = encoder.getBanks(userId).toString();
@@ -81,7 +82,7 @@ import java.util.UUID;
   @Override
   public Optional<Transaction> getTransaction(String bankId, String accountId,
     String transactionId, String userId)
-    throws InterruptedException, DecoderException
+    throws InterruptedException
   {
     String id = UUID.randomUUID().toString();
     String request = encoder
@@ -95,7 +96,7 @@ import java.util.UUID;
 
   @Override
   public Iterable<Transaction> getTransactions(String bankId, String accountId,
-    String userId) throws InterruptedException, DecoderException
+    String userId) throws InterruptedException
   {
     String id = UUID.randomUUID().toString();
     String request = encoder.getTransactions(bankId, accountId, userId)
@@ -108,7 +109,7 @@ import java.util.UUID;
   }
 
   @Override public Iterable<Account> getAccounts(String bankId)
-    throws InterruptedException, DecoderException
+    throws InterruptedException
   {
     String id = UUID.randomUUID().toString();
     String request = encoder.getAccounts(bankId).toString();
@@ -132,7 +133,7 @@ import java.util.UUID;
   }
 
   @Override public Optional<Bank> getBank(String bankId, String userId)
-    throws InterruptedException, DecoderException
+    throws InterruptedException
   {
     String id = UUID.randomUUID().toString();
     String request = encoder.getBank(userId, bankId).toString();
@@ -144,7 +145,7 @@ import java.util.UUID;
   }
 
   @Override public Iterable<Bank> getBanks()
-    throws InterruptedException, DecoderException
+    throws InterruptedException
   {
     String id = UUID.randomUUID().toString();
     String request = encoder.getBanks().toString();
@@ -157,7 +158,7 @@ import java.util.UUID;
 
   @Override
   public Optional<Transaction> getTransaction(String bankId, String accountId,
-    String transactionId) throws InterruptedException, DecoderException
+    String transactionId) throws InterruptedException
   {
     String id = UUID.randomUUID().toString();
     String request = encoder.getTransaction(bankId, accountId, transactionId)
@@ -171,7 +172,7 @@ import java.util.UUID;
 
   @Override
   public Iterable<Transaction> getTransactions(String bankId, String accountId)
-    throws InterruptedException, DecoderException
+    throws InterruptedException
   {
     String id = UUID.randomUUID().toString();
     String request = encoder.getTransactions(bankId, accountId).toString();
@@ -183,7 +184,7 @@ import java.util.UUID;
   }
 
   @Override public Optional<User> getUser(String userId)
-    throws InterruptedException, DecoderException
+    throws InterruptedException
   {
     String id = UUID.randomUUID().toString();
     String request = encoder.getUser(userId).toString();

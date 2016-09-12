@@ -31,10 +31,9 @@ import org.json.JSONObject;
       .put("label", account.label())
       .put("number", account.number())
       .put("type", account.type())
-      .put("balance", new JSONObject()
-        .put("currency", account.currency())
-        .put("amount", account.amount()))
-      .put("IBAN", account.iban());
+      .put("currency", account.currency())
+      .put("amount", account.amount())
+      .put("iban", account.iban());
     // @formatter:on
 
     return json;

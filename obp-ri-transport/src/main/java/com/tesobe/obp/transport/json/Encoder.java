@@ -26,7 +26,7 @@ import static java.util.Objects.nonNull;
  * <p>
  * Todo make robust.
  *
- * @since 2016.0
+ * @since 2016.9
  */
 @SuppressWarnings("WeakerAccess") public class Encoder
   implements com.tesobe.obp.transport.spi.Encoder
@@ -38,91 +38,86 @@ import static java.util.Objects.nonNull;
 
   @Override public Request getAccount(String bankId, String accountId)
   {
-    return request("getBankAccount")
-      .arguments("bankId", bankId, "accountId", accountId);
+    return request("get account").put("bank", bankId).put("account", accountId);
   }
 
   @Override
   public Request getAccount(String userId, String bankId, String accountId)
   {
-    return request("getBankAccount")
-      .arguments("username", userId, "bankId", bankId, "accountId", accountId);
+    return request("get account").put("user", userId).put("bank", bankId)
+      .put("account", accountId);
+  }
+
+  @Override public Request getAccounts(String bankId)
+  {
+    return request("get accounts").put("bank", bankId);
+  }
+
+  @Override public Request getAccounts(String userId, String bankId)
+  {
+    return request("get accounts").put("user", userId).put("bank", bankId);
+  }
+
+  @Override public Request getBank(String userId, String bankId)
+  {
+    return request("get bank").put("user", userId).put("bank", bankId);
+  }
+
+  @Override public Request getBank(String bankId)
+  {
+    return request("get bank").put("bank", bankId);
   }
 
   @Override public Request getBanks()
   {
-    return request("getBanks");
+    return request("get banks");
+  }
+
+  @Override public Request getBanks(String userId)
+  {
+    return request("get banks").put("user", userId);
   }
 
   @Override public Request getTransaction(String bankId, String accountId,
     String transactionId)
   {
-    return request("getTransaction")
-      .arguments("bankId", bankId, "accountId", accountId, "transactionId",
-        transactionId);
-  }
-
-  @Override public Request getTransactions(String bankId, String accountId)
-  {
-    return request("getTransactions")
-      .arguments("bankId", bankId, "accountId", accountId);
-  }
-
-  @Override public Request getUser(String userId)
-  {
-    return request("getUser").arguments("username", userId);
-  }
-
-  @Override public Request getBanks(String userId)
-  {
-    return request("getBanks").arguments("username", userId);
+    return request("get transaction").put("bank", bankId)
+      .put("account", accountId).put("transaction", transactionId);
   }
 
   @Override public Request getTransaction(String bankId, String accountId,
     String transactionId, String userId)
   {
-    return request("getTransaction")
-      .arguments("username", userId, "accountId", accountId, "bankId", bankId,
-        "transactionId", transactionId);
+    return request("get transaction").put("bank", bankId).put("user", userId)
+      .put("account", accountId).put("transaction", transactionId);
+  }
+
+  @Override public Request getTransactions(String bankId, String accountId)
+  {
+    return request("get transactions").put("bank", bankId)
+      .put("account", accountId);
   }
 
   @Override
   public Request getTransactions(String bankId, String accountId, String userId)
   {
-    return request("getTransactions")
-      .arguments("bankId", bankId, "accountId", accountId, "userId", userId);
+    return request("get transactions").put("bank", bankId)
+      .put("account", accountId).put("user", userId);
   }
 
-  @Override public Request getAccounts(String bankId)
+  @Override public Request getUser(String userId)
   {
-    return request("getBankAccounts").arguments("bankId", bankId);
-  }
-
-  @Override public Request getAccounts(String userId, String bankId)
-  {
-    return request("getBankAccounts")
-      .arguments("username", userId, "bankId", bankId);
-  }
-
-  @Override public Request getBank(String userId, String bankId)
-  {
-    return request("getBank").arguments("username", userId, "bankId", bankId);
-  }
-
-  @Override public Request getBank(String bankId)
-  {
-    return request("getBank").arguments("bankId", bankId);
+    return request("get user").put("user", userId);
   }
 
   @Override public Request saveTransaction(String userId, String accountId,
     String currency, String amount, String otherAccountId,
     String otherAccountCurrency, String transactionType)
   {
-    return request("saveTransaction")
-      .arguments("username", userId, "accountId", accountId, "currency",
-        currency, "amount", amount, "otherAccountId", otherAccountId,
-        "otherAccountCurrency", otherAccountCurrency, "transactionType",
-        transactionType);
+    return request("save transaction").put("user", userId)
+      .put("account", accountId).put("currency", currency).put("amount", amount)
+      .put("otherId", otherAccountId).put("otherCurrency", otherAccountCurrency)
+      .put("transactionType", transactionType);
   }
 
   protected RequestBuilder request(String name)
@@ -307,33 +302,23 @@ import static java.util.Objects.nonNull;
     {
       this.name = name;
 
-      request.put(name, JSONObject.NULL);
+      request.put("name", name);
+      request.put("version", version);
     }
 
     @Override public String toString()
     {
-      log.trace("{} {}", version, request);
-
       return request.toString();
     }
 
-    public Request arguments(String... kv)
+    public RequestBuilder put(String key, String value)
     {
-      for(int i = 0; i < kv.length - 1; i += 2)
-      {
-        arguments.put(kv[i], kv[i + 1]);
-      }
-
-      if(request.opt(name) == JSONObject.NULL)
-      {
-        request.put(name, arguments);
-      }
+      request.put(key, value);
 
       return this;
     }
 
     final String name;
-    final JSONObject arguments = new JSONObject();
     final JSONObject request = new JSONObject();
   }
 }

@@ -28,12 +28,12 @@ class BankDecoder implements Bank
 
   @Override public String shortName()
   {
-    return bank.optString("short_name", null);
+    return bank.optString("short", null);
   }
 
   @Override public String fullName()
   {
-    return bank.optString("full_name", null);
+    return bank.optString("name", null);
   }
 
   @Override public String logo()
@@ -43,7 +43,7 @@ class BankDecoder implements Bank
 
   @Override public String url()
   {
-    return bank.optString("website", null);
+    return bank.optString("url", null);
   }
 
   @Override public String toString()

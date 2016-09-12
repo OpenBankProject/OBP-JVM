@@ -12,7 +12,6 @@ import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.transport.User;
-import com.tesobe.obp.transport.spi.DecoderException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,14 +22,13 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
 
-import static com.tesobe.obp.util.Strings.white;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 /**
  * Internal JSON decoder. Only called by trusted code.
  *
- * @since 2016.0
+ * @since 2016.9
  */
 @SuppressWarnings("WeakerAccess") public class Decoder
   implements com.tesobe.obp.transport.spi.Decoder
@@ -40,71 +38,53 @@ import static java.util.Objects.nonNull;
     version = v;
   }
 
-  @Override public Request request(String request)
+  @Override public Optional<Request> request(String request)
   {
-    return new Request()
+    return Optional.of(new Request()
     {
       @Override public Optional<String> accountId()
       {
-        return arguments == null
-               ? Optional.empty()
-               : white(arguments.optString("accountId", null));
+        return Optional.ofNullable(json.optString("account", null));
       }
 
       @Override public Optional<String> bankId()
       {
-        return arguments == null
-               ? Optional.empty()
-               : white(arguments.optString("bankId", null));
+        return Optional.ofNullable(json.optString("bank", null));
       }
 
       @Override public Optional<String> transactionId()
       {
-        return arguments == null
-               ? Optional.empty()
-               : white(arguments.optString("transactionId", null));
+        return Optional.ofNullable(json.optString("transaction", null));
       }
 
       @Override public Optional<String> userId()
       {
-        return arguments == null
-               ? Optional.empty()
-               : white(arguments.optString("username", null));
+        return Optional.ofNullable(json.optString("user", null));
       }
 
       @Override public Optional<String> amount()
       {
-        return arguments == null
-               ? Optional.empty()
-               : white(arguments.optString("amount", null));
+        return Optional.ofNullable(json.optString("amount", null));
       }
 
       @Override public Optional<String> currency()
       {
-        return arguments == null
-               ? Optional.empty()
-               : white(arguments.optString("currency", null));
+        return Optional.ofNullable(json.optString("currency", null));
       }
 
       @Override public Optional<String> otherAccountId()
       {
-        return arguments == null
-               ? Optional.empty()
-               : white(arguments.optString("otherAccountId", null));
+        return Optional.ofNullable(json.optString("otherId", null));
       }
 
       @Override public Optional<String> otherAccountCurrency()
       {
-        return arguments == null
-               ? Optional.empty()
-               : white(arguments.optString("otherAccountCurrency", null));
+        return Optional.ofNullable(json.optString("otherCurrency", null));
       }
 
       @Override public Optional<String> transactionType()
       {
-        return arguments == null
-               ? Optional.empty()
-               : white(arguments.optString("transactionType", null));
+        return Optional.ofNullable(json.optString("transactionType", null));
       }
 
       /**
@@ -114,6 +94,8 @@ import static java.util.Objects.nonNull;
       {
         return name;
       }
+
+      @Override public String version() { return version; }
 
       @Override public String raw()
       {
@@ -126,21 +108,12 @@ import static java.util.Objects.nonNull;
       }
 
       JSONObject json = new JSONObject(request);
-      JSONObject arguments;
-      String name;
-
-      {
-        Iterator<String> keys = json.keys(); // Legacy api: only one key
-
-        name = keys.hasNext() ? keys.next() : null;
-        arguments = json.opt(name) instanceof JSONObject ? json
-          .getJSONObject(name) : null;
-      }
-    };
+      String name = json.optString("name", null);
+      String version = json.optString("version", null);
+    });
   }
 
   @Override public Optional<Account> account(String response)
-    throws DecoderException
   {
     log.trace("{} {}", version, String.valueOf(response));
 
@@ -154,7 +127,7 @@ import static java.util.Objects.nonNull;
       }
       catch(JSONException e)
       {
-        throw new DecoderException("Cannot decode: " + response);
+        log.error("{}", response);
       }
     }
 
@@ -170,6 +143,14 @@ import static java.util.Objects.nonNull;
       return Collections::emptyIterator;
     }
 
+    JSONArray array = array(response);
+
+    if(array == null)
+    {
+      return Collections::emptyIterator;
+    }
+
+
     return () -> new Iterator<Account>()
     {
       @Override public boolean hasNext()
@@ -183,13 +164,15 @@ import static java.util.Objects.nonNull;
 
         if(!(next instanceof JSONObject))
         {
-          throw new DecoderException(String.valueOf(next));
+          log.error("{}", next);
+
+          return null;
         }
 
         return new AccountDecoder(JSONObject.class.cast(next));
       }
 
-      final Iterator<Object> iterator = array(response).iterator();
+      final Iterator<Object> iterator = array.iterator();
     };
   }
 
@@ -207,7 +190,7 @@ import static java.util.Objects.nonNull;
       }
       catch(JSONException e)
       {
-        throw new DecoderException("Cannot decode: " + response);
+        log.error("{}", response);
       }
     }
 
@@ -219,6 +202,13 @@ import static java.util.Objects.nonNull;
     log.trace("{} {}", version, String.valueOf(response));
 
     if(isNull(response) || response.equals("null"))
+    {
+      return Collections::emptyIterator;
+    }
+
+    JSONArray array = array(response);
+
+    if(array == null)
     {
       return Collections::emptyIterator;
     }
@@ -236,13 +226,15 @@ import static java.util.Objects.nonNull;
 
         if(!(next instanceof JSONObject))
         {
-          throw new DecoderException(String.valueOf(next));
+          log.error("{}", next);
+
+          return null;
         }
 
         return new BankDecoder(JSONObject.class.cast(next));
       }
 
-      final Iterator<Object> iterator = array(response).iterator();
+      final Iterator<Object> iterator = array.iterator();
     };
   }
 
@@ -258,7 +250,7 @@ import static java.util.Objects.nonNull;
       }
       catch(JSONException e)
       {
-        throw new DecoderException("Cannot decode: " + response);
+        log.error("{}", response);
       }
     }
 
@@ -279,7 +271,7 @@ import static java.util.Objects.nonNull;
       }
       catch(JSONException e)
       {
-        throw new DecoderException("Cannot decode: " + response);
+        log.error("{}", response);
       }
     }
 
@@ -295,26 +287,38 @@ import static java.util.Objects.nonNull;
       return Collections::emptyIterator;
     }
 
-    return () -> new Iterator<Transaction>()
+    JSONArray array = array(response);
+
+    if(array == null)
     {
-      @Override public boolean hasNext()
-      {
-        return iterator.hasNext();
-      }
+      return Collections::emptyIterator;
+    }
 
-      @Override public Transaction next()
+    return () ->
+    {
+      return new Iterator<Transaction>()
       {
-        Object next = iterator.next();
-
-        if(!(next instanceof JSONObject))
+        @Override public boolean hasNext()
         {
-          throw new DecoderException(String.valueOf(next));
+          return iterator.hasNext();
         }
 
-        return new TransactionDecoder(JSONObject.class.cast(next));
-      }
+        @Override public Transaction next()
+        {
+          Object next = iterator.next();
 
-      final Iterator<Object> iterator = array(response).iterator();
+          if(!(next instanceof JSONObject))
+          {
+            log.error("{}", next);
+
+            return null;
+          }
+
+          return new TransactionDecoder(JSONObject.class.cast(next));
+        }
+
+        final Iterator<Object> iterator = array.iterator();
+      };
     };
   }
 
@@ -332,14 +336,14 @@ import static java.util.Objects.nonNull;
       }
       catch(JSONException e)
       {
-        throw new DecoderException("Cannot decode: " + response);
+        log.error("{}", response);
       }
     }
 
     return Optional.empty();
   }
 
-  protected JSONArray array(String json) throws DecoderException
+  protected JSONArray array(String json)
   {
     try
     {
@@ -347,7 +351,9 @@ import static java.util.Objects.nonNull;
     }
     catch(JSONException e)
     {
-      throw new DecoderException(json);
+      log.error("{}", json);
+
+      return null;
     }
   }
 
