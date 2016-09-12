@@ -23,8 +23,6 @@ import static java.util.Objects.nonNull;
 
 /**
  * Internal JSON encoder. Only called by trusted code.
- * <p>
- * Todo make robust.
  *
  * @since 2016.9
  */

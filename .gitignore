@@ -22,6 +22,10 @@ target
 pom.xml.versionsBackup
 settings.xml
 
+a.json
+a.txt
+a.xml
+
 gradle
 gradlew*
 hs_err_pid*

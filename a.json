@@ -1,0 +1,15 @@
+{
+  "bank": "bank-1",
+  "other": {
+    "id": "otherId-1",
+    "account": "otherAccount-1"
+  },
+  "balance": "balance-1",
+  "description": "description-1",
+  "id": "transaction-x",
+  "completed": "2016-09-12T18:08:05.736+0200",
+  "type": "type-1",
+  "value": "value-1",
+  "account": "account-1",
+  "posted": "2016-09-12T18:08:05.736+0200"
+}

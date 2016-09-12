@@ -1,6 +1,6 @@
 # OBP-JVM
 A set of libraries and a demo application.
-*Not quite ready for release.*
+*Not quite ready for release.* *Pull requests and comments very welcome*.
 
 ## Using this Library in your Project
 
@@ -10,7 +10,7 @@ Add a dependency
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-kafka</artifactId>
-  <version>2016.9-ALPHA3</version>
+  <version>2016.9-ALPHA6</version>
 </dependency>
 ```
 For testing also add
@@ -19,7 +19,7 @@ For testing also add
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-transport</artifactId>
-  <version>2016.9-ALPHA3</version>
+  <version>2016.9-ALPHA6</version>
   <classifier>tests</classifier>
 </dependency>
 ```
@@ -30,6 +30,8 @@ To build a connector that is called by OBP-API you need to do three things:
   * Implement a version of the service provider interface
   * Pick an encoding (or implement your own)
   * Pick a transport (or implement your own) 
+
+When not using this library to implement the south, all you need to do is look at the message format below and read and write those. The current version uses JSON and should be implementation language independent. (If not, please file a bug)
 
 #### Implementing the SPI
 
@@ -118,18 +120,78 @@ Now, to use the **connector** simply call the methods, for example:
 String bankId = "...";
 String userId = "...";
 
-Optional<Bank> bank = connector.getPrivateBank(bankId, userId);
+Optional<Bank> bank = connector.getBank(bankId, userId);
 ```
 
 Examples for all methods in the connector are here: 
 `com.tesobe.obp.transport.spi.ConnectorTest`.
 
-### Implementing Encoders and Decoders
+### The JSON Messages used by Default
 
-### Implementing a Transport
+The serializing and deserializing of data onto the transport medium is specified by two classes:
 
-### Implementing a new Version of the API / SPI
+  * `com.tesobe.obp.transport.spi.Encoder`
+  * `com.tesobe.obp.transport.spi.Decoder`
+  
+It is implemented using JSON by
 
+  * `com.tesobe.obp.transport.json.Encoder`
+  * `com.tesobe.obp.transport.json.Decoder`
+   
+These are the types messages sent and received
+
+  * Request: Sent by the north, received by the south
+  * Response: Sent by the south, received by the north
+  * Error: Sent by the south, received by the north
+
+The sender also encodes a messages, the receiver decodes, an exchange has the steps:
+
+* North calls a connector method.
+* The connector uses the encoder to create a JSON String.
+* The sender creates a request message and sends it to the receiver.
+* The receiver decodes the request and calls a method that south implements
+* South gets the message call and creates a response, or an error.
+* South has to use the decoder and encode to get information from the request, or to put information into the reponse.
+* The reciever sends the reponse to the sender.
+* The sender decodes the response
+*  North gets the result of the call.
+
+By looking at `com.tesobe.obp.demo.SuperSimpleDemo` you can see all of the above in action.
+
+Looking at the log messages produced by running `com.tesobe.obp.transport.spi.DefaultConnectorTest`, you will see the JSON written by all requests and responses.
+
+A **request** is a standard JSON object with two required JSON string keys, `name` and `version`. The values of these keys are required to be JSON strings. The South is expected to use these two keys to interpret the meaning and the other content of the request. Further keys will be present depending on context and request.
+
+These are the requests that return **zero** or **one** entity:
+
+| Name | Additional Keys in Request | Keys in Response |
+|----|----|----|
+|  `get account` | `account` `bank` | `amount` `bank` `currency` `iban` `id ` `label` `number` `type` |
+|  `get bank` | `bank` | `account` `bank` `logo` `name` `url` |
+|  `get transaction` |  `account` `bank` `logo` `name` `url` | `account` `balance` `bank` `completed` `description` `id` `other` `posted` `type` `value` |
+|  `save transaction` | `account` `amount` `currency` `otherCurrency` `otherId` `transactionType` | |
+
+These are the requests that return **zero** or **many** entities:
+
+| Name | Additional Keys in Request | Response is an Array of JSON Objects with Keys|
+|----|----|----|
+|  `get accounts` | `bank` | *as in `get account` above*
+|  `get banks` |  | *as in `get bank` above*
+|  `get transactions` | `account` `bank` | *as in `get transaction` above*
+
+All request may include the `user` key that referes to the owner of the quiered entities. When the `user` key is present the query is altered in a way that is **defined** by the south side. The basic understanding is that a query without a `user` key is **anonymous**. A query with a `user` key requests **only** entities that relate to the given user in some way defined by the south.
+
+####Get Transaction
+These keys in the response have JSON objects as value
+
+|Key | Keys in Value |
+|----|----|
+| `other` | `account` `id` |
+
+The **completed** and **posted** keys are timestamps with this pattern: `"yyyy-MM-dd'T'HH:mm:ss.SSSZ"`.
+
+####Save Transaction
+The response is a single JSON string, the transaction id.
 
 ## Design
 

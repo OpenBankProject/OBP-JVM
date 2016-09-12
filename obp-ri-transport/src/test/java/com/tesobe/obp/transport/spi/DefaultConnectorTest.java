@@ -44,7 +44,7 @@ public class DefaultConnectorTest
     final BlockingQueue<Message> out = new SynchronousQueue<>();
 
     // north: sender
-    legacy = factory.connector(request ->
+    connector = factory.connector(request ->
     {
       out.put(request);
 
@@ -80,8 +80,8 @@ public class DefaultConnectorTest
     Optional<Account> anonymous;
     Optional<Account> owned;
 
-    anonymous = legacy.getAccount(bankId, accountId);
-    owned = legacy.getAccount(bankId, accountId, userId);
+    anonymous = connector.getAccount(bankId, accountId);
+    owned = connector.getAccount(bankId, accountId, userId);
 
     assertThat(anonymous, optionallyReturns("id", "account-x"));
     assertThat(owned, optionallyReturns("id", "account-x"));
@@ -94,8 +94,8 @@ public class DefaultConnectorTest
     Iterable<Account> anonymous;
     Iterable<Account> owned;
 
-    anonymous = legacy.getAccounts(bankId);
-    owned = legacy.getAccounts(bankId, userId);
+    anonymous = connector.getAccounts(bankId);
+    owned = connector.getAccounts(bankId, userId);
 
     assertThat(anonymous, notNullValue());
     assertThat(owned, notNullValue());
@@ -123,8 +123,8 @@ public class DefaultConnectorTest
 
     try
     {
-      anonymous = legacy.getBank(bankId);
-      owned = legacy.getBank(bankId, userId);
+      anonymous = connector.getBank(bankId);
+      owned = connector.getBank(bankId, userId);
 
       assertThat(anonymous, optionallyReturns("id", "bank-x"));
       assertThat(owned, optionallyReturns("id", "bank-x"));
@@ -142,8 +142,8 @@ public class DefaultConnectorTest
     Iterable<Bank> anonymous;
     Iterable<Bank> owned;
 
-    anonymous = legacy.getBanks();
-    owned = legacy.getBanks(userId);
+    anonymous = connector.getBanks();
+    owned = connector.getBanks(userId);
 
     assertThat(anonymous, notNullValue());
     assertThat(owned, notNullValue());
@@ -169,8 +169,8 @@ public class DefaultConnectorTest
     Optional<Transaction> anonymous;
     Optional<Transaction> owned;
 
-    anonymous = legacy.getTransaction(bankId, accountId, tid);
-    owned = legacy.getTransaction(bankId, accountId, tid, userId);
+    anonymous = connector.getTransaction(bankId, accountId, tid);
+    owned = connector.getTransaction(bankId, accountId, tid, userId);
 
     assertThat(anonymous, optionallyReturns("id", "transaction-x"));
     assertThat(owned, optionallyReturns("id", "transaction-x"));
@@ -185,8 +185,8 @@ public class DefaultConnectorTest
     Iterable<Transaction> anonymous;
     Iterable<Transaction> owned;
 
-    anonymous = legacy.getTransactions(bankId, accountId);
-    owned = legacy.getTransactions(bankId, accountId, userId);
+    anonymous = connector.getTransactions(bankId, accountId);
+    owned = connector.getTransactions(bankId, accountId, userId);
 
     anonymous.forEach(transaction ->
     {
@@ -203,7 +203,7 @@ public class DefaultConnectorTest
   {
     String userId = "user-x@example.org";
 
-    Optional<User> user = legacy.getUser(userId);
+    Optional<User> user = connector.getUser(userId);
 
     assertThat(user, optionallyReturns("email", userId));
   }
@@ -218,13 +218,13 @@ public class DefaultConnectorTest
     String otherAccountCurrency = "currency-y";
     String transactionType = "type-x";
 
-    Optional<String> tid = legacy
+    Optional<String> tid = connector
       .saveTransaction(userId, accountId, currency, amount, otherAccountId,
         otherAccountCurrency, transactionType);
 
     assertThat(tid, returns("get", "tid-x"));
   }
 
-  private Connector legacy;
+  private Connector connector;
   private ExecutorService service = Executors.newCachedThreadPool();
 }
