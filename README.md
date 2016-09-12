@@ -24,6 +24,9 @@ For testing also add
 </dependency>
 ```
 
+The library has not yet been released to maven central. To use it, clone the repository and run `mvn install`. 
+This will install the library in your local repository.
+
 ### Implementing the South
 To build a connector that is called by OBP-API you need to do three things:
 
@@ -53,7 +56,7 @@ that was choosen for you.
 
 The possible requests depend on the version of the SPI you are using.
 
-For the `Version.legacy` the possible requests are listed 
+For the `Version.sep2016` the possible requests are listed 
 in `com.tesobe.obp.transport.spi.AbstractResponder`. 
 The **AbstractResponder** implements **Receiver** and has an abstract method for 
 each request.
