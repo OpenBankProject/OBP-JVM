@@ -53,34 +53,30 @@ that was choosen for you.
 
 The possible requests depend on the version of the SPI you are using.
 
-For the `Version.legacy` the possible requests are listed 
-in `com.tesobe.obp.transport.spi.AbstractResponder`. 
-The **AbstractResponder** implements **Receiver** and has an abstract method for 
+For the `Version.Sep2016` the possible requests are listed 
+in `com.tesobe.obp.transport.spi.AbstractReceiver`. 
+The **AbstractReceiver** implements **Receiver** and has an abstract method for 
 each request.
 
-You need to subclass **AbstractResponder** and implement these methods. 
+You need to subclass **AbstractReceiver** and implement these methods. 
 This is an example for one of them:
 
 ```java
 protected abstract String getBank(Decoder.Request r, Encoder e);
 ```
 
-The first argument **payload** is the verbatim request as taken from the message.
-It is not needed for the response but it has one important use: 
-Pass it on to the APIs you are calling to document the origin of the call.
+The first argument, of type **Decoder.Request** is used to decode the request.
 
-The second argument, of type **Decoder.Request** is used to decode the request.
+The second argument, of type **Encoder** is used to encode the response.
 
-The third argument, of type **Encode** is used to encode the response.
-
-Every request is implemented by `com.tesobe.obp.transport.spi.MockResponder` 
-used to test the **AbstractResonder**. 
+Every request is implemented by `com.tesobe.obp.transport.spi.MockReceiver` 
+used to test the **AbstractReceiver**. 
 The Demo gives a more complete example: `com.tesobe.obp.demo.south.DemoData`.
 A third test worth looking at because it implements the **North** and **South** 
 sides is: `com.tesobe.obp.transport.spi.ConnectorTest`.
 
-To get you started, you may use `com.tesobe.obp.transport.spi.DefaultResponder`.
-It has a no-op implementation of every method in AbstractResponder.
+To get you started, you may use `com.tesobe.obp.transport.spi.DefaultReceiver`.
+It has a no-op implementation of every method in AbstractReceiver.
 
 ### Implementing the North
 
@@ -104,15 +100,15 @@ Connector connector = factory.connector(sender);
 
 The sender sends messages to the south and receives the responses.
 If the south is local to the north, the sender only has one method to call on 
-**MyResponder**, an implementation of `com.tesobe.obp.transport.spi.Receiver`:
+**MyReceiver**, an implementation of `com.tesobe.obp.transport.spi.Receiver`:
 
 ```java
-MyResponder responder = new MyResponder(decoder, encoder);
-Sender = request -> responder.respond(request);
+MyReceiver receiver = new MyReceiver(decoder, encoder);
+Sender = request -> receiver.respond(request);
 ```
 
 For a simple but complete implementation of **Receiver** for testing see 
-`com.tesobe.obp.transport.spi.MockResponder`.
+`com.tesobe.obp.transport.spi.MockReceiver`.
 
 Now, to use the **connector** simply call the methods, for example:
 
@@ -128,12 +124,12 @@ Examples for all methods in the connector are here:
 
 ### The JSON Messages used by Default
 
-The serializing and deserializing of data onto the transport medium is specified by two classes:
+The serializing and deserializing of data onto the transport medium is **specified** by two classes:
 
   * `com.tesobe.obp.transport.spi.Encoder`
   * `com.tesobe.obp.transport.spi.Decoder`
   
-It is implemented using JSON by
+It is **implemented** using JSON by
 
   * `com.tesobe.obp.transport.json.Encoder`
   * `com.tesobe.obp.transport.json.Decoder`
@@ -151,20 +147,20 @@ The sender also encodes a messages, the receiver decodes, an exchange has the st
 * The sender creates a request message and sends it to the receiver.
 * The receiver decodes the request and calls a method that south implements
 * South gets the message call and creates a response, or an error.
-* South has to use the decoder and encode to get information from the request, or to put information into the reponse.
-* The reciever sends the reponse to the sender.
+* South has to use the decoder and encoder to get information from the request, or to put information into the response.
+* The receiver sends the reponse to the sender.
 * The sender decodes the response
 *  North gets the result of the call.
 
 By looking at `com.tesobe.obp.demo.SuperSimpleDemo` you can see all of the above in action.
 
-Looking at the log messages produced by running `com.tesobe.obp.transport.spi.DefaultConnectorTest`, you will see the JSON written by all requests and responses.
+Looking at the log messages produced by running `com.tesobe.obp.transport.spi.DefaultConnectorTest` will give you the JSON written by all requests and responses.
 
 A **request** is a standard JSON object with two required JSON string keys, `name` and `version`. The values of these keys are required to be JSON strings. The South is expected to use these two keys to interpret the meaning and the other content of the request. Further keys will be present depending on context and request.
 
 These are the requests that return **zero** or **one** entity:
 
-| Name | Additional Keys in Request | Keys in Response |
+| Value of `name` Key | Additional Keys in Request | Keys in Response |
 |----|----|----|
 |  `get account` | `account` `bank` | `amount` `bank` `currency` `iban` `id ` `label` `number` `type` |
 |  `get bank` | `bank` | `account` `bank` `logo` `name` `url` |
@@ -173,13 +169,16 @@ These are the requests that return **zero** or **one** entity:
 
 These are the requests that return **zero** or **many** entities:
 
-| Name | Additional Keys in Request | Response is an Array of JSON Objects with Keys|
+| Value of `name` Key | Additional Keys in Request | Response is an Array of JSON Objects with Keys|
 |----|----|----|
 |  `get accounts` | `bank` | *as in `get account` above*
 |  `get banks` |  | *as in `get bank` above*
 |  `get transactions` | `account` `bank` | *as in `get transaction` above*
 
-All request may include the `user` key that referes to the owner of the quiered entities. When the `user` key is present the query is altered in a way that is **defined** by the south side. The basic understanding is that a query without a `user` key is **anonymous**. A query with a `user` key requests **only** entities that relate to the given user in some way defined by the south.
+All requests may include the `user` key that refers to the owner of the queried entities. 
+When the `user` key is present the query is altered in a way that is **defined** by the south side. 
+The basic understanding is that a query without a `user` key is **anonymous**. 
+A query with a `user` key requests **only** entities that relate to the given user in some way defined by the south.
 
 ####Get Transaction
 These keys in the response have JSON objects as value

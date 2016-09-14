@@ -14,7 +14,7 @@
   <parent>
     <artifactId>obp-ri</artifactId>
     <groupId>com.tesobe.obp</groupId>
-    <version>2016.9-ALPHA6</version>
+    <version>2016.9-ALPHA7-SNAPSHOT</version>
   </parent>
 
   <artifactId>obp-ri-kafka</artifactId>
@@ -27,14 +27,17 @@
     <dependency>
       <groupId>com.tesobe.obp</groupId>
       <artifactId>obp-ri-transport</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.kafka</groupId>
       <artifactId>kafka-clients</artifactId>
+      <version>${kafka.version}</version>
     </dependency>
     <dependency>
       <groupId>com.tesobe.obp</groupId>
       <artifactId>obp-ri-transport</artifactId>
+      <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>

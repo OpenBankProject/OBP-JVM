@@ -12,7 +12,7 @@
   <parent>
     <artifactId>obp-ri</artifactId>
     <groupId>com.tesobe.obp</groupId>
-    <version>2016.9-ALPHA6</version>
+    <version>2016.9-ALPHA7-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -27,10 +27,12 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>obp-ri-core</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>obp-ri-core</artifactId>
+      <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
