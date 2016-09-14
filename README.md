@@ -31,6 +31,9 @@ For testing also add
 </dependency>
 ```
 
+The library has not yet been released to maven central. To use it, clone the repository and run `mvn install`. 
+This will install the library in your local repository.
+
 ### Implementing the South
 To build a connector that is called by OBP-API you need to do three things:
 
