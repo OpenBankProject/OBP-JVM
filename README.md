@@ -4,13 +4,19 @@ A set of libraries and a demo application.
 
 ## Using this Library in your Project
 
-Add a dependency
+Add dependencies
 
 ```xml
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-kafka</artifactId>
-  <version>2016.9-ALPHA6</version>
+  <version>2016.9-ALPHA7</version>
+</dependency>
+
+<dependency>
+  <groupId>com.tesobe.obp</groupId>
+  <artifactId>obp-ri-transport</artifactId>
+  <version>2016.9-ALPHA7</version>
 </dependency>
 ```
 For testing also add
@@ -19,8 +25,9 @@ For testing also add
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-transport</artifactId>
-  <version>2016.9-ALPHA6</version>
-  <classifier>tests</classifier>
+  <version>2016.9-ALPHA7</version>
+  <type>test-jar</type>
+  <scope>test</scope>
 </dependency>
 ```
 
@@ -157,6 +164,8 @@ By looking at `com.tesobe.obp.demo.SuperSimpleDemo` you can see all of the above
 Looking at the log messages produced by running `com.tesobe.obp.transport.spi.DefaultConnectorTest` will give you the JSON written by all requests and responses.
 
 A **request** is a standard JSON object with two required JSON string keys, `name` and `version`. The values of these keys are required to be JSON strings. The South is expected to use these two keys to interpret the meaning and the other content of the request. Further keys will be present depending on context and request.
+
+Any key may be omitted if it has no value.
 
 These are the requests that return **zero** or **one** entity:
 
