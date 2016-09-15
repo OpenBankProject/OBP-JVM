@@ -10,13 +10,13 @@ Add dependencies
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-kafka</artifactId>
-  <version>2016.9-ALPHA7</version>
+  <version>2016.9-ALPHA9</version>
 </dependency>
 
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-transport</artifactId>
-  <version>2016.9-ALPHA7</version>
+  <version>2016.9-ALPHA9</version>
 </dependency>
 ```
 For testing also add
