@@ -176,7 +176,7 @@ These are the requests that return **zero** or **one** entity:
 |----|----|----|
 |  `get account` | `account` `bank` | `amount` `bank` `currency` `iban` `id ` `label` `number` `type` |
 |  `get bank` | `bank` | `account` `bank` `logo` `name` `url` |
-|  `get transaction` |  `account` `bank` `logo` `name` `url` | `account` `balance` `bank` `completed` `description` `id` `other` `posted` `type` `value` |
+|  `get transaction` |  `account` `bank` `transaction` | `account` `balance` `bank` `completed` `description` `id` `other` `posted` `type` `value` |
 |  `save transaction` | `account` `amount` `currency` `otherCurrency` `otherId` `transactionType` | |
 
 These are the requests that return **zero** or **many** entities:
@@ -192,7 +192,7 @@ When the `user` key is present the query is altered in a way that is **defined**
 The basic understanding is that a query without a `user` key is **anonymous**. 
 A query with a `user` key requests **only** entities that relate to the given user in some way defined by the south.
 
-####Get Transaction
+#####Get Transaction
 These keys in the response have JSON objects as value
 
 |Key | Keys in Value |
@@ -201,8 +201,65 @@ These keys in the response have JSON objects as value
 
 The **completed** and **posted** keys are timestamps with this pattern: `"yyyy-MM-dd'T'HH:mm:ss.SSSZ"`.
 
-####Save Transaction
+#####Save Transaction
 The response is a single JSON string, the transaction id.
+
+####The Above Again as EBNF
+All messages are valid JSON.
+
+```
+message ::= request | response
+
+request ::= get-account-request 
+        |  get-accounts-request 
+        |  get-bank-request
+        |  get-banks-request
+        |  get-transaction-request
+        |  get-transactions-request
+        |  save-transaction-request
+
+response ::= get-account-response 
+        |  get-accounts-response 
+        |  get-bank-response
+        |  get-banks-response
+        |  get-transaction-response
+        |  get-transactions-response
+        |  save-transaction-response
+        |  error-response
+
+get-account-request      ::= '{' '"name"' ':' '"get account"'      version bank? account? user? '}'
+get-accounts-request     ::= '{' '"name"' ':' '"get accounts"'     version bank? user? '}'
+get-bank-request         ::= '{' '"name"' ':' '"get bank"'         version bank? user? '}'
+get-banks-request        ::= '{' '"name"' ':' '"get banks"'        version user? '}'
+get-transaction-request  ::= '{' '"name"' ':' '"get transaction"'  version bank? account? transaction? user? '}'
+get-transactions-request ::= '{' '"name"' ':' '"get transactions"' version bank? account? user? '}'
+
+get-account-response      ::= '{' amount? bank? currency? iban? id? label? number? type? '}'
+get-accounts-response     ::= empty | '[' get-account-response (',' get-account-repsonse)* ']'
+get-bank-response         ::= '{' account? bank? logo? name? url? '}'
+get-banks-response        ::= empty | '[' get-bank-response (',' get-bank-repsonse)* ']'
+get-transaction-response  ::= '{' account? balance? bank? completed? description? id? other? posted? type? value? '}'
+get-transactions-response ::= empty | '[' get-transaction-response (',' get-transaction-repsonse)* ']'
+save-transaction-response ::= transaction-id
+error-response            ::= '{' error '}'
+
+other       ::= 'null' | '{' account? id? '}'
+
+error       ::= '"error"' ':' (JSON string | 'null')     
+version     ::= '"version"' ':' (JSON string | 'null')
+account     ::= ',' '"account"' ':' (JSON string | 'null')     
+
+# these are all just like account above
+balance bank currency description iban id label logo name number transaction type url user value
+            ::= ',' '"${non-terminal-name}"' ':' (JSON string | 'null')
+
+completed   ::= ',' '"completed"' ':' (date-time | 'null')
+posted      ::= ',' '"posted"' ':' (date-time | 'null')
+
+date-time      ::= JSON string with format yyyy-MM-dd'T'HH:mm:ss.SSSZ
+empty          ::= empty JSON array
+transaction-id ::= JSON string
+```
 
 ## Design
 
