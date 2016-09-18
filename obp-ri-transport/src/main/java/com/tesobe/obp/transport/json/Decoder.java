@@ -150,8 +150,7 @@ import static java.util.Objects.nonNull;
       return Collections::emptyIterator;
     }
 
-
-    return () -> new Iterator<Account>()
+    return () -> new Iterator<Account>() // Iterable as lambda
     {
       @Override public boolean hasNext()
       {
@@ -213,7 +212,7 @@ import static java.util.Objects.nonNull;
       return Collections::emptyIterator;
     }
 
-    return () -> new Iterator<Bank>()
+    return () -> new Iterator<Bank>() // Iterable as lambda
     {
       @Override public boolean hasNext()
       {
@@ -294,31 +293,28 @@ import static java.util.Objects.nonNull;
       return Collections::emptyIterator;
     }
 
-    return () ->
+    return () -> new Iterator<Transaction>() // Iterable as lambda
     {
-      return new Iterator<Transaction>()
+      @Override public boolean hasNext()
       {
-        @Override public boolean hasNext()
+        return iterator.hasNext();
+      }
+
+      @Override public Transaction next()
+      {
+        Object next = iterator.next();
+
+        if(!(next instanceof JSONObject))
         {
-          return iterator.hasNext();
+          log.error("{}", next);
+
+          return null;
         }
 
-        @Override public Transaction next()
-        {
-          Object next = iterator.next();
+        return new TransactionDecoder(JSONObject.class.cast(next));
+      }
 
-          if(!(next instanceof JSONObject))
-          {
-            log.error("{}", next);
-
-            return null;
-          }
-
-          return new TransactionDecoder(JSONObject.class.cast(next));
-        }
-
-        final Iterator<Object> iterator = array.iterator();
-      };
+      final Iterator<Object> iterator = array.iterator();
     };
   }
 

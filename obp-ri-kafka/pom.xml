@@ -14,7 +14,7 @@
   <parent>
     <artifactId>obp-ri</artifactId>
     <groupId>com.tesobe.obp</groupId>
-    <version>2016.9-ALPHA8</version>
+    <version>2016.9-ALPHA10-SNAPSHOT</version>
   </parent>
 
   <artifactId>obp-ri-kafka</artifactId>

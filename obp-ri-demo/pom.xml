@@ -13,7 +13,7 @@
   <parent>
     <artifactId>obp-ri</artifactId>
     <groupId>com.tesobe.obp</groupId>
-    <version>2016.9-ALPHA8</version>
+    <version>2016.9-ALPHA10-SNAPSHOT</version>
   </parent>
 
   <artifactId>obp-ri-demo</artifactId>
@@ -22,6 +22,10 @@
   <description>
     TESOBE LTD.'s reference implementation of parts of the Open Bank Project.
   </description>
+
+  <properties>
+    <jaxws.version>2.2.10</jaxws.version>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -38,6 +42,17 @@
       <groupId>com.tesobe.obp</groupId>
       <artifactId>obp-ri-kafka</artifactId>
       <version>${obp-ri.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.ws</groupId>
+      <artifactId>jaxws-rt</artifactId>
+      <version>${jaxws.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.ws</groupId>
+      <artifactId>jaxws-tools</artifactId>
+      <version>${jaxws.version}</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 
