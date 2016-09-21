@@ -15,7 +15,7 @@ import java.util.Map;
 @SuppressWarnings("WeakerAccess") public class SimpleNorth
   extends SimpleTransport
 {
-  public SimpleNorth(String producerTopic, String consumerTopic)
+  public SimpleNorth(String consumerTopic, String producerTopic)
   {
     super(consumerTopic, producerTopic);
   }
