@@ -427,9 +427,11 @@
       <plugin>
         <artifactId>maven-deploy-plugin</artifactId>
       </plugin>
+<!--
       <plugin>
         <artifactId>maven-enforcer-plugin</artifactId>
       </plugin>
+-->
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
       </plugin>
