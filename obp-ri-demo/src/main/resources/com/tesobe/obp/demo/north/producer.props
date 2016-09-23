@@ -1,0 +1,18 @@
+#
+# Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+#
+# Use of this source code is governed by a GNU AFFERO license
+# that can be found in the LICENSE file.
+#
+#
+
+# Taken from https://github.com/mapr-demos/kafka-sample-programs.git.
+
+bootstrap.servers=localhost:9092
+acks=all
+retries=0
+batch.size=16384
+linger.ms=0
+key.serializer=org.apache.kafka.common.serialization.StringSerializer
+value.serializer=org.apache.kafka.common.serialization.StringSerializer
+#block.on.buffer.full=true

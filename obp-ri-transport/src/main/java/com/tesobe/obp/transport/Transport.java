@@ -8,8 +8,10 @@
 package com.tesobe.obp.transport;
 
 import com.tesobe.obp.transport.spi.Decoder;
-import com.tesobe.obp.transport.spi.Encoder;
 import com.tesobe.obp.transport.spi.DefaultConnector;
+import com.tesobe.obp.transport.spi.Encoder;
+import com.tesobe.obp.util.DefaultMetrics;
+import com.tesobe.obp.util.Metrics;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -34,9 +36,22 @@ import static com.tesobe.obp.transport.Transport.Version.Sep2016;
    */
   public static Factory defaultFactory()
   {
+    return defaultFactory(new DefaultMetrics());
+  }
+
+  /**
+   * Uses {@link Version#Sep2016}, {@link Encoding#json}.
+   *
+   * @return a factory that is always available
+   *
+   * @since 2016.9
+   */
+  public static Factory defaultFactory(Metrics m)
+  {
     //noinspection OptionalGetWithoutIsPresent
     return factory(Version.Sep2016, Encoding.json).get();
   }
+
 
   /**
    * Try to provide a factory for a version / encoding combination.
@@ -47,6 +62,21 @@ import static com.tesobe.obp.transport.Transport.Version.Sep2016;
    * @return empty if the version / encoding combination is not available
    */
   public static Optional<Transport.Factory> factory(Version v, Encoding e)
+  {
+    return factory(v, e, new DefaultMetrics());
+  }
+
+  /**
+   * Try to provide a factory for a version / encoding combination.
+   *
+   * @param v the API / SPI version
+   * @param e the encoding used by the transport layer
+   * @param m metrics
+   *
+   * @return empty if the version / encoding combination is not available
+   */
+  public static Optional<Transport.Factory> factory(Version v, Encoding e,
+    Metrics m)
   {
     return Optional.of(new Factory()
     {

@@ -14,10 +14,20 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
+ * Read a properties file.
+ *
  * @since 2016.9
  */
 public class Props
 {
+  /**
+   * Read properties from the class path.
+   *
+   * @param root use this class' classloader
+   * @param path lookup
+   *
+   * @throws IOException not found
+   */
   public Props(Class root, String path) throws IOException
   {
     if(root != null && path != null)

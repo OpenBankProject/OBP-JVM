@@ -25,9 +25,16 @@ class Flags extends Options
     .defaultsTo("Response");
 
   final OptionSpec<String> consumerProps = acceptsAll("Consumer Configuration",
-    "c", "consumer").withRequiredArg().describedAs("CONSUMER")
+    "consumer").withRequiredArg().describedAs("CONSUMER")
     .defaultsTo("consumer.props");
   final OptionSpec<String> producerProps = acceptsAll("Producer Configuration",
-    "p", "producer").withRequiredArg().describedAs("PRODUCER")
+    "producer").withRequiredArg().describedAs("PRODUCER")
     .defaultsTo("producer.props");
+
+  final OptionSpec<String> ipAddress = acceptsAll(
+    "REST server listen interface", "interface").withRequiredArg()
+    .describedAs("IP_ADDRESS").defaultsTo("0.0.0.0");
+  final OptionSpec<Integer> port = acceptsAll("REST server listen port", "port")
+    .withRequiredArg().describedAs("PORT").ofType(Integer.class)
+    .defaultsTo(4567);
 }

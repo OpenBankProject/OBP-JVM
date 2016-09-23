@@ -41,11 +41,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
    */
   public SimpleTransport(String consumerTopic, String producerTopic)
   {
-    this.consumerTopic = consumerTopic;
-    this.producerTopic = producerTopic;
-
-    consumer = new KafkaConsumer<>(consumer());
-    producer = new KafkaProducer<>(producer());
+    this(consumerTopic, producerTopic, Collections.emptyMap(),
+      Collections.emptyMap());
   }
 
   /**
@@ -95,16 +92,32 @@ import java.util.concurrent.atomic.AtomicBoolean;
   {
     MDC.put("kafka", getClass().getSimpleName());
 
-    log.trace("{} {} {}", producerTopic, key, value);
+    String topic = topicToSendTo();
 
-    producer.send(new ProducerRecord<>(producerTopic, key, value));
+    log.trace("{} {} {}", topic, key, value);
+
+    System.out.println(
+      getClass().getSimpleName() + " send " + topic + " " + key + " " + value);
+
+    producer.send(new ProducerRecord<>(topic, key, value));
 
     MDC.remove("kafka");
+  }
+
+  protected String topicToSendTo()
+  {
+    return producerTopic;
+  }
+
+  protected String topicToReceiveFrom()
+  {
+    return consumerTopic;
   }
 
   @SuppressWarnings("InfiniteLoopStatement") public void receive()
   {
     final String type = getClass().getSimpleName();
+    final String topic = topicToReceiveFrom();
 
     service.submit(new Callable<Void>() // lambda fails to compile here
     {
@@ -112,9 +125,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
       {
         MDC.put("kafka", type);
 
-        log.trace("Starting consumer on {}", consumerTopic);
+        log.trace("Starting consumer on {}", topic);
 
-        consumer.subscribe(Collections.singletonList(consumerTopic));
+        consumer.subscribe(Collections.singletonList(topic));
 
         while(!done.get())
         {
@@ -124,12 +137,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
             for(ConsumerRecord<String, String> record : records)
             {
+              System.out.println(
+                getClass().getSimpleName() + " send " + topic + " " + record
+                  .key() + " " + record.value());
+
               receive(record.key(), record.value());
             }
           }
           catch(Exception e)
           {
-            log.warn("{} consumer done: {}", consumerTopic, done);
+            log.warn("{} consumer done: {}", topic, done);
           }
         }
 
@@ -144,7 +161,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
   protected void receive(String key, String value) throws InterruptedException
   {
-    log.trace("{} {} {}", consumerTopic, key, value);
+    log.trace("{} {} {}", topicToReceiveFrom(), key, value);
 
     in.put(key, value);
   }

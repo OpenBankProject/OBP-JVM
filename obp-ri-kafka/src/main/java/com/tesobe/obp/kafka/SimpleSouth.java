@@ -37,11 +37,21 @@ import java.util.Map;
   @Override protected void receive(String key, String value)
     throws InterruptedException
   {
-    log.trace("{} {} {}", consumerTopic, key, value);
+    log.trace("{} {} {}", topicToReceiveFrom(), key, value);
 
     String response = receiver.respond(new Message(key, value));
 
     send(key, response);
+  }
+
+  @Override protected String topicToSendTo()
+  {
+    return producerTopic;
+  }
+
+  @Override protected String topicToReceiveFrom()
+  {
+    return consumerTopic;
   }
 
   protected final Receiver receiver;

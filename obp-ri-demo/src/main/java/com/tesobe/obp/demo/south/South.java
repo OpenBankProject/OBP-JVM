@@ -30,10 +30,7 @@ import java.util.concurrent.locks.LockSupport;
   {
     if(flags.parse(commandLine))
     {
-      if(log.isInfoEnabled())
-      {
-        log.info("Starting TESOBE's OBP API South Demo ...");
-      }
+      log.info("Starting TESOBE's OBP South Demo...");
 
       String consumerProps = flags.valueOf(flags.consumerProps);
       String consumerTopic = flags.valueOf(flags.consumerTopic);
@@ -41,11 +38,11 @@ import java.util.concurrent.locks.LockSupport;
       String producerTopic = flags.valueOf(flags.producerTopic);
 
       Transport.Factory factory = Transport.defaultFactory();
-      Receiver responder = new DemoData(factory.decoder(), factory.encoder());
+      Receiver receiver = new DemoData(factory.decoder(), factory.encoder());
       SimpleSouth south = new SimpleSouth(consumerTopic, producerTopic,
         new Props(South.class, consumerProps).toMap(),
         new Props(South.class, producerProps).toMap(),
-        new LoggingReceiver(responder));
+        new LoggingReceiver(receiver));
 
       south.receive();
 
