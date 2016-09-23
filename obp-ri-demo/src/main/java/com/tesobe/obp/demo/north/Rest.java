@@ -1,6 +1,5 @@
 package com.tesobe.obp.demo.north;
 
-import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Connector;
 import com.tesobe.obp.util.tbd;
 import org.slf4j.Logger;
@@ -8,8 +7,6 @@ import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 import spark.route.RouteOverview;
-
-import java.util.Optional;
 
 import static spark.Spark.awaitInitialization;
 import static spark.Spark.get;
@@ -21,18 +18,6 @@ class Rest
   Rest(Connector c, String ip, int port)
   {
     connector = c;
-
-    try
-    {
-      Optional<Account> account = connector
-        .getAccount("bank", "account", "user");
-
-      log.info("{}", account);
-    }
-    catch(InterruptedException e)
-    {
-      log.error("getAccount", e);
-    }
 
     ipAddress(ip);
     port(port);

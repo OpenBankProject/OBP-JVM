@@ -19,10 +19,10 @@ class Flags extends Options
 {
   final OptionSpec<String> consumerTopic = acceptsAll("Consumer Topic",
     "consumer-topic").withRequiredArg().describedAs("CONSUMER_TOPIC")
-    .defaultsTo("Request");
+    .defaultsTo("Response");
   final OptionSpec<String> producerTopic = acceptsAll("Producer Topic",
     "producer-topic").withRequiredArg().describedAs("PRODUCER_TOPIC")
-    .defaultsTo("Response");
+    .defaultsTo("Request");
 
   final OptionSpec<String> consumerProps = acceptsAll("Consumer Configuration",
     "consumer").withRequiredArg().describedAs("CONSUMER")
