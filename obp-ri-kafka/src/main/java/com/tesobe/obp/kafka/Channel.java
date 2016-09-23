@@ -20,16 +20,38 @@ import java.util.concurrent.SynchronousQueue;
  */
 @SuppressWarnings("WeakerAccess") class Channel
 {
+  /**
+   * Channel contains [id, payload].
+   *
+   * @param id packet id expected
+   *
+   * @return packet payload
+   *
+   * @throws InterruptedException network trouble
+   */
   public String take(String id) throws InterruptedException
   {
-    String[] packet = in.take();
-
-    if(packet == null || packet.length < 2 || !id.equals(packet[0]))
+    for(String[] packet = in.take(); ; )
     {
-      throw new RuntimeException(id); // todo fix
-    }
+      if(packet == null || packet.length < 2)
+      {
 
-    return packet[1];
+        log.trace("discarding malformed packet");
+
+        packet = in.take();
+      }
+      else if(!id.equals(packet[0]))
+      {
+
+        log.trace("discarding kafka packet {} {}", packet[0], packet[1]);
+
+        packet = in.take();
+      }
+      else
+      {
+        return packet[1];
+      }
+    }
   }
 
   public void put(String id, String payload) throws InterruptedException

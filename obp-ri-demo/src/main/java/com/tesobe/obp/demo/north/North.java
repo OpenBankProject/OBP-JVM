@@ -12,6 +12,7 @@ import com.tesobe.obp.kafka.SimpleNorth;
 import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Connector;
+import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.util.Props;
 import org.slf4j.Logger;
@@ -20,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.locks.LockSupport;
 
 /**
  * A simple REST server that uses the kafka transport to send messages.
@@ -59,14 +59,30 @@ import java.util.concurrent.locks.LockSupport;
       try
       {
         Connector connector = factory.connector(north);
-        Iterable<Bank> banks = connector.getBanks();
 
-        log.info("{}", banks);
+        for(int i = 0; i < 10; ++i)
+        {
+          String id = String.format("%2d", i);
 
-        Optional<Account> account = connector
-          .getAccount("bank", "account", "user");
+          String userId = "user-" + id;
+          String accountId = "account-" + id;
+          String bankId = "bank-" + id;
+          String transactionId = "transaction-" + id;
+          Iterable<Bank> banks;
+          Optional<Account> account;
+          Optional<Transaction> transaction;
 
-        log.info("{}", account);
+          account = connector.getAccount(bankId, accountId);
+          account = connector.getAccount(bankId, accountId, userId);
+          banks = connector.getBanks();
+          banks = connector.getBanks(userId);
+          transaction = connector
+            .getTransaction(bankId, accountId, transactionId);
+          transaction = connector
+            .getTransaction(bankId, accountId, transactionId, userId);
+        }
+
+        log.info("done!");
       }
       catch(InterruptedException e)
       {
@@ -75,15 +91,15 @@ import java.util.concurrent.locks.LockSupport;
 
       // todo kafka restarts, shutdown
 
-      {
-        //noinspection InfiniteLoopStatement
-        for(; ; )
-        {
-          log.trace("Parking main...");
-
-          LockSupport.park(Thread.currentThread());
-        }
-      }
+//      {
+//        //noinspection InfiniteLoopStatement
+//        for(; ; )
+//        {
+//          log.trace("Parking main...");
+//
+//          LockSupport.park(Thread.currentThread());
+//        }
+//      }
     }
   }
 
