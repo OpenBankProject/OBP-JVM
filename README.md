@@ -36,8 +36,8 @@ You can check [VERSION_OF_PROJECT] in pom.xml of each project
 <parent>
     <artifactId>obp-ri</artifactId>
     <groupId>com.tesobe.obp</groupId>
-    <version>2016.9-ALPHA10-SNAPSHOT</version> <- here
-  </parent>
+    <version>2016.9-ALPHA10-SNAPSHOT</version> ## this one
+</parent>
 ```
 
 The library has not yet been released to maven central. To use it, clone the repository and run `mvn install`. 
