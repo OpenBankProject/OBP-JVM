@@ -35,7 +35,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Test compatibility with Scala.
  */
-@SuppressWarnings("OptionalGetWithoutIsPresent") public class ResponderTest
+@SuppressWarnings("OptionalGetWithoutIsPresent") public class ReceiverTest
 {
   @Before public void setup()
   {
@@ -52,9 +52,9 @@ import static org.junit.Assert.assertThat;
     String accountId = "account-x";
     String bankId = "id-x";
     String userId = "user-x";
-    String request = new JSONObject().put("name", "get account")
-      .put("bank", bankId).put("account", accountId).put("user", userId)
-      .toString();
+    String request = new JSONObject().put("version", Sep2016)
+      .put("name", "get account").put("bank", bankId).put("account", accountId)
+      .put("user", userId).toString();
     String response = responder.respond(new Message(id, request));
     Optional<Account> account = decoder.account(response);
 
@@ -66,8 +66,9 @@ import static org.junit.Assert.assertThat;
     String id = UUID.randomUUID().toString();
     String bankId = "id-x";
     String userId = "user-x";
-    String request = new JSONObject().put("name", "get accounts")
-      .put("bank", bankId).put("user", userId).toString();
+    String request = new JSONObject().put("version", Sep2016)
+      .put("name", "get accounts").put("bank", bankId).put("user", userId)
+      .toString();
     String response = responder.respond(new Message(id, request));
     Iterable<Account> accounts = decoder.accounts(response);
     List<String> ids = new ArrayList<>();
@@ -83,8 +84,9 @@ import static org.junit.Assert.assertThat;
     String id = UUID.randomUUID().toString();
     String bankId = "id-1";
     String userId = "user-1";
-    String request = new JSONObject().put("name", "get bank")
-      .put("bank", bankId).put("user", userId).toString();
+    String request = new JSONObject().put("version", Sep2016)
+      .put("name", "get bank").put("bank", bankId).put("user", userId)
+      .toString();
     String response = responder.respond(new Message(id, request));
     Optional<Bank> bank = decoder.bank(response);
 
@@ -95,8 +97,8 @@ import static org.junit.Assert.assertThat;
   {
     String id = UUID.randomUUID().toString();
     String userId = "user-1";
-    String request = new JSONObject().put("name", "get banks")
-      .put("user", userId).toString();
+    String request = new JSONObject().put("version", Sep2016)
+      .put("name", "get banks").put("user", userId).toString();
     String response = responder.respond(new Message(id, request));
     Iterable<Bank> bank1s = decoder.banks(response);
     List<String> ids = new ArrayList<>();
@@ -113,9 +115,9 @@ import static org.junit.Assert.assertThat;
     String bankId = "bank-x";
     String userId = "user-x";
     String transactionId = "transaction-x";
-    String request = new JSONObject().put("name", "get transaction")
-      .put("bank", bankId).put("user", userId).put("account", accountId)
-      .put("transaction", transactionId).toString();
+    String request = new JSONObject().put("version", Sep2016)
+      .put("name", "get transaction").put("bank", bankId).put("user", userId)
+      .put("account", accountId).put("transaction", transactionId).toString();
     String response = responder.respond(new Message(id, request));
     Optional<Transaction> transaction = decoder.transaction(response);
 
@@ -128,8 +130,9 @@ import static org.junit.Assert.assertThat;
     String accountId = "account-x";
     String bankId = "bank-x";
     String userId = "user-x";
-    String request = new JSONObject().put("name", "get transactions")
-      .put("use", userId).put("bank", bankId).put("account", accountId).
+    String request = new JSONObject().put("version", Sep2016)
+      .put("name", "get transactions").put("use", userId).put("bank", bankId)
+      .put("account", accountId).
         toString();
     String response = responder.respond(new Message(id, request));
     Iterable<Transaction> transactions = decoder.transactions(response);
@@ -150,8 +153,8 @@ import static org.junit.Assert.assertThat;
   {
     String id = UUID.randomUUID().toString();
     String userId = "user-x@example.com";
-    String request = new JSONObject().put("name", "get user")
-      .put("user", userId).toString();
+    String request = new JSONObject().put("version", Sep2016)
+      .put("name", "get user").put("user", userId).toString();
     String response = responder.respond(new Message(id, request));
     Optional<User> user = decoder.user(response);
 
@@ -168,11 +171,10 @@ import static org.junit.Assert.assertThat;
     String otherAccountId = "account-y";
     String otherAccountCurrency = "currency-y";
     String transactionType = "type-x";
-    String request = new JSONObject().put("name", "save transaction")
-      .put("user", userId).put("account", accountId)
-      .put("currency", currency).put("amount", amount)
-      .put("otherId", otherAccountId)
-      .put("otherCurrency", otherAccountCurrency)
+    String request = new JSONObject().put("version", Sep2016)
+      .put("name", "save transaction").put("user", userId)
+      .put("account", accountId).put("currency", currency).put("amount", amount)
+      .put("otherId", otherAccountId).put("otherCurrency", otherAccountCurrency)
       .put("transactionType", transactionType).toString();
     String response = responder.respond(new Message(id, request));
     Optional<String> tid = decoder.transactionId(response);

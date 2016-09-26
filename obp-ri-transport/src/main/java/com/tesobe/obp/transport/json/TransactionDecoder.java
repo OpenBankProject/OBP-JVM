@@ -23,74 +23,74 @@ import static com.tesobe.obp.transport.json.Json.zonedDateTimeFromJson;
 {
   public TransactionDecoder(JSONObject transaction)
   {
-    this.transaction = transaction;
+    assert transaction != null;
+
+    json = transaction;
   }
 
   @Override public String id()
   {
-    return transaction.optString("id", null);
+    return json.optString("id", null);
   }
 
   @Override public String account()
   {
-    return transaction.optString("account", null);
+    return json.optString("account", null);
   }
 
   @Override public String bank()
   {
-    return transaction.optString("bank", null);
+    return json.optString("bank", null);
   }
 
   @Override public String otherId()
   {
-    JSONObject other = transaction.optJSONObject("other");
+    JSONObject other = json.optJSONObject("other");
 
     return other != null ? other.optString("id") : null;
   }
 
   @Override public String otherAccount()
   {
-    JSONObject other = transaction.optJSONObject("other");
+    JSONObject other = json.optJSONObject("other");
 
-    return other != null
-           ? other.optString("account")
-           : null;
+    return other != null ? other.optString("account") : null;
   }
 
   @Override public String type()
   {
-    return transaction.optString("type", null);
+    return json.optString("type", null);
   }
 
   @Override public String description()
   {
-    return transaction.optString("description", null);
+    return json.optString("description", null);
   }
 
   @Override public ZonedDateTime posted()
   {
-    return zonedDateTimeFromJson(transaction.optString("posted", null));
+    return zonedDateTimeFromJson(json.optString("posted", null));
   }
 
   @Override public ZonedDateTime completed()
   {
-    return zonedDateTimeFromJson(transaction.optString("completed", null));
+    return zonedDateTimeFromJson(json.optString("completed", null));
   }
 
   @Override public String balance()
   {
-    return transaction.optString("balance", null);
+    return json.optString("balance", null);
   }
 
   @Override public String value()
   {
-    return transaction.optString("value", null);
+    return json.optString("value", null);
   }
 
   @Override public String toString()
   {
-    return transaction.toString();
+    return json.toString();
   }
 
-  private final JSONObject transaction;
+  private final JSONObject json;
 }

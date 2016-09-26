@@ -96,9 +96,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
     log.trace("{} {} {}", topic, key, value);
 
-    System.out.println(
-      getClass().getSimpleName() + " send " + topic + " " + key + " " + value);
-
     producer.send(new ProducerRecord<>(topic, key, value));
 
     MDC.remove("kafka");
@@ -137,10 +134,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
             for(ConsumerRecord<String, String> record : records)
             {
-              System.out.println(
-                getClass().getSimpleName() + " send " + topic + " " + record
-                  .key() + " " + record.value());
-
               receive(record.key(), record.value());
             }
           }

@@ -18,53 +18,55 @@ class AccountDecoder implements Account
 {
   AccountDecoder(JSONObject account)
   {
-    this.account = account;
+    assert account != null;
+
+    json = account;
   }
 
   @Override public String id()
   {
-    return account.optString("id", null);
+    return json.optString("id", null);
   }
 
   @Override public String bank()
   {
-    return account.optString("bank", null);
+    return json.optString("bank", null);
   }
 
   @Override public String label()
   {
-    return account.optString("label", null);
+    return json.optString("label", null);
   }
 
   @Override public String number()
   {
-    return account.optString("number", null);
+    return json.optString("number", null);
   }
 
   @Override public String type()
   {
-    return account.optString("type", null);
+    return json.optString("type", null);
   }
 
   @Override public String currency()
   {
-    return account.optString("currency", null);
+    return json.optString("currency", null);
   }
 
   @Override public String amount()
   {
-    return account.optString("amount", null);
+    return json.optString("amount", null);
   }
 
   @Override public String iban()
   {
-    return account.optString("iban", null);
+    return json.optString("iban", null);
   }
 
   @Override public String toString()
   {
-    return account.toString();
+    return json.toString();
   }
 
-  private final JSONObject account;
+  private final JSONObject json;
 }

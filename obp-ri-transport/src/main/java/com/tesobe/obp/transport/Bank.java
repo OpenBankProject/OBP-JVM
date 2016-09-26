@@ -8,6 +8,10 @@
 
 package com.tesobe.obp.transport;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
+
 /**
  * Matches KafkaInboundBank in KafkaMappedConnector.
  * <pre>case class KafkaInboundBank(
@@ -17,11 +21,22 @@ package com.tesobe.obp.transport;
  * logo : String,
  * website : String)</pre>
  */
-@SuppressWarnings("WeakerAccess") public interface Bank
+public interface Bank extends Id
 {
   String id();
+
   String shortName();
+
   String fullName();
+
   String logo();
+
   String url();
+
+  default List<String> fields()
+  {
+    return FIELDS;
+  }
+
+  List<String> FIELDS = asList("id", "fullName", "logo", "shortName", "url");
 }

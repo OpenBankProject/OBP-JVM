@@ -15,7 +15,14 @@ import org.json.JSONObject;
 {
   public UserDecoder(JSONObject user)
   {
+    assert user!= null;
+
     json = user;
+  }
+
+  @Override public String id()
+  {
+    return json.optString("id", null);
   }
 
   @Override public String displayName()

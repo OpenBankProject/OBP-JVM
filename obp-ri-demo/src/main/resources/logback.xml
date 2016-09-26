@@ -24,11 +24,20 @@
     </encoder>
   </appender>
 
-  <logger name="ch.qos.logback" level="error"/>
+  <appender name="kafka" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>
+        %-5level %d{HH:mm:ss.SSS} [%thread] %logger{30}.%M:%L %X{kafka} - %msg%n
+      </pattern>
+    </encoder>
+  </appender>
 
-  <logger name="com.tesobe.obp" level="trace"/>
-  <logger name="com.tesobe.obp.transport.spi.DefaultConnector" level="trace"/>
-  <logger name="com.tesobe.obp.transport.spi.AbstractReceiver" level="trace"/>
+  <logger name="ch.qos.logback" level="error"/>
+  <logger name="com.tesobe.obp" level="debug"/>
+
+  <logger name="com.tesobe.obp.kafka" level="trace" additivity="false">
+    <appender-ref ref="kafka"/>
+  </logger>
 
   <logger name="com.tesobe.obp.transport.spi.LoggingReceiver" level="info"
     additivity="false">

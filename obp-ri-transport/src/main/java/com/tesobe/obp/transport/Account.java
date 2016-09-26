@@ -8,6 +8,10 @@
 
 package com.tesobe.obp.transport;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
+
 /**
  * Matches KafkaMappedConnector's KafkaInboundAccount.
  * <pre>KafkaInboundAccount(
@@ -24,21 +28,29 @@ package com.tesobe.obp.transport;
  * generate_auditors_view : Boolean)</pre>.
  */
 
-public interface Account
+public interface Account extends Id
 {
-  public String id();
+  String id();
 
-  public String bank();
+  String amount();
 
-  public String label();
+  String bank();
 
-  public String number();
+  String currency();
 
-  public String type();
+  String iban();
 
-  public String currency();
+  String label();
 
-  public String amount();
+  String number();
 
-  public String iban();
+  String type();
+
+  default List<String> fields()
+  {
+    return FIELDS;
+  }
+
+  List<String> FIELDS = asList("id", "amount", "bank", "currency", "iban",
+    "label", "number", "type");
 }

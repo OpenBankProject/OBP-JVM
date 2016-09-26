@@ -23,6 +23,7 @@ import org.json.JSONObject;
     // @formatter:off
     @SuppressWarnings("UnnecessaryLocalVariable")
     JSONObject json = new JSONObject()
+      .put("id", user.id())
       .put("name", user.displayName())
       .put("email", user.email())
       .put("password", user.password());

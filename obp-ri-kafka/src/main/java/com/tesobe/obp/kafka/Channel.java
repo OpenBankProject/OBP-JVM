@@ -14,7 +14,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
 /**
- * Todo support for multiple producers.
+ * Discards unwanted packets on {@link #take}.
  *
  * @since 2016.9
  */
@@ -35,15 +35,13 @@ import java.util.concurrent.SynchronousQueue;
     {
       if(packet == null || packet.length < 2)
       {
-
-        log.trace("discarding malformed packet");
+        log.warn("discarding malformed packet");
 
         packet = in.take();
       }
       else if(!id.equals(packet[0]))
       {
-
-        log.trace("discarding kafka packet {} {}", packet[0], packet[1]);
+        log.warn("discarding kafka packet {} {}", packet[0], packet[1]);
 
         packet = in.take();
       }

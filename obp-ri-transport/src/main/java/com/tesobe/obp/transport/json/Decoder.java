@@ -88,13 +88,16 @@ import static java.util.Objects.nonNull;
       }
 
       /**
-       * @return null if absent or without value
+       * @return empty string if absent or without value
        */
       @Override public String name()
       {
         return name;
       }
 
+      /**
+       * @return empty string if absent or without value
+       */
       @Override public String version() { return version; }
 
       @Override public String raw()
@@ -108,14 +111,14 @@ import static java.util.Objects.nonNull;
       }
 
       JSONObject json = new JSONObject(request);
-      String name = json.optString("name", null);
-      String version = json.optString("version", null);
+      String name = json.optString("name", "");
+      String version = json.optString("version", "");
     });
   }
 
   @Override public Optional<Account> account(String response)
   {
-    log.trace("{} {}", version, String.valueOf(response));
+    log.trace("{} {}", version, response);
 
     if(nonNull(response) && !response.equals("null"))
     {
@@ -136,7 +139,7 @@ import static java.util.Objects.nonNull;
 
   @Override public Iterable<Account> accounts(String response)
   {
-    log.trace("{} {}", version, String.valueOf(response));
+    log.trace("{} {}", version, response);
 
     if(isNull(response) || response.equals("null"))
     {
@@ -177,7 +180,7 @@ import static java.util.Objects.nonNull;
 
   @Override public Optional<Bank> bank(String response)
   {
-    log.trace("{} {}", version, String.valueOf(response));
+    log.trace("{} {}", version, response);
 
     if(nonNull(response) && !response.equals("null"))
     {
@@ -198,7 +201,7 @@ import static java.util.Objects.nonNull;
 
   @Override public Iterable<Bank> banks(String response)
   {
-    log.trace("{} {}", version, String.valueOf(response));
+    log.trace("{} {}", version, response);
 
     if(isNull(response) || response.equals("null"))
     {
@@ -239,7 +242,7 @@ import static java.util.Objects.nonNull;
 
   @Override public Optional<String> transactionId(String response)
   {
-    log.trace("{} {}", version, String.valueOf(response));
+    log.trace("{} {}", version, response);
 
     if(nonNull(response) && !response.equals("null"))
     {
@@ -258,7 +261,7 @@ import static java.util.Objects.nonNull;
 
   @Override public Optional<Transaction> transaction(String response)
   {
-    log.trace("{} {}", version, String.valueOf(response));
+    log.trace("{} {}", version, response);
 
     if(nonNull(response) && !response.equals("null"))
     {
@@ -279,7 +282,7 @@ import static java.util.Objects.nonNull;
 
   @Override public Iterable<Transaction> transactions(String response)
   {
-    log.trace("{} {}", version, String.valueOf(response));
+    log.trace("{} {}", version, response);
 
     if(isNull(response) || response.equals("null"))
     {
@@ -320,15 +323,15 @@ import static java.util.Objects.nonNull;
 
   @Override public Optional<User> user(String response)
   {
-    log.trace("{} {}", version, String.valueOf(response));
+    log.trace("{} {}", version, response);
 
     if(nonNull(response) && !response.equals("null"))
     {
       try
       {
-        JSONObject bank = new JSONObject(response);
+        JSONObject user = new JSONObject(response);
 
-        return Optional.of(new UserDecoder(bank));
+        return Optional.of(new UserDecoder(user));
       }
       catch(JSONException e)
       {

@@ -29,6 +29,7 @@ import java.util.function.BiFunction;
 
 import static java.lang.reflect.Proxy.newProxyInstance;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static java.util.Objects.isNull;
 
 @SuppressWarnings("WeakerAccess") class DemoData extends AbstractReceiver
@@ -92,7 +93,8 @@ import static java.util.Objects.isNull;
     log.trace("{}", r.raw());
 
     return r.bankId()
-      .map(bankId -> e.bank(generate(Bank.class, 1, "id", bankId)))
+      .filter(id -> id.equals(THE_ONE_BANK.id()))
+      .map(id -> e.bank(THE_ONE_BANK))
       .orElse(e.bank(null));
   }
 
@@ -108,12 +110,7 @@ import static java.util.Objects.isNull;
   {
     log.trace("{}", r.raw());
 
-    List<Bank> banks = new ArrayList<>();
-
-    banks.add(generate(Bank.class, 1));
-    banks.add(generate(Bank.class, 2));
-
-    return e.banks(banks);
+    return e.banks(singletonList(THE_ONE_BANK));
   }
 
   /**
@@ -242,11 +239,44 @@ import static java.util.Objects.isNull;
   private static final Map<Class<?>, BiFunction<String, Integer, ?>> values
     = new HashMap<>();
 
+  static final Map<String, Bank> banks = new HashMap<>();
+  static final Bank THE_ONE_BANK = new TheOneBank();
   static
   {
+    banks.put(THE_ONE_BANK.id(), THE_ONE_BANK);
+
     values.put(String.class, (s, i) -> s + "-" + i);
     values.put(Integer.class, (s, i) -> i);
     values.put(BigDecimal.class, (s, i) -> new BigDecimal(i));
     values.put(ZonedDateTime.class, (s, i) -> ZonedDateTime.now());
+  }
+
+
+  static class TheOneBank implements Bank
+  {
+    @Override public String id()
+    {
+      return "B1";
+    }
+
+    @Override public String shortName()
+    {
+      return "The One Bank";
+    }
+
+    @Override public String fullName()
+    {
+      return "The Most Precious One Great Bank";
+    }
+
+    @Override public String logo()
+    {
+      return null;
+    }
+
+    @Override public String url()
+    {
+      return "http://www.example.org/";
+    }
   }
 }

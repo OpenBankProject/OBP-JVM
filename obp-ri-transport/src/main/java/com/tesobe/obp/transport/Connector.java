@@ -102,7 +102,7 @@ import java.util.Optional;
   /**
    * Anonymously get banks.
    *
-   * @return
+   * @return never null
    *
    * @throws InterruptedException Network trouble
    */

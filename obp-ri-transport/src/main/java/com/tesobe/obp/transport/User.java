@@ -8,6 +8,10 @@
 
 package com.tesobe.obp.transport;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
+
 /**
  * Matches KafkaMappedConnector's KafkaInboundUser.
  * <pre>
@@ -17,11 +21,20 @@ package com.tesobe.obp.transport;
  *   display_name : String)
  * </pre>
  */
-public interface User
+public interface User extends Id
 {
+  String id();
+
   String displayName();
 
   String email();
 
   String password();
+
+  default List<String> fields()
+  {
+    return FIELDS;
+  }
+
+  List<String> FIELDS = asList("id", "displayName", "email", "password");
 }

@@ -59,8 +59,9 @@ import java.util.UUID;
   @Override public Iterable<Account> getAccounts(String bankId, String userId)
     throws InterruptedException
   {
+    String id = UUID.randomUUID().toString();
     String request = encoder.getAccounts(userId, bankId).toString();
-    String response = sender.send(new Message("id", request));
+    String response = sender.send(new Message(id, request));
 
     log.trace("{} \u2192 {}", request, response);
 

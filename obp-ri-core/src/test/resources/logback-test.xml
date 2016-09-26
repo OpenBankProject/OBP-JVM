@@ -23,10 +23,7 @@
   </appender>
 
   <logger name="ch.qos.logback" level="error"/>
-
-  <logger name="com.tesobe.obp" level="debug"/>
-  <logger name="com.tesobe.obp.transport.json" level="trace"/>
-  <logger name="com.tesobe.obp.transport.spi" level="trace"/>
+  <logger name="com.tesobe.obp" level="trace"/>
 
   <root level="error">
     <appender-ref ref="console"/>

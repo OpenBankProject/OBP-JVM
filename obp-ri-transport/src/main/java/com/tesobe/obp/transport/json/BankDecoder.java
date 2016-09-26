@@ -18,38 +18,40 @@ class BankDecoder implements Bank
 {
   BankDecoder(JSONObject bank)
   {
-    this.bank = bank;
+    assert bank != null;
+
+    json = bank;
   }
 
   @Override public String id()
   {
-    return bank.optString("id", null);
+    return json.optString("id", null);
   }
 
   @Override public String shortName()
   {
-    return bank.optString("short", null);
+    return json.optString("short", null);
   }
 
   @Override public String fullName()
   {
-    return bank.optString("name", null);
+    return json.optString("name", null);
   }
 
   @Override public String logo()
   {
-    return bank.optString("logo", null);
+    return json.optString("logo", null);
   }
 
   @Override public String url()
   {
-    return bank.optString("url", null);
+    return json.optString("url", null);
   }
 
   @Override public String toString()
   {
-    return bank.toString();
+    return json.toString();
   }
 
-  private final JSONObject bank;
+  private final JSONObject json;
 }
