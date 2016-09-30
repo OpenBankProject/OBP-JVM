@@ -10,13 +10,13 @@ Add dependencies
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-kafka</artifactId>
-  <version>2016.9-ALPHA9</version>
+  <version>[VERSION_OF_PROJECT]</version>
 </dependency>
 
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-transport</artifactId>
-  <version>2016.9-ALPHA9</version>
+  <version>[VERSION_OF_PROJECT]</version>
 </dependency>
 ```
 For testing also add
@@ -25,10 +25,19 @@ For testing also add
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-transport</artifactId>
-  <version>2016.9-ALPHA7</version>
+  <version>[VERSION_OF_PROJECT]</version>
   <type>test-jar</type>
   <scope>test</scope>
 </dependency>
+```
+
+You can check [VERSION_OF_PROJECT] in pom.xml of each project
+```xml
+<parent>
+    <artifactId>obp-ri</artifactId>
+    <groupId>com.tesobe.obp</groupId>
+    <version>2016.9-ALPHA10-SNAPSHOT</version> ## this one
+</parent>
 ```
 
 The library has not yet been released to maven central. To use it, clone the repository and run `mvn install`. 
