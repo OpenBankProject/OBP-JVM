@@ -170,6 +170,8 @@ A **request** is a standard JSON object with two required JSON string keys, `nam
 
 Any key may be omitted if it has no value.
 
+### Default Messages 
+
 These are the requests that return **zero** or **one** entity:
 
 | Value of `name` Key | Additional Keys in Request | Keys in Response |
