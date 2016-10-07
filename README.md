@@ -25,7 +25,7 @@ For testing also add
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-transport</artifactId>
-  <version>2016.9-ALPHA7</version>
+  <version>2016.9-ALPHA9</version>
   <type>test-jar</type>
   <scope>test</scope>
 </dependency>
