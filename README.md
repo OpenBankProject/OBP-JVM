@@ -206,7 +206,8 @@ The **completed** and **posted** keys are timestamps with this pattern: `"yyyy-M
 #####Save Transaction
 The response is a single JSON string, the transaction id.
 
-####The Above Default Messages Again as EBNF (https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_Form)
+###The Above Default Messages Again as [EBNF](https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_Form)
+
 All messages are valid JSON.
 
 ```
