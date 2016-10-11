@@ -20,16 +20,11 @@ import org.json.JSONObject;
 
   public JSONObject toJson()
   {
-    // @formatter:off
-    @SuppressWarnings("UnnecessaryLocalVariable")
-    JSONObject json = new JSONObject()
+    return new JSONObject()
       .put("id", user.id())
       .put("name", user.displayName())
       .put("email", user.email())
       .put("password", user.password());
-    // @formatter:on
-
-    return json;
   }
 
   private final User user;

@@ -33,22 +33,22 @@ public class LoggingReceiver implements Receiver
   {
     if(nonNull(request))
     {
-      log.info("{} -> {}", request.id, request.payload);
+      log.info("{} \u2192 {}", request.id, request.payload);
     }
     else
     {
-      log.warn("empty request -> ");
+      log.warn("empty request \u2192 ");
     }
 
     String response = receiver.respond(request);
 
     if(nonNull(request))
     {
-      log.info("{} <- {}", request.id, response);
+      log.info("{} \u2190 {}", request.id, response);
     }
     else
     {
-      log.warn("empty request <- {}", response);
+      log.warn("empty request \u2190 {}", response);
     }
 
     return response;

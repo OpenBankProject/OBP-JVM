@@ -92,6 +92,16 @@ import static java.util.Objects.nonNull;
     return "null";
   }
 
+  @Override protected String getUsers(Decoder.Request r, Encoder e)
+  {
+    assert nonNull(r);
+    assert nonNull(e);
+
+    log.trace("{} user id present? {}", r, r.userId().isPresent());
+
+    return "[]";
+  }
+
   @Override protected String saveTransaction(Decoder.Request r, Encoder e)
   {
     assert nonNull(r);

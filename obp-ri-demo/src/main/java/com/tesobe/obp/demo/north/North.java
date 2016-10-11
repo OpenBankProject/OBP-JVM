@@ -17,8 +17,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Map;
 
-import static com.tesobe.obp.demo.south.DemoUsers.USERS;
-
 /**
  * A simple REST server that uses the kafka transport to send messages.
  *
@@ -50,7 +48,7 @@ import static com.tesobe.obp.demo.south.DemoUsers.USERS;
         new Props(North.class, consumerProps).toMap(),
         new Props(South.class, producerProps).toMap());
 
-      new Rest(factory.connector(north), ipAddress, port, USERS);
+      new Rest(factory.connector(north), ipAddress, port);
 
       north.receive();
 

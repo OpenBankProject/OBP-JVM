@@ -36,28 +36,4 @@ import java.util.Map;
     return consumerTopic;
   }
 
-  //  static // todo enable if desperate
-//  {
-//    try
-//    {
-//      Class<?> logger = Class.forName("ch.qos.logback.classic.Logger");
-//      Class<?> level = Class.forName("ch.qos.logback.classic.Level");
-//
-//      if(logger != null && level != null)
-//      {
-//        Object log = logger
-//          .cast(LoggerFactory.getLogger("com.tesobe.obp.socgen"));
-//        Method setLevel = logger.getMethod("setLevel", level);
-//        Field trace = level.getField("TRACE");
-//
-//        setLevel.invoke(log, trace);
-//      }
-//    }
-//    catch(ClassNotFoundException | NoSuchMethodException |
-//      IllegalAccessException | InvocationTargetException |
-//      NoSuchFieldException x)
-//    {
-//      x.printStackTrace();
-//    }
-//  }
 }

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ *
+ * Use of this source code is governed by a GNU AFFERO license
+ * that can be found in the LICENSE file.
+ *
+ */
 package com.tesobe.obp.demo.north;
 
 import com.tesobe.obp.transport.Account;
@@ -12,23 +19,24 @@ import spark.Request;
 import spark.Response;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static java.util.Objects.isNull;
+import static java.util.function.Function.identity;
 import static spark.Spark.awaitInitialization;
 import static spark.Spark.get;
 import static spark.Spark.ipAddress;
 import static spark.Spark.port;
 import static spark.Spark.staticFileLocation;
 
-@SuppressWarnings("WeakerAccess") class Rest
+@SuppressWarnings("WeakerAccess") public class Rest
 {
-  Rest(Connector c, String ip, int port, Iterable<User> namedUsers)
+  public Rest(Connector c, String ip, int port)
   {
     connector = c;
-    users = new Users(namedUsers);
-    html = new Html(ip, port, users.users());
+    html = new Html(ip, port);
 
     staticFileLocation(getClass().getPackage().getName().replace('.', '/'));
     ipAddress(ip);
@@ -81,14 +89,8 @@ import static spark.Spark.staticFileLocation;
         account = connector.getAccount(bankId, accountId, userId);
       }
 
-      if(account.isPresent())
-      {
-        return html.render(userId, bankId, accountId, null, account.get());
-      }
-      else
-      {
-        return html.render(userId, bankId, accountId, null, (Id)null);
-      }
+      return html.render(userId, bankId, accountId, null,
+        account.map(identity()).orElse(null), User.class, users());
     }
     catch(Exception e)
     {
@@ -102,7 +104,7 @@ import static spark.Spark.staticFileLocation;
 
     String userId = request.params(":user");
 
-    return html.render(userId, null, null, null, (Id)null);
+    return html.render(userId, null, null, null, (Id)null, null, users());
   }
 
   protected Object getAccount(Request request, Response response)
@@ -125,14 +127,8 @@ import static spark.Spark.staticFileLocation;
         account = connector.getAccount(bankId, accountId, userId);
       }
 
-      if(account.isPresent())
-      {
-        return html.render(userId, bankId, accountId, null, account.get());
-      }
-      else
-      {
-        return html.render(userId, bankId, accountId, null, (Id)null);
-      }
+      return html.render(userId, bankId, accountId, null,
+        account.map(identity()).orElse(null), Account.class, users());
     }
     catch(Exception e)
     {
@@ -162,14 +158,8 @@ import static spark.Spark.staticFileLocation;
 
       accounts.forEach(items::add);
 
-      if(!items.isEmpty())
-      {
-        return html.render(userId, bankId, null, null, items);
-      }
-      else
-      {
-        return html.render(userId, bankId, null, null, (List<Id>)null);
-      }
+      return html.render(userId, bankId, null, null, items, Account.class,
+        users());
     }
     catch(Exception e)
     {
@@ -196,14 +186,8 @@ import static spark.Spark.staticFileLocation;
         bank = connector.getBank(bankId, userId);
       }
 
-      if(bank.isPresent())
-      {
-        return html.render(userId, bankId, null, null, bank.get());
-      }
-      else
-      {
-        return html.render(userId, bankId, null, null, (Id)null);
-      }
+      return html.render(userId, bankId, null, null,
+        bank.map(identity()).orElse(null), Bank.class, users());
     }
     catch(Exception e)
     {
@@ -232,14 +216,7 @@ import static spark.Spark.staticFileLocation;
 
       banks.forEach(items::add);
 
-      if(!items.isEmpty())
-      {
-        return html.render(userId, null, null, null, items);
-      }
-      else
-      {
-        return html.render(userId, null, null, null, (List<Id>)null);
-      }
+      return html.render(userId, null, null, null, items, Bank.class, users());
     }
     catch(Exception e)
     {
@@ -255,30 +232,23 @@ import static spark.Spark.staticFileLocation;
     {
       String bankId = request.params(":bank");
       String accountId = request.params(":account");
-      String transactionId = request.params(":user");
+      String transactionId = request.params(":transaction");
       String userId = request.params(":user");
       Optional<Transaction> transaction;
 
       if(isNull(userId))
       {
-        transaction = connector
-          .getTransaction(bankId, accountId, transactionId);
+        transaction = connector.getTransaction(bankId, accountId,
+          transactionId);
       }
       else
       {
-        transaction = connector
-          .getTransaction(bankId, accountId, transactionId, userId);
+        transaction = connector.getTransaction(bankId, accountId, transactionId,
+          userId);
       }
 
-      if(transaction.isPresent())
-      {
-        return html
-          .render(userId, bankId, accountId, transactionId, transaction.get());
-      }
-      else
-      {
-        return html.render(userId, bankId, accountId, transactionId, (Id)null);
-      }
+      return html.render(userId, bankId, accountId, transactionId,
+        transaction.map(identity()).orElse(null), Transaction.class, users());
     }
     catch(Exception e)
     {
@@ -293,30 +263,25 @@ import static spark.Spark.staticFileLocation;
     try
     {
       String bankId = request.params(":bank");
+      String accountId = request.params(":account");
       String userId = request.params(":user");
 
-      Iterable<Account> accounts;
+      Iterable<Transaction> transactions;
       List<Id> items = new ArrayList<>();
 
       if(isNull(userId))
       {
-        accounts = connector.getAccounts(bankId);
+        transactions = connector.getTransactions(bankId, accountId);
       }
       else
       {
-        accounts = connector.getAccounts(bankId, userId);
+        transactions = connector.getTransactions(bankId, accountId, userId);
       }
 
-      accounts.forEach(items::add);
+      transactions.forEach(items::add);
 
-      if(!items.isEmpty())
-      {
-        return html.render(userId, bankId, null, null, items);
-      }
-      else
-      {
-        return html.render(userId, bankId, null, null, (List<Id>)null);
-      }
+      return html.render(userId, bankId, accountId, null, items,
+        Transaction.class, users());
     }
     catch(Exception e)
     {
@@ -324,9 +289,83 @@ import static spark.Spark.staticFileLocation;
     }
   }
 
+  private List<User> users()
+  {
+    try
+    {
+      List<User> users = new ArrayList<>();
+
+      connector.getUsers().forEach(users::add);
+
+      users.add(new Anonymous());
+
+      Collections.sort(users);
+
+      return users;
+    }
+    catch(InterruptedException e)
+    {
+      log.error(e.getMessage(), e);
+
+      return Collections.emptyList();
+    }
+  }
+
   protected final Connector connector;
   protected final Html html;
-  protected final Users users;
 
   final static Logger log = LoggerFactory.getLogger(Rest.class);
+
+  public static class Anonymous implements User
+  {
+    @Override public String id()
+    {
+      return null;
+    }
+
+    @Override public String displayName()
+    {
+      return "Anonymous";
+    }
+
+    @Override public String email()
+    {
+      return "anonymous@example.org";
+    }
+
+    @Override public String password()
+    {
+      return "secret";
+    }
+  }
+
+  public static class Unkown implements User
+  {
+    public Unkown(String id)
+    {
+      this.id = id;
+    }
+
+    @Override public String id()
+    {
+      return id;
+    }
+
+    @Override public String displayName()
+    {
+      return id;
+    }
+
+    @Override public String email()
+    {
+      return null;
+    }
+
+    @Override public String password()
+    {
+      return null;
+    }
+
+    public final String id;
+  }
 }

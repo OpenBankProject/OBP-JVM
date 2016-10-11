@@ -9,13 +9,13 @@ package com.tesobe.obp.transport.json;
 
 import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
+import com.tesobe.obp.transport.Connector;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.transport.User;
+import com.tesobe.obp.transport.spi.DefaultConnector;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -42,7 +42,9 @@ import static java.util.Objects.nonNull;
   @Override
   public Request getAccount(String userId, String bankId, String accountId)
   {
-    return request("get account").put("user", userId).put("bank", bankId)
+    return request("get account")
+      .put("user", userId)
+      .put("bank", bankId)
       .put("account", accountId);
   }
 
@@ -79,28 +81,39 @@ import static java.util.Objects.nonNull;
   @Override public Request getTransaction(String bankId, String accountId,
     String transactionId)
   {
-    return request("get transaction").put("bank", bankId)
-      .put("account", accountId).put("transaction", transactionId);
+    return request("get transaction")
+      .put("bank", bankId)
+      .put("account", accountId)
+      .put("transaction", transactionId);
   }
 
   @Override public Request getTransaction(String bankId, String accountId,
     String transactionId, String userId)
   {
-    return request("get transaction").put("bank", bankId).put("user", userId)
-      .put("account", accountId).put("transaction", transactionId);
+    return request("get transaction")
+      .put("bank", bankId)
+      .put("user", userId)
+      .put("account", accountId)
+      .put("transaction", transactionId);
   }
 
-  @Override public Request getTransactions(String bankId, String accountId)
+  @Override public Request getTransactions(Connector.Pager p, String bankId,
+    String accountId)
   {
-    return request("get transactions").put("bank", bankId)
+    return request("get transactions")
+      .put(p)
+      .put("bank", bankId)
       .put("account", accountId);
   }
 
-  @Override
-  public Request getTransactions(String bankId, String accountId, String userId)
+  @Override public Request getTransactions(Connector.Pager p, String bankId,
+    String accountId, String userId)
   {
-    return request("get transactions").put("bank", bankId)
-      .put("account", accountId).put("user", userId);
+    return request("get transactions")
+      .put(p)
+      .put("bank", bankId)
+      .put("account", accountId)
+      .put("user", userId);
   }
 
   @Override public Request getUser(String userId)
@@ -108,13 +121,27 @@ import static java.util.Objects.nonNull;
     return request("get user").put("user", userId);
   }
 
+  @Override public Request getUsers(String userId)
+  {
+    return request("get users").put("user", userId);
+  }
+
+  @Override public Request getUsers()
+  {
+    return request("get users");
+  }
+
   @Override public Request saveTransaction(String userId, String accountId,
     String currency, String amount, String otherAccountId,
     String otherAccountCurrency, String transactionType)
   {
-    return request("save transaction").put("user", userId)
-      .put("account", accountId).put("currency", currency).put("amount", amount)
-      .put("otherId", otherAccountId).put("otherCurrency", otherAccountCurrency)
+    return request("save transaction")
+      .put("user", userId)
+      .put("account", accountId)
+      .put("currency", currency)
+      .put("amount", amount)
+      .put("otherId", otherAccountId)
+      .put("otherCurrency", otherAccountCurrency)
       .put("transactionType", transactionType);
   }
 
@@ -130,7 +157,7 @@ import static java.util.Objects.nonNull;
     return json != null ? json.toString() : notFound();
   }
 
-  @Override public String accounts(List<Account> accounts)
+  @Override public String accounts(List<? extends Account> accounts)
   {
     JSONArray result = new JSONArray();
 
@@ -149,7 +176,7 @@ import static java.util.Objects.nonNull;
     return json != null ? json.toString() : notFound();
   }
 
-  @Override public String banks(List<Bank> banks)
+  @Override public String banks(List<? extends Bank> banks)
   {
     JSONArray result = new JSONArray();
 
@@ -243,6 +270,19 @@ import static java.util.Objects.nonNull;
     return null;
   }
 
+  private void json(User u, JSONArray result)
+  {
+    if(nonNull(u))
+    {
+      JSONObject json = json(u);
+
+      result.put(json != null ? json : JSONObject.NULL);
+    }
+    else
+    {
+      result.put(JSONObject.NULL);
+    }
+  }
 
   @Override public String transaction(Transaction t)
   {
@@ -251,7 +291,7 @@ import static java.util.Objects.nonNull;
     return json != null ? json.toString() : JSONObject.NULL.toString();
   }
 
-  @Override public String transactions(List<Transaction> ts)
+  @Override public String transactions(List<? extends Transaction> ts)
   {
     JSONArray result = new JSONArray();
 
@@ -261,6 +301,26 @@ import static java.util.Objects.nonNull;
     }
 
     return result.toString();
+  }
+
+  @Override
+  public String transactions(List<? extends Transaction> ts, boolean more)
+  {
+    if(more)
+    {
+      JSONArray data = new JSONArray();
+
+      if(nonNull(ts))
+      {
+        ts.forEach(transaction -> json(transaction, data));
+      }
+
+      return new JSONObject().put("more", true).put("data", data).toString();
+    }
+    else
+    {
+      return transactions(ts);
+    }
   }
 
   @Override public String user(User u)
@@ -273,6 +333,18 @@ import static java.util.Objects.nonNull;
   @Override public String transactionId(String s)
   {
     return s;
+  }
+
+  @Override public String users(List<? extends User> users)
+  {
+    JSONArray result = new JSONArray();
+
+    if(nonNull(users))
+    {
+      users.forEach(user -> json(user, result));
+    }
+
+    return result.toString();
   }
 
   @Override public String error(String message)
@@ -292,8 +364,6 @@ import static java.util.Objects.nonNull;
 
   final Transport.Version version;
 
-  static final Logger log = LoggerFactory.getLogger(Encoder.class);
-
   class RequestBuilder implements Request
   {
     public RequestBuilder(String name)
@@ -312,6 +382,54 @@ import static java.util.Objects.nonNull;
     public RequestBuilder put(String key, String value)
     {
       request.put(key, value);
+
+      return this;
+    }
+
+    public RequestBuilder put(String key, int value)
+    {
+      request.put(key, value);
+
+      return this;
+    }
+
+    public RequestBuilder put(Connector.Pager p)
+    {
+      if(p instanceof DefaultConnector.DefaultPager)
+      {
+        DefaultConnector.DefaultPager pager
+          = DefaultConnector.DefaultPager.class.cast(p);
+
+        if(pager.offset != 0)
+        {
+          request.put("offset", pager.offset);
+        }
+
+        if(pager.size != 0)
+        {
+          request.put("size", pager.size);
+        }
+
+        if(nonNull(pager.field))
+        {
+          request.put("sort by", pager.field.toString());
+        }
+
+        if(nonNull(pager.sortOrder))
+        {
+          request.put("sort", pager.sortOrder.toString());
+        }
+
+        if(nonNull(pager.earliest))
+        {
+          request.put("earliest", Json.toJson(pager.earliest));
+        }
+
+        if(nonNull(pager.latest))
+        {
+          request.put("latest", Json.toJson(pager.latest));
+        }
+      }
 
       return this;
     }

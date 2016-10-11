@@ -11,6 +11,8 @@ package com.tesobe.obp.transport.json;
 import com.tesobe.obp.transport.Transaction;
 import org.json.JSONObject;
 
+import static java.util.Objects.nonNull;
+
 @SuppressWarnings("WeakerAccess") class TransactionEncoder
 {
   public TransactionEncoder(Transaction t)
@@ -22,22 +24,23 @@ import org.json.JSONObject;
 
   public JSONObject toJson()
   {
-    // @formatter:off
-    @SuppressWarnings("UnnecessaryLocalVariable")
     JSONObject json = new JSONObject()
       .put("id", transaction.id())
       .put("account", transaction.account())
       .put("bank", transaction.bank())
-      .put("other", new JSONObject()
-        .put("id", transaction.otherId())
-        .put("account", transaction.otherAccount()))
       .put("type", transaction.type())
       .put("description", transaction.description())
       .put("posted", Json.toJson(transaction.posted()))
       .put("completed", Json.toJson(transaction.completed()))
       .put("balance", transaction.balance())
       .put("value", transaction.value());
-    // @formatter:on
+
+    if(nonNull(transaction.otherId()) && nonNull(transaction.otherAccount()))
+    {
+      json.put("other", new JSONObject()
+        .put("id", transaction.otherId())
+        .put("account", transaction.otherAccount()));
+    }
 
     return json;
   }

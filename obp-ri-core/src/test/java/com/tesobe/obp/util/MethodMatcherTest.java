@@ -5,7 +5,6 @@
  * that can be found in the LICENSE file.
  *
  */
-
 package com.tesobe.obp.util;
 
 import ch.qos.logback.classic.Level;

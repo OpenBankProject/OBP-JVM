@@ -8,8 +8,15 @@ public interface Id extends Comparable<Id>
 
   List<String> fields();
 
-  @SuppressWarnings("NullableProblems") @Override
-  default int compareTo(Id other)
+  /**
+   * Must handle null well.
+   *
+   * @param other null allowed
+   *
+   * @return null is less than non null
+   */
+  @SuppressWarnings("NullableProblems") @Override default int compareTo(
+    Id other)
   {
     if(other == null)
     {

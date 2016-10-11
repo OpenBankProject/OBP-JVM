@@ -10,13 +10,13 @@ Add dependencies
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-kafka</artifactId>
-  <version>2016.9-ALPHA9</version>
+  <version>2016.9-ALPHA10-SNAPSHOT</version>
 </dependency>
 
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-transport</artifactId>
-  <version>2016.9-ALPHA9</version>
+  <version>2016.9-ALPHA10-SNAPSHOT</version>
 </dependency>
 ```
 For testing also add
@@ -25,7 +25,7 @@ For testing also add
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-transport</artifactId>
-  <version>2016.9-ALPHA7</version>
+  <version>2016.9-ALPHA10-SNAPSHOT</version>
   <type>test-jar</type>
   <scope>test</scope>
 </dependency>

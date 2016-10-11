@@ -23,9 +23,7 @@ import org.json.JSONObject;
 
   public JSONObject toJson()
   {
-    // @formatter:off
-    @SuppressWarnings("unused")
-    JSONObject json = new JSONObject()
+    return new JSONObject()
       .put("id", account.id())
       .put("bank", account.bank())
       .put("label", account.label())
@@ -34,9 +32,6 @@ import org.json.JSONObject;
       .put("currency", account.currency())
       .put("amount", account.amount())
       .put("iban", account.iban());
-    // @formatter:on
-
-    return json;
   }
 
   private final Account account;

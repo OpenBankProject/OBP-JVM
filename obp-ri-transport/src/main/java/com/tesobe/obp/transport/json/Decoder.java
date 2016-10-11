@@ -9,17 +9,22 @@ package com.tesobe.obp.transport.json;
 
 import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
+import com.tesobe.obp.transport.Connector;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.transport.User;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Objects.isNull;
@@ -87,6 +92,40 @@ import static java.util.Objects.nonNull;
         return Optional.ofNullable(json.optString("transactionType", null));
       }
 
+      @Override public int offset()
+      {
+        return json.optInt("offset", 0);
+      }
+
+      @Override public int size()
+      {
+        return json.optInt("size", 0);
+      }
+
+      @Override public Optional<Connector.SortField> field()
+      {
+        return Optional.ofNullable(
+          json.optEnum(Connector.SortField.class, "field"));
+      }
+
+      @Override public Optional<Connector.SortOrder> sort()
+      {
+        return Optional.ofNullable(
+          json.optEnum(Connector.SortOrder.class, "sort"));
+      }
+
+      @Override public Optional<ZonedDateTime> earliest()
+      {
+        return Optional.ofNullable(
+          Json.zonedDateTimeFromJson(json.optString("earliest", null)));
+      }
+
+      @Override public Optional<ZonedDateTime> latest()
+      {
+        return Optional.ofNullable(
+          Json.zonedDateTimeFromJson(json.optString("latest", null)));
+      }
+
       /**
        * @return empty string if absent or without value
        */
@@ -98,7 +137,10 @@ import static java.util.Objects.nonNull;
       /**
        * @return empty string if absent or without value
        */
-      @Override public String version() { return version; }
+      @Override public String version()
+      {
+        return version;
+      }
 
       @Override public String raw()
       {
@@ -280,45 +322,9 @@ import static java.util.Objects.nonNull;
     return Optional.empty();
   }
 
-  @Override public Iterable<Transaction> transactions(String response)
+  @Override public Response transactions(String response)
   {
-    log.trace("{} {}", version, response);
-
-    if(isNull(response) || response.equals("null"))
-    {
-      return Collections::emptyIterator;
-    }
-
-    JSONArray array = array(response);
-
-    if(array == null)
-    {
-      return Collections::emptyIterator;
-    }
-
-    return () -> new Iterator<Transaction>() // Iterable as lambda
-    {
-      @Override public boolean hasNext()
-      {
-        return iterator.hasNext();
-      }
-
-      @Override public Transaction next()
-      {
-        Object next = iterator.next();
-
-        if(!(next instanceof JSONObject))
-        {
-          log.error("{}", next);
-
-          return null;
-        }
-
-        return new TransactionDecoder(JSONObject.class.cast(next));
-      }
-
-      final Iterator<Object> iterator = array.iterator();
-    };
+    return new DefaultResponse(response);
   }
 
   @Override public Optional<User> user(String response)
@@ -342,6 +348,47 @@ import static java.util.Objects.nonNull;
     return Optional.empty();
   }
 
+  @Override public Iterable<User> users(String response)
+  {
+    log.trace("{} {}", version, response);
+
+    if(isNull(response) || response.equals("null"))
+    {
+      return Collections::emptyIterator;
+    }
+
+    JSONArray array = array(response);
+
+    if(array == null)
+    {
+      return Collections::emptyIterator;
+    }
+
+    return () -> new Iterator<User>() // Iterable as lambda
+    {
+      @Override public boolean hasNext()
+      {
+        return iterator.hasNext();
+      }
+
+      @Override public User next()
+      {
+        Object next = iterator.next();
+
+        if(!(next instanceof JSONObject))
+        {
+          log.error("{}", next);
+
+          return null;
+        }
+
+        return new UserDecoder(JSONObject.class.cast(next));
+      }
+
+      final Iterator<Object> iterator = array.iterator();
+    };
+  }
+
   protected JSONArray array(String json)
   {
     try
@@ -363,4 +410,106 @@ import static java.util.Objects.nonNull;
 
   final Transport.Version version;
   static final Logger log = LoggerFactory.getLogger(Decoder.class);
+
+  protected class DefaultResponse implements Response
+  {
+    public DefaultResponse(String response)
+    {
+      this.response = response;
+
+      log.trace("{} {}", version, response);
+
+      if(isNull(response) || response.equals("null"))
+      {
+        data = Collections.emptyList();
+        more = false;
+      }
+      else
+      {
+        Object wrapper = scan(response);
+
+        if(wrapper instanceof JSONArray)
+        {
+          more = false;
+          data = collect(JSONArray.class.cast(wrapper));
+        }
+        else if(wrapper instanceof JSONObject)
+        {
+          JSONObject json = JSONObject.class.cast(wrapper);
+
+          more = json.optBoolean("more");
+          data = collect(json.optJSONArray("data"));
+        }
+        else
+        {
+          data = Collections.emptyList();
+          more = false;
+        }
+      }
+    }
+
+    protected Object scan(String response)
+    {
+      try
+      {
+        JSONTokener scanner = new JSONTokener(response);
+
+        switch(scanner.nextClean())
+        {
+          case '[':
+            scanner.back();
+            return new JSONArray(scanner);
+          case '{':
+            scanner.back();
+            return new JSONObject(scanner);
+          default:
+            return null;
+        }
+      }
+      catch(JSONException e)
+      {
+        return null;
+      }
+    }
+
+    protected ArrayList<Transaction> collect(JSONArray array)
+    {
+      ArrayList<Transaction> items = new ArrayList<>();
+
+      if(array != null)
+      {
+        for(Object entry : array)
+        {
+          try
+          {
+            if(entry instanceof JSONObject)
+            {
+              items.add(new TransactionDecoder(JSONObject.class.cast(entry)));
+            }
+          }
+          catch(Exception e)
+          {
+            // skip
+            log.warn("Not a transaction: {}", entry);
+          }
+        }
+      }
+
+      return items;
+    }
+
+    @Override public boolean more()
+    {
+      return more;
+    }
+
+    @Override public List<Transaction> transactions()
+    {
+      return data;
+    }
+
+    final String response;
+    final List<Transaction> data;
+    final boolean more;
+  }
 }

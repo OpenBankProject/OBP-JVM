@@ -7,6 +7,8 @@
  */
 package com.tesobe.obp.transport;
 
+import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -52,8 +54,7 @@ import java.util.Optional;
   Optional<Account> getAccount(String bankId, String accountId, String userId)
     throws InterruptedException;
 
-  Iterable<Account> getAccounts(String bankId)
-    throws InterruptedException;
+  Iterable<Account> getAccounts(String bankId) throws InterruptedException;
 
   /**
    * All private accounts the user is explicitly linked to.
@@ -76,14 +77,13 @@ import java.util.Optional;
   /**
    * Anonymous request for a bank.
    *
-   * @param bankId sent to the south as is, even if it is null
+   * @param bankId the bank's id. Not a UUID.
    *
    * @return empty if the bankId is invalid
    *
    * @throws InterruptedException Network trouble
    */
-  Optional<Bank> getBank(String bankId)
-    throws InterruptedException;
+  Optional<Bank> getBank(String bankId) throws InterruptedException;
 
   /**
    * @param bankId An invalid bank id means an empty result.
@@ -115,33 +115,97 @@ import java.util.Optional;
    * fields in the banks returned may be {@code null}.
    *
    * @param userId An invalid user id means an empty result.
-   * An all white space user id is invalid.
    *
    * @return The user's private banks or an empty result.
    *
    * @throws InterruptedException Network trouble
    */
-  Iterable<Bank> getBanks(String userId)
-    throws InterruptedException;
+  Iterable<Bank> getBanks(String userId) throws InterruptedException;
 
   Optional<Transaction> getTransaction(String bankId, String accountId,
-    String transactionId, String userId)
-    throws InterruptedException;
-
-  Iterable<Transaction> getTransactions(String bankId, String accountId,
-    String userId) throws InterruptedException;
+    String transactionId, String userId) throws InterruptedException;
 
   Optional<Transaction> getTransaction(String bankId, String accountId,
     String transactionId) throws InterruptedException;
 
+  /**
+   * @param bankId Not a UUID
+   * @param accountId A UUID
+   * @param userId A UUID
+   *
+   * @return a page of transactions
+   *
+   * @throws InterruptedException network trouble
+   * @deprecated use {@link Pager#getTransactions(String, String, String)}
+   */
+  Iterable<Transaction> getTransactions(String bankId, String accountId,
+    String userId) throws InterruptedException;
+
+  /**
+   * @param bankId Not a UUID
+   * @param accountId A UUID
+   *
+   * @return a page of transactions
+   *
+   * @throws InterruptedException network trouble
+   * @deprecated use {@link Pager#getTransactions(String, String)}
+   */
   Iterable<Transaction> getTransactions(String bankId, String accountId)
     throws InterruptedException;
 
-  Optional<User> getUser(String userId)
-    throws InterruptedException;
+  Optional<User> getUser(String userId) throws InterruptedException;
+
+  Iterable<User> getUsers() throws InterruptedException;
+
+  Iterable<User> getUsers(String userId) throws InterruptedException;
 
   Optional<String> saveTransaction(String userId, String accountId,
     String currency, String amount, String otherAccountId,
     String otherAccountCurrency, String transactionType)
     throws InterruptedException;
+
+  /**
+   * A pager in source sort order with offset zero, infinite page size and no
+   * constraints.
+   *
+   * @return a pager
+   */
+  Pager pager();
+
+  /**
+   * @param offset zero is first item
+   * @param size set to zero to disregard
+   * @param field set to null to disregard
+   * @param so set to null to disregard
+   * @param earliest set to null to disregard
+   * @param latest set to null to disregard
+   *
+   * @return a pager
+   */
+  @SuppressWarnings("SameParameterValue") Pager pager(int offset, int size,
+    Connector.SortField field, Connector.SortOrder so, ZonedDateTime earliest,
+    ZonedDateTime latest);
+
+  interface Pager
+  {
+    List<Transaction> getTransactions(String bankId, String accountId)
+      throws InterruptedException;
+
+    List<Transaction> getTransactions(String bankId, String accountId,
+      String userId) throws InterruptedException;
+
+    boolean hasMorePages();
+
+    Pager nextPage();
+  }
+
+  enum SortField
+  {
+    completed, description, otherAccount, otherId, posted, type, value
+  }
+
+  enum SortOrder
+  {
+    ascending, descending, source
+  }
 }

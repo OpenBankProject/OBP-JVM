@@ -9,25 +9,26 @@
 package com.tesobe.obp.transport.json;
 
 import java.time.DateTimeException;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static java.util.Objects.nonNull;
 
-@SuppressWarnings("WeakerAccess")  final class Json
+@SuppressWarnings("WeakerAccess") final class Json
 {
   /**
-   * Uses the format JavaScript Date uses: yyyy-MM-dd'T'HH:mm:ss.SSSZ.
+   * The JSON only has zulu time.
    *
-   * @param dt date time with time zone
+   * @param dt date time with time zone. Will be converted to zulu.
    *
-   * @return null when dt is null
+   * @return null when dt is null, or yyyy-MM-dd'T'HH:mm:ss.SSSZ
    */
   public static String toJson(ZonedDateTime dt)
   {
     if(nonNull(dt))
     {
-      return dt.format(FORMATTER);
+      return dt.withZoneSameInstant(UTC).format(FORMATTER);
     }
 
     return null;
@@ -36,10 +37,11 @@ import static java.util.Objects.nonNull;
   /**
    * Uses the format JavaScript Date uses: yyyy-MM-dd'T'HH:mm:ss.SSSZ.
    *
-   * @param dt should conform to yyyy-MM-dd'T'HH:mm:ss.SSSZ
+   * @param dt in zulu
    *
    * @return null when dt is null
    */
+  @SuppressWarnings("ConstantConditions")
   public static ZonedDateTime zonedDateTimeFromJson(String dt)
   {
     if(nonNull(dt))
@@ -57,7 +59,8 @@ import static java.util.Objects.nonNull;
     return null;
   }
 
-  static final DateTimeFormatter FORMATTER = DateTimeFormatter
-    .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+  static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(
+    "yyyy-MM-dd'T'HH:mm:ss.SSSX");
 
+  public static ZoneId UTC = ZoneId.of("UTC");
 }

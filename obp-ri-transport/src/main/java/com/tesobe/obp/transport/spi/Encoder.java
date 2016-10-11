@@ -9,6 +9,7 @@ package com.tesobe.obp.transport.spi;
 
 import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
+import com.tesobe.obp.transport.Connector;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.User;
 
@@ -40,11 +41,16 @@ public interface Encoder
   Request getTransaction(String bankId, String accountId, String transactionId,
     String userId);
 
-  Request getTransactions(String bankId, String accountId, String userId);
+  Request getTransactions(Connector.Pager p, String bankId, String accountId,
+    String userId);
 
-  Request getTransactions(String bankId, String accountId);
+  Request getTransactions(Connector.Pager p, String bankId, String accountId);
 
   Request getUser(String userId);
+
+  Request getUsers(String userId);
+
+  Request getUsers();
 
   Request saveTransaction(String userId, String accountId, String currency,
     String amount, String otherAccountId, String otherAccountCurrency,
@@ -52,24 +58,43 @@ public interface Encoder
 
   String account(Account a);
 
-  String accounts(List<Account> as);
+  String accounts(List<? extends Account> as);
 
   String bank(Bank b);
 
-  String banks(List<Bank> bs);
+  String banks(List<? extends Bank> bs);
 
   String error(String message);
 
   String transaction(Transaction t);
 
-  String transactions(List<Transaction> ts);
+  String transactions(List<? extends Transaction> ts);
+
+  String transactions(List<? extends Transaction> ts, boolean more);
 
   String user(User u);
 
   String transactionId(String s);
 
+  String users(List<? extends User> users);
+
   interface Request
   {
     String toString();
+  }
+
+  default String account()
+  {
+    return account(null);
+  }
+
+  default String bank()
+  {
+    return bank(null);
+  }
+
+  default String transaction()
+  {
+    return transaction(null);
   }
 }

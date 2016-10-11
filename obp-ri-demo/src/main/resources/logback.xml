@@ -11,7 +11,7 @@
   <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>
-        %-5level %d{HH:mm:ss.SSS} [%thread] %logger{30}.%M:%L - %msg%n
+        %-5level %d{HH:mm:ss.SSS} [%thread] %logger{30}.%M:%L %msg%n
       </pattern>
     </encoder>
   </appender>
@@ -27,13 +27,14 @@
   <appender name="kafka" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>
-        %-5level %d{HH:mm:ss.SSS} [%thread] %logger{30}.%M:%L %X{kafka} - %msg%n
+        %-5level %d{HH:mm:ss.SSS} [%thread] %logger{30}.%M:%L %X{kafka} %msg%n
       </pattern>
     </encoder>
   </appender>
 
   <logger name="ch.qos.logback" level="error"/>
   <logger name="com.tesobe.obp" level="debug"/>
+  <logger name="com.tesobe.obp.demo" level="trace"/>
 
   <logger name="com.tesobe.obp.kafka" level="trace" additivity="false">
     <appender-ref ref="kafka"/>

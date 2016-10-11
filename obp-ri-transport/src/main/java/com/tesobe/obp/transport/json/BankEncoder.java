@@ -25,17 +25,12 @@ import org.json.JSONObject;
 
   public JSONObject toJson()
   {
-    // @formatter:off
-    @SuppressWarnings("UnnecessaryLocalVariable")
-    JSONObject json = new JSONObject()
+    return new JSONObject()
       .put("id", bank.id())
       .put("short", bank.shortName())
       .put("name", bank.fullName())
       .put("logo", bank.logo())
       .put("url", bank.url());
-    // @formatter:on
-
-    return json;
   }
 
   private final Bank bank;

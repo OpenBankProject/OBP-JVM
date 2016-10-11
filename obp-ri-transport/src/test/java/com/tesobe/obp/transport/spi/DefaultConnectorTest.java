@@ -19,6 +19,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -38,7 +39,7 @@ public class DefaultConnectorTest
   @Before public void defaultConnector()
   {
     Transport.Factory factory = Transport.defaultFactory();
-    Receiver responder = new MockReceiver(factory.decoder(),
+    Receiver receiver = new MockReceiver(factory.decoder(),
       factory.encoder());
     final BlockingQueue<String> in = new SynchronousQueue<>();
     final BlockingQueue<Message> out = new SynchronousQueue<>();
@@ -59,7 +60,7 @@ public class DefaultConnectorTest
       {
         for(; ; )
         {
-          in.put(responder.respond(out.take()));
+          in.put(receiver.respond(out.take()));
         }
       }
     });
@@ -91,8 +92,8 @@ public class DefaultConnectorTest
   {
     String bankId = "bank-x";
     String userId = "user-x";
-    Iterable<Account> anonymous;
-    Iterable<Account> owned;
+    Iterable<? extends Account> anonymous;
+    Iterable<? extends Account> owned;
 
     anonymous = connector.getAccounts(bankId);
     owned = connector.getAccounts(bankId, userId);
@@ -139,8 +140,8 @@ public class DefaultConnectorTest
   {
     String userId = "user-x";
 
-    Iterable<Bank> anonymous;
-    Iterable<Bank> owned;
+    Iterable<? extends Bank> anonymous;
+    Iterable<? extends Bank> owned;
 
     anonymous = connector.getBanks();
     owned = connector.getBanks(userId);
@@ -182,23 +183,36 @@ public class DefaultConnectorTest
     String bankId = "bank-x";
     String userId = "user-x";
 
-    Iterable<Transaction> anonymous;
-    Iterable<Transaction> owned;
+    Iterable<? extends Transaction> anonymous;
+    Iterable<? extends Transaction> owned;
 
     anonymous = connector.getTransactions(bankId, accountId);
     owned = connector.getTransactions(bankId, accountId, userId);
 
-    anonymous.forEach(transaction ->
-    {
-      assertThat(transaction.id(), anyOf(is("id-1"), is("id-2")));
-    });
-
-    owned.forEach(transaction ->
-    {
-      assertThat(transaction.id(), anyOf(is("id-1"), is("id-2")));
-    });
+    assertThat(anonymous.iterator().next().id(), is("id-0"));
+    assertThat(owned.iterator().next().id(), is("id-0"));
   }
 
+  @Test public void pageTransactions() throws Exception
+  {
+    String accountId = "account-x";
+    String bankId = "bank-x";
+    String userId = "user-x";
+    Connector.Pager pager = connector.pager(0, 3, null, null, null, null);
+
+    List<? extends Transaction> owned;
+
+    owned = pager.getTransactions(bankId, accountId, userId);
+
+    assertThat(pager.hasMorePages(), is(true));
+    assertThat(owned.size(), is(3));
+
+    pager = pager.nextPage();
+    owned = pager.getTransactions(bankId, accountId, userId);
+
+    assertThat(pager.hasMorePages(), is(false));
+    assertThat(owned.size(), is(1));
+  }
   @Test public void getUser() throws Exception
   {
     String userId = "user-x@example.org";

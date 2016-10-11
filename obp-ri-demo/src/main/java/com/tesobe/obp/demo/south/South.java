@@ -38,7 +38,8 @@ import java.util.concurrent.locks.LockSupport;
       String producerTopic = flags.valueOf(flags.producerTopic);
 
       Transport.Factory factory = Transport.defaultFactory();
-      Receiver receiver = new DemoData(factory.decoder(), factory.encoder());
+      Receiver receiver = new DemoReceiver(factory.decoder(), factory.encoder(),
+        DemoDatabase.simple());
       SimpleSouth south = new SimpleSouth(consumerTopic, producerTopic,
         new Props(South.class, consumerProps).toMap(),
         new Props(South.class, producerProps).toMap(),

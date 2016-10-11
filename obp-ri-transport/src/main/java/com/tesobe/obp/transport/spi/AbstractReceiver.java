@@ -43,6 +43,7 @@ import static java.util.Objects.nonNull;
     api.put("get transaction", this::getTransaction);
     api.put("get transactions", this::getTransactions);
     api.put("get user", this::getUser);
+    api.put("get users", this::getUsers);
     api.put("save transaction", this::saveTransaction);
 
     versions.put(Transport.Version.Sep2016, api);
@@ -117,6 +118,8 @@ import static java.util.Objects.nonNull;
   protected abstract String getTransactions(Decoder.Request r, Encoder e);
 
   protected abstract String getUser(Decoder.Request r, Encoder e);
+
+  protected abstract String getUsers(Decoder.Request r, Encoder e);
 
   protected abstract String saveTransaction(Decoder.Request r, Encoder e);
 

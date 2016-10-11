@@ -5,7 +5,6 @@
  * that can be found in the LICENSE file.
  *
  */
-
 package com.tesobe.obp.demo;
 
 import com.tesobe.obp.transport.Bank;
@@ -29,61 +28,63 @@ public class SuperSimpleDemo
   public static void main(String[] commandLine) throws InterruptedException
   {
     Transport.Factory factory = Transport.defaultFactory();
-    Decoder decoder = factory.decoder();
-    Encoder encoder = factory.encoder();
-
-    Receiver south = new DefaultReceiver(decoder, encoder)
-    {
-      @Override protected String getBank(Decoder.Request r, Encoder e)
-      {
-        if(r.bankId().isPresent())
-        {
-          return e.bank(new Bank()
-          {
-            @SuppressWarnings("OptionalGetWithoutIsPresent") @Override
-            public String id()
-            {
-              return r.bankId().get();
-            }
-
-            @Override public String shortName()
-            {
-              return "My Bank";
-            }
-
-            @Override public String fullName()
-            {
-              return "My Very Own Bank";
-            }
-
-            @Override public String logo()
-            {
-              return "https://example.org/my-bank/logo.png";
-            }
-
-            @Override public String url()
-            {
-              return "https://example.org/my-bank/";
-            }
-          });
-        }
-        else
-        {
-          return e.bank(null);
-        }
-      }
-    };
-
+    Receiver south = new South(factory.decoder(), factory.encoder());
     Sender north = south::respond; // super simple transport layer
     Connector connector = factory.connector(north);
-
     String bankId = "my-bank";
-    Optional<Bank> bank = connector.getBank(bankId);
+    Optional<Bank> bank = connector.getBank(bankId); // <- this is it
 
     System.out.println();
     System.out.print("connector.getBank(\"");
     System.out.print(bankId);
     System.out.print("\") \u2192 ");
     System.out.println(bank);
+  }
+
+  static class South extends DefaultReceiver
+  {
+    public South(Decoder d, Encoder e)
+    {
+      super(d, e);
+    }
+
+    @Override protected String getBank(Decoder.Request r, Encoder e)
+    {
+      if(r.bankId().isPresent())
+      {
+        return e.bank(new Bank()
+        {
+          @SuppressWarnings("OptionalGetWithoutIsPresent") @Override
+          public String id()
+          {
+            return r.bankId().get();
+          }
+
+          @Override public String shortName()
+          {
+            return "My Bank";
+          }
+
+          @Override public String fullName()
+          {
+            return "My Very Own Bank";
+          }
+
+          @Override public String logo()
+          {
+            return "https://example.org/my-bank/logo.png";
+          }
+
+          @Override public String url()
+          {
+            return "https://example.org/my-bank/";
+          }
+        });
+      }
+      else
+      {
+        return e.bank(null);
+      }
+    }
   }
 }

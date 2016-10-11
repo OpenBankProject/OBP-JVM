@@ -9,9 +9,12 @@ package com.tesobe.obp.transport.spi;
 
 import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
+import com.tesobe.obp.transport.Connector;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.User;
 
+import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -33,9 +36,11 @@ public interface Decoder
 
   Optional<Transaction> transaction(String response);
 
-  Iterable<Transaction> transactions(String response);
+  Response transactions(String response);
 
   Optional<User> user(String response);
+
+  Iterable<User> users(String response);
 
   interface Request
   {
@@ -62,5 +67,18 @@ public interface Decoder
     Optional<String> otherAccountCurrency();
 
     Optional<String> transactionType();
+
+    int offset();
+    int size();
+    Optional<Connector.SortField> field();
+    Optional<Connector.SortOrder> sort();
+    Optional<ZonedDateTime> earliest();
+    Optional<ZonedDateTime> latest();
+  }
+
+  interface Response
+  {
+    boolean more();
+    List<Transaction> transactions();
   }
 }

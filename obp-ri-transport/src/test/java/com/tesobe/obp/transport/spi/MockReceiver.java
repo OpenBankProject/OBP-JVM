@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static com.tesobe.obp.util.ImplGen.generate;
 import static com.tesobe.obp.util.MethodMatcher.isPresent;
@@ -33,7 +34,7 @@ import static org.junit.Assert.assertThat;
  * returned item to allow the test to check for the id.
  */
 @SuppressWarnings({"WeakerAccess", "OptionalGetWithoutIsPresent"})
-class MockReceiver extends AbstractReceiver
+class MockReceiver extends DefaultReceiver
 {
   public MockReceiver(Decoder decoder, Encoder encoder)
   {
@@ -44,7 +45,8 @@ class MockReceiver extends AbstractReceiver
   {
     log.trace("{}", r.raw());
 
-    return r.accountId()
+    return r
+      .accountId()
       .map(accountId -> e.account(generate(Account.class, 1, "id", accountId)))
       .orElse(e.account(null));
   }
@@ -69,7 +71,8 @@ class MockReceiver extends AbstractReceiver
   {
     log.trace("{}", r.raw());
 
-    return r.bankId()
+    return r
+      .bankId()
       .map(bankId -> e.bank(generate(Bank.class, 1, "id", bankId)))
       .orElse(e.bank(null));
   }
@@ -90,7 +93,8 @@ class MockReceiver extends AbstractReceiver
   {
     log.trace("{}", r.raw());
 
-    return r.transactionId()
+    return r
+      .transactionId()
       .map(tid -> e.transaction(generate(Transaction.class, 1, "id", tid)))
       .orElse(e.transaction(null));
   }
@@ -99,21 +103,40 @@ class MockReceiver extends AbstractReceiver
   {
     log.trace("{}", r.raw());
 
-    List<Transaction> transactions = new ArrayList<>();
+    int count = 4; // 4 transactions
+    int first = r.offset();
+    int last = Math.min(first + r.size(), count);
 
-    transactions.add(generate(Transaction.class, 1));
-    transactions.add(generate(Transaction.class, 2));
+    List<Transaction> transactions = IntStream
+      .range(first, last)
+      .mapToObj(i -> generate(Transaction.class, i))
+      .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
 
-    return e.transactions(transactions);
+    return last < count
+      ? e.transactions(transactions, true)
+      : e.transactions(transactions);
   }
 
   @Override protected String getUser(Decoder.Request r, Encoder e)
   {
     log.trace("{}", r.raw());
 
-    return r.userId()
+    return r
+      .userId()
       .map(uid -> e.user(generate(User.class, 1, "email", uid)))
       .orElse(e.user(null));
+  }
+
+  @Override protected String getUsers(Decoder.Request r, Encoder e)
+  {
+    log.trace("{}", r.raw());
+
+    List<User> users = new ArrayList<>();
+
+    users.add(generate(User.class, 1));
+    users.add(generate(User.class, 2));
+
+    return e.users(users);
   }
 
   @Override protected String saveTransaction(Decoder.Request r, Encoder e)
