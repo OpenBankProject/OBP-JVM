@@ -10,13 +10,13 @@ Add dependencies
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-kafka</artifactId>
-  <version>2016.9-ALPHA10-SNAPSHOT</version>
+  <version>2016.9-ALPHA11-SNAPSHOT</version>
 </dependency>
 
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-transport</artifactId>
-  <version>2016.9-ALPHA10-SNAPSHOT</version>
+  <version>2016.9-ALPHA11-SNAPSHOT</version>
 </dependency>
 ```
 For testing also add
@@ -25,7 +25,7 @@ For testing also add
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-transport</artifactId>
-  <version>2016.9-ALPHA10-SNAPSHOT</version>
+  <version>2016.9-ALPHA11-SNAPSHOT</version>
   <type>test-jar</type>
   <scope>test</scope>
 </dependency>
@@ -170,6 +170,8 @@ A **request** is a standard JSON object with two required JSON string keys, `nam
 
 Any key may be omitted if it has no value.
 
+### Default Messages 
+
 These are the requests that return **zero** or **one** entity:
 
 | Value of `name` Key | Additional Keys in Request | Keys in Response |
@@ -204,7 +206,8 @@ The **completed** and **posted** keys are timestamps with this pattern: `"yyyy-M
 #####Save Transaction
 The response is a single JSON string, the transaction id.
 
-####The Above Again as EBNF
+###The above Default Messages again as [EBNF](https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_Form)
+
 All messages are valid JSON.
 
 ```
