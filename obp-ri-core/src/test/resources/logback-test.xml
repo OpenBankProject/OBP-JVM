@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+  ~ Copyright (c) TESOBE Ltd.  2016. All rights reserved.
   ~
-  ~ Use of this source code is governed by a GNU AFFERO license
-  ~ that can be found in the LICENSE file.
+  ~ Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
   ~
   -->
 <configuration debug="false">
@@ -16,14 +15,18 @@
     </encoder>
   </appender>
 
-  <appender name="terse" class="ch.qos.logback.core.ConsoleAppender">
+  <appender name="json" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>%d{HH:mm:ss.SSS} %msg%n</pattern>
+      <pattern>
+        /*%d{HH:mm:ss.SSS} [%thread] %logger{30} %M:%L*/ , %msg%n
+      </pattern>
     </encoder>
   </appender>
 
   <logger name="ch.qos.logback" level="error"/>
-  <logger name="com.tesobe.obp" level="trace"/>
+  <logger name="com.tesobe.obp" level="debug"/>
+  <logger name="com.tesobe.obp.transport.spi.ConnectorNov2016" level="trace"/>
+  <logger name="com.tesobe.obp.transport.spi.DefaultResponder" level="trace"/>
 
   <root level="error">
     <appender-ref ref="console"/>

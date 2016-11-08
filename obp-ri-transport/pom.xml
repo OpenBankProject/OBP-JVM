@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+  ~ Copyright (c) TESOBE Ltd.  2016. All rights reserved.
   ~
-  ~ Use of this source code is governed by a GNU AFFERO license
-  ~ that can be found in the LICENSE file.
+  ~ Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
   ~
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>obp-ri</artifactId>
     <groupId>com.tesobe.obp</groupId>
-    <version>2016.9-ALPHA11-SNAPSHOT</version>
+    <version>2016.11-RC5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 

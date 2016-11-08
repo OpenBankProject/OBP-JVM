@@ -1,52 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+  ~ Copyright (c) TESOBE Ltd.  2016. All rights reserved.
   ~
-  ~ Use of this source code is governed by a GNU AFFERO license
-  ~ that can be found in the LICENSE file.
+  ~ Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
   ~
   -->
 <configuration debug="false">
 
-  <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+  <appender name="demo" class="ch.qos.logback.core.FileAppender">
     <encoder>
       <pattern>
         %-5level %d{HH:mm:ss.SSS} [%thread] %logger{30}.%M:%L %msg%n
       </pattern>
     </encoder>
+    <file>demo.log</file>
   </appender>
 
-  <appender name="log" class="ch.qos.logback.core.ConsoleAppender">
+  <appender name="south" class="ch.qos.logback.core.FileAppender">
     <encoder>
       <pattern>
         %-5level %d{HH:mm:ss.SSS} [%thread] %msg%n
       </pattern>
     </encoder>
+    <file>south.log</file>
   </appender>
 
-  <appender name="kafka" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-      <pattern>
-        %-5level %d{HH:mm:ss.SSS} [%thread] %logger{30}.%M:%L %X{kafka} %msg%n
-      </pattern>
-    </encoder>
-  </appender>
-
-  <logger name="ch.qos.logback" level="error"/>
   <logger name="com.tesobe.obp" level="debug"/>
-  <logger name="com.tesobe.obp.demo" level="trace"/>
-
-  <logger name="com.tesobe.obp.kafka" level="trace" additivity="false">
-    <appender-ref ref="kafka"/>
-  </logger>
+  <logger name="com.tesobe.obp.transport.spi.ConnectorNov2016" level="trace"/>
 
   <logger name="com.tesobe.obp.transport.spi.LoggingReceiver" level="info"
     additivity="false">
-    <appender-ref ref="log"/>
+    <appender-ref ref="south"/>
   </logger>
 
   <root level="info">
-    <appender-ref ref="console"/>
+    <appender-ref ref="demo"/>
   </root>
 
 </configuration>

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.kafka;
@@ -56,8 +55,6 @@ import java.util.concurrent.SynchronousQueue;
   {
     in.put(new String[]{id, payload});
   }
-
-  protected final BlockingQueue<String[]> in = new SynchronousQueue<>();
-
   static final Logger log = LoggerFactory.getLogger(Channel.class);
+  protected final BlockingQueue<String[]> in = new SynchronousQueue<>();
 }

@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+  ~ Copyright (c) TESOBE Ltd.  2016. All rights reserved.
   ~
-  ~ Use of this source code is governed by a GNU AFFERO license
-  ~ that can be found in the LICENSE file.
+  ~ Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
   ~
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
     http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri</artifactId>
-  <version>2016.9-ALPHA11-SNAPSHOT</version>
+  <version>2016.11-RC5-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>The Open Bank Project Reference Implementation</name>
 
@@ -101,9 +100,8 @@
 
     <hamcrest-core.version>1.3</hamcrest-core.version>
     <jersey.version>2.23</jersey.version>
-    <joda.version>2.9.4</joda.version>
-    <jopt-simple.version>5.0.2</jopt-simple.version>
-    <json.version>20160212</json.version>
+    <jopt-simple.version>5.0.3</jopt-simple.version>
+    <json.version>20160810</json.version>
     <junit.version>4.12</junit.version>
     <kafka.version>0.10.0.0</kafka.version>
     <logback.version>1.1.7</logback.version>
@@ -150,11 +148,6 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>joda-time</groupId>
-        <artifactId>joda-time</artifactId>
-        <version>${joda.version}</version>
-      </dependency>
-      <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${junit.version}</version>
@@ -196,10 +189,6 @@
   </dependencyManagement>
 
   <dependencies>
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -427,11 +416,9 @@
       <plugin>
         <artifactId>maven-deploy-plugin</artifactId>
       </plugin>
-<!--
       <plugin>
         <artifactId>maven-enforcer-plugin</artifactId>
       </plugin>
--->
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
       </plugin>

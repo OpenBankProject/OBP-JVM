@@ -1,20 +1,22 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 
 package com.tesobe.obp.transport.json;
 
 import java.time.DateTimeException;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static java.util.Objects.nonNull;
 
+/**
+ * @since 2016.9
+ */
 @SuppressWarnings("WeakerAccess") final class Json
 {
   /**
@@ -28,7 +30,7 @@ import static java.util.Objects.nonNull;
   {
     if(nonNull(dt))
     {
-      return dt.withZoneSameInstant(UTC).format(FORMATTER);
+      return dt.withZoneSameInstant(ZoneOffset.UTC).format(FORMATTER);
     }
 
     return null;
@@ -62,5 +64,4 @@ import static java.util.Objects.nonNull;
   static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(
     "yyyy-MM-dd'T'HH:mm:ss.SSSX");
 
-  public static ZoneId UTC = ZoneId.of("UTC");
 }

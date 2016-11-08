@@ -1,19 +1,26 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.util;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 public class Utils
 {
+  public static <K, V> Map<K, V> merge(Map<K, V> map, K key, V value)
+  {
+    map.put(key, value);
+
+    return map;
+  }
+
   /**
    * Invoke zero parameter method name.
    *

@@ -1,168 +1,91 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.transport;
 
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 /**
  * North side API.
  *
- * @since 2016.9
+ * @since 2016.11
  */
 @SuppressWarnings("WeakerAccess") public interface Connector
 {
   /**
-   * Anonymously get an account.
+   * Request information about the south.
    *
-   * @param bankId An invalid bank id means an empty result.
-   * An all white space bank id is invalid.
-   * @param accountId An invalid account id means an empty result.
-   * An all white space account id is invalid.
+   * @return JSON describing the versions, verbs, targets, and fields south
+   * supports.
    *
-   * @return An empty result if the account is not explicitly linked to the
-   * user.
-   * If the account is public but not linked to the user, empty will be
-   * returned.
-   *
-   * @throws InterruptedException Network trouble
+   * @throws Exception network trouble
    */
-  Optional<Account> getAccount(String bankId, String accountId)
-    throws InterruptedException;
+  String describe() throws Exception;
 
   /**
-   * @param bankId An invalid bank id means an empty result.
-   * An all white space bank id is invalid.
-   * @param accountId An invalid account id means an empty result.
-   * An all white space account id is invalid.
-   * @param userId An invalid user id means an empty result.
-   * An all white space user id is invalid.
+   * Fetch data from the south without paging.
+   * <p>
+   * Todo: it is not clearly specified which request parameters are hashes!
    *
-   * @return An empty result if the account is not explicitly linked to the
-   * user.
-   * If the account is public but not linked to the user, empty will be
-   * returned.
+   * @param caller label for the message, not required
+   * @param target select data source, required
+   * @param parameters request parameters, not required
    *
-   * @throws InterruptedException Network trouble
-   */
-  Optional<Account> getAccount(String bankId, String accountId, String userId)
-    throws InterruptedException;
-
-  Iterable<Account> getAccounts(String bankId) throws InterruptedException;
-
-  /**
-   * All private accounts the user is explicitly linked to.
-   * No public accounts that the user is not linked to will be returned.
-   * The resulting iterable's {@code next()} will not produce {@code null} but
-   * fields in the accounts returned may be {@code null}.
-   *
-   * @param bankId An invalid bank id means an empty result.
-   * An all white space bank id is invalid.
-   * @param userId An invalid user id means an empty result.
-   * An all white space user id is invalid.
-   *
-   * @return The user's private banks or an empty result.
-   *
-   * @throws InterruptedException Network trouble
-   */
-  Iterable<Account> getAccounts(String bankId, String userId)
-    throws InterruptedException;
-
-  /**
-   * Anonymous request for a bank.
-   *
-   * @param bankId the bank's id. Not a UUID.
-   *
-   * @return empty if the bankId is invalid
-   *
-   * @throws InterruptedException Network trouble
-   */
-  Optional<Bank> getBank(String bankId) throws InterruptedException;
-
-  /**
-   * @param bankId An invalid bank id means an empty result.
-   * An all white space bank id is invalid.
-   * @param userId An invalid user id means an empty result.
-   * An all white space user id is invalid.
-   *
-   * @return An empty result if the bank is not explicitly linked to the user.
-   * If the bank is public but not linked to the user, empty will be returned.
-   *
-   * @throws InterruptedException Network trouble
-   */
-  Optional<Bank> getBank(String bankId, String userId)
-    throws InterruptedException;
-
-  /**
-   * Anonymously get banks.
-   *
-   * @return never null
-   *
-   * @throws InterruptedException Network trouble
-   */
-  Iterable<Bank> getBanks() throws InterruptedException;
-
-  /**
-   * All private banks the user is explicitly linked to.
-   * No public banks that the user is not linked to will be returned.
-   * The resulting iterable's {@code next()} will not produce {@code null} but
-   * fields in the banks returned may be {@code null}.
-   *
-   * @param userId An invalid user id means an empty result.
-   *
-   * @return The user's private banks or an empty result.
-   *
-   * @throws InterruptedException Network trouble
-   */
-  Iterable<Bank> getBanks(String userId) throws InterruptedException;
-
-  Optional<Transaction> getTransaction(String bankId, String accountId,
-    String transactionId, String userId) throws InterruptedException;
-
-  Optional<Transaction> getTransaction(String bankId, String accountId,
-    String transactionId) throws InterruptedException;
-
-  /**
-   * @param bankId Not a UUID
-   * @param accountId A UUID
-   * @param userId A UUID
-   *
-   * @return a page of transactions
+   * @return a response
    *
    * @throws InterruptedException network trouble
-   * @deprecated use {@link Pager#getTransactions(String, String, String)}
    */
-  Iterable<Transaction> getTransactions(String bankId, String accountId,
-    String userId) throws InterruptedException;
+  default Decoder.Response get(String caller, Transport.Target target,
+    Map<String, ?> parameters) throws Exception
+  {
+    return get(caller, target, pager(), parameters);
+  }
 
   /**
-   * @param bankId Not a UUID
-   * @param accountId A UUID
+   * Fetch data from the south with optional paging.
+   * <p>
+   * Todo: it is not clearly specified which request parameters are hashes!
    *
-   * @return a page of transactions
+   * @param caller label for the message, not required
+   * @param target select data source, required
+   * @param pager how to filter, sort and page
+   * @param parameters request parameters, not required
    *
-   * @throws InterruptedException network trouble
-   * @deprecated use {@link Pager#getTransactions(String, String)}
+   * @return a response todo fix
+   *
+   * @throws Exception network trouble
    */
-  Iterable<Transaction> getTransactions(String bankId, String accountId)
-    throws InterruptedException;
+  Decoder.Response get(String caller, Transport.Target target, Pager pager,
+    Map<String, ?> parameters) throws Exception;
 
-  Optional<User> getUser(String userId) throws InterruptedException;
+  /**
+   * North: Send data to the south.
+   * <p>
+   * Todo: it is not clearly specified which request parameters are hashes!
+   *
+   * @param caller label for the message, not required
+   * @param target select data sink, required
+   * @param parameters
+   * @param fields input parameters
+   *
+   * @return a response
+   *
+   * @throws Exception network trouble
+   */
+  Decoder.Response put(String caller, Transport.Target target,
+    Map<String, ?> parameters, Map<String, ?> fields) throws Exception;
 
-  Iterable<User> getUsers() throws InterruptedException;
-
-  Iterable<User> getUsers(String userId) throws InterruptedException;
-
-  Optional<String> saveTransaction(String userId, String accountId,
-    String currency, String amount, String otherAccountId,
-    String otherAccountCurrency, String transactionType)
-    throws InterruptedException;
+  /**
+   * North: fetch asynchronous results from previous puts.
+   *
+   * @return a map of transactionId -> result
+   *
+   * @throws Exception network trouble
+   */
+  Decoder.Response fetch() throws Exception;
 
   /**
    * A pager in source sort order with offset zero, infinite page size and no
@@ -173,39 +96,24 @@ import java.util.Optional;
   Pager pager();
 
   /**
-   * @param offset zero is first item
-   * @param size set to zero to disregard
-   * @param field set to null to disregard
-   * @param so set to null to disregard
-   * @param earliest set to null to disregard
-   * @param latest set to null to disregard
+   * The result set produced on the south side is split into pages that are
+   * sent individually. First any filter is applied, then the result
+   * is sorted. Then, starting at offset, pageSize many items are sent upon
+   * request.
+   * <p>
+   * If following request do not occur in a timely manner, the south may
+   * discard
+   * the result set. If this happens, you can detect it by looking at {@link
+   * Pager#count()}. When it is reset to zero, the state was lost south side.
+   * The default implementation checks for this.
+   *
+   * @param pageSize the maximum number of items sent. Set to zero to return
+   * all items.
+   * @param offset the index into the result set of the first item to send
+   * @param f a filter, not required
+   * @param s a sorter, not required
    *
    * @return a pager
    */
-  @SuppressWarnings("SameParameterValue") Pager pager(int offset, int size,
-    Connector.SortField field, Connector.SortOrder so, ZonedDateTime earliest,
-    ZonedDateTime latest);
-
-  interface Pager
-  {
-    List<Transaction> getTransactions(String bankId, String accountId)
-      throws InterruptedException;
-
-    List<Transaction> getTransactions(String bankId, String accountId,
-      String userId) throws InterruptedException;
-
-    boolean hasMorePages();
-
-    Pager nextPage();
-  }
-
-  enum SortField
-  {
-    completed, description, otherAccount, otherId, posted, type, value
-  }
-
-  enum SortOrder
-  {
-    ascending, descending, source
-  }
+  Pager pager(int pageSize, int offset, Pager.Filter f, Pager.Sorter s);
 }

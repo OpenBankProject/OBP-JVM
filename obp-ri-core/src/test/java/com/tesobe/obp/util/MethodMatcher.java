@@ -1,15 +1,12 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.util;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,12 +15,18 @@ import java.util.Optional;
 
 /**
  * Match against the return value of a method call.
+ * Todo rm when hamcrest supports optionals.
  */
 @SuppressWarnings("WeakerAccess") public final class MethodMatcher
 {
   public static <T> Matcher<T> isPresent()
   {
     return returns("isPresent", true);
+  }
+
+  public static <T> Matcher<T> notPresent()
+  {
+    return returns("isPresent", false);
   }
 
   public static <T> Matcher<T> get(Object expected)

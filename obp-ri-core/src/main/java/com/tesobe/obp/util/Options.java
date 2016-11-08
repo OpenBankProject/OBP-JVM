@@ -1,15 +1,32 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.util;
 
-import joptsimple.*;
+import joptsimple.OptionDescriptor;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
+import joptsimple.OptionSpecBuilder;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
@@ -34,7 +51,6 @@ import static java.util.Arrays.asList;
  * </pre>
  *
  * @author ub@kassapo.com
- * @since 2016.9
  */
 @SuppressWarnings("WeakerAccess") public class Options
 {
@@ -213,9 +229,8 @@ import static java.util.Arrays.asList;
   {
     description = aDescription;
   }
-
-  OptionSet options;
   final OptionParser parser = new OptionParser();
+  OptionSet options;
   OptionSpec<Void> help;
   String[] description = new String[0];
 

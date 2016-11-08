@@ -1,61 +1,124 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.demo.north;
 
 import com.tesobe.obp.demo.south.South;
 import com.tesobe.obp.kafka.SimpleNorth;
+import com.tesobe.obp.kafka.SimpleTransport;
+import com.tesobe.obp.transport.Connector;
+import com.tesobe.obp.transport.Decoder;
 import com.tesobe.obp.transport.Transport;
+import com.tesobe.obp.transport.nov2016.Account;
+import com.tesobe.obp.transport.nov2016.AccountReader;
+import com.tesobe.obp.transport.nov2016.Bank;
+import com.tesobe.obp.transport.nov2016.BankReader;
+import com.tesobe.obp.transport.nov2016.User;
+import com.tesobe.obp.transport.nov2016.UserReader;
 import com.tesobe.obp.util.Props;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * A simple REST server that uses the kafka transport to send messages.
  *
  * @since 2016.9
  */
-@SuppressWarnings("WeakerAccess") public class North extends SimpleNorth
+@SuppressWarnings("WeakerAccess") public class North
 {
-  public North(String consumerTopic, String producerTopic,
-    Map<String, Object> consumerProps, Map<String, Object> producerProps)
+  public North(String consumerTopic, String producerTopic, String consumerProps,
+    String producerProps) throws IOException
   {
-    super(consumerTopic, producerTopic, consumerProps, producerProps);
+    log.info("Starting TESOBE's OBP kafka north demo...");
+
+    Transport.Factory factory = Transport.defaultFactory();
+
+    transport = new SimpleNorth(consumerTopic, producerTopic,
+      new Props(North.class, consumerProps).toMap(),
+      new Props(South.class, producerProps).toMap());
+    connector = factory.connector(transport);
+
+    transport.receive();
   }
 
-  public static void main(String[] commandLine) throws IOException
+  public List<Bank> getBanks() throws Exception
   {
-    if(flags.parse(commandLine))
-    {
-      log.info("Starting TESOBE's OBP North Demo REST Server...");
+    Decoder.Response response = connector.get("getBanks",
+      Transport.Target.banks, null);
 
-      String consumerProps = flags.valueOf(flags.consumerProps);
-      String consumerTopic = flags.valueOf(flags.consumerTopic);
-      String producerProps = flags.valueOf(flags.producerProps);
-      String producerTopic = flags.valueOf(flags.producerTopic);
-      String ipAddress = flags.valueOf(flags.ipAddress);
-      int port = flags.valueOf(flags.port);
+    return response.error()
+      .map(e ->
+      {
+        log.error(e.message());
 
-      Transport.Factory factory = Transport.defaultFactory();
-      North north = new North(consumerTopic, producerTopic,
-        new Props(North.class, consumerProps).toMap(),
-        new Props(South.class, producerProps).toMap());
-
-      new Rest(factory.connector(north), ipAddress, port);
-
-      north.receive();
-
-      // todo kafka restarts, shutdown
-    }
+        return Collections.<Bank>emptyList();
+      })
+      .orElseGet(() -> response.data()
+        .stream()
+        .map(BankReader::new)
+        .map(Bank.class::cast)
+        .collect(toList()));
   }
 
-  final static Flags flags = new Flags();
+  public List<User> getUsers() throws Exception
+  {
+    Decoder.Response response = connector.get("getUsers",
+      Transport.Target.users, null);
+
+    return response.error()
+      .map(e ->
+      {
+        log.error(e.message());
+
+        return Collections.<User>emptyList();
+      })
+      .orElseGet(() -> response.data()
+        .stream()
+        .map(UserReader::new)
+        .map(User.class::cast)
+        .collect(toList()));
+  }
+
+  public List<Account> getAccounts(Bank b, User u) throws Exception
+  {
+    HashMap<String, Object> parameters = new HashMap<>();
+
+    parameters.put("bankId", b.bankId());
+    parameters.put("userId", u.id());
+
+    Decoder.Response response = connector.get("getAccounts",
+      Transport.Target.accounts, parameters);
+
+    return response.error()
+      .map(e ->
+      {
+        log.error(e.message());
+
+        return Collections.<Account>emptyList();
+      })
+      .orElseGet(() -> response.data()
+        .stream()
+        .map(AccountReader::new)
+        .map(Account.class::cast)
+        .collect(toList()));
+  }
+
+  public void shutdown()
+  {
+    transport.shutdown();
+  }
+
   final static Logger log = LoggerFactory.getLogger(North.class);
+  final Connector connector;
+  final SimpleTransport transport;
 }

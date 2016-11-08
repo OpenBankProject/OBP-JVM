@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+  ~ Copyright (c) TESOBE Ltd.  2016. All rights reserved.
   ~
-  ~ Use of this source code is governed by a GNU AFFERO license
-  ~ that can be found in the LICENSE file.
+  ~ Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
   ~
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <artifactId>obp-ri</artifactId>
     <groupId>com.tesobe.obp</groupId>
-    <version>2016.9-ALPHA11-SNAPSHOT</version>
+    <version>2016.11-RC5-SNAPSHOT</version>
   </parent>
 
   <artifactId>obp-ri-kafka</artifactId>
@@ -41,11 +40,27 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <!-- todo rm -->
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-    </dependency>
   </dependencies>
 
 </project>
+
+<!--
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+      <version>2.11.8</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka_2.11</artifactId>
+      <version>${kafka.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>info.batey.kafka</groupId>
+      <artifactId>kafka-unit</artifactId>
+      <version>0.6</version>
+      <scope>test</scope>
+    </dependency>
+-->
