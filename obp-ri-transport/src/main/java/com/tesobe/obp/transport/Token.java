@@ -4,14 +4,14 @@
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
-package com.tesobe.obp.demo.south;
-
-import java.util.List;
+package com.tesobe.obp.transport;
 
 /**
- * Users that have access.
+ * Result of a put.
  */
-public interface Accessible
+public interface Token
 {
-  List<DemoUser> customers();
+  String id();
+
+  String error();
 }

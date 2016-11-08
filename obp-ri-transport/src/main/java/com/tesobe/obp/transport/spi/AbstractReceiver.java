@@ -1,18 +1,22 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.transport.spi;
 
 import com.tesobe.obp.transport.Message;
 import com.tesobe.obp.transport.Transport;
+import com.tesobe.obp.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -25,33 +29,49 @@ import static java.util.Objects.nonNull;
 @SuppressWarnings("WeakerAccess") public abstract class AbstractReceiver
   implements Receiver
 {
-  public AbstractReceiver(Decoder d, Encoder e)
+  public AbstractReceiver(Codecs cs)
   {
-    assert d != null;
-    assert e != null;
+    assert cs != null;
 
-    decoder = d;
-    encoder = e;
+    codecs = cs;
+    decoder = cs.requestDecoder;
+    errorEncoder = cs.errorEncoder;
 
-    Map<String, BiFunction<Decoder.Request, Encoder, String>> api
+    Map<String, BiFunction<Decoder.Request, Encoder, String>> sep2016
       = new HashMap<>();
 
-    api.put("get account", this::getAccount);
-    api.put("get accounts", this::getAccounts);
-    api.put("get bank", this::getBank);
-    api.put("get banks", this::getBanks);
-    api.put("get transaction", this::getTransaction);
-    api.put("get transactions", this::getTransactions);
-    api.put("get user", this::getUser);
-    api.put("get users", this::getUsers);
-    api.put("save transaction", this::saveTransaction);
+    sep2016.put("get account", this::getAccount);
+    sep2016.put("get accounts", this::getAccounts);
+    sep2016.put("get bankOld", this::getBank);
+    sep2016.put("get banks", this::getBanks);
+    sep2016.put("get transaction", this::getTransaction);
+    sep2016.put("get transactions", this::getTransactions);
+    sep2016.put("get user", this::getUser);
+    sep2016.put("get users", this::getUsers);
+    sep2016.put("save transaction", this::saveTransaction);
 
-    versions.put(Transport.Version.Sep2016, api);
+    Map<String, BiFunction<Decoder.Request, Encoder, String>> nov2016
+      = new HashMap<>();
+
+    nov2016.put("get", this::get);
+    nov2016.put("put", this::put);
+
+    versions.put(Transport.Version.Nov2016, nov2016);
+    versions.put(Transport.Version.Sep2016, sep2016);
+  }
+
+  protected Pair<Encoder, Decoder> newest(
+    EnumMap<Transport.Version, Pair<Encoder, Decoder>> cs)
+  {
+    List<Transport.Version> sorted = new ArrayList<>(cs.keySet());
+
+    sorted.sort(Collections.reverseOrder());
+
+    return cs.get(sorted.get(0));
   }
 
   /**
    * Decode request, find handler, return result.
-   * Version is ignored for now.
    *
    * @param request anything
    *
@@ -70,9 +90,17 @@ import static java.util.Objects.nonNull;
         if(decoded.isPresent())
         {
           String name = decoded.get().name();
-          String version = decoded.get().version();
+          Transport.Version version = Transport.Version.valueOf(
+            decoded.get().version());
           Map<String, BiFunction<Decoder.Request, Encoder, String>> api
-            = versions.get(Transport.Version.valueOf(version));
+            = versions.get(version);
+          Pair<Encoder, Decoder> pair = codecs.get(version);
+          Encoder encoder = pair.first;
+
+          if(version != decoder.version())
+          {
+            decoded = pair.second.request(request.payload);
+          }
 
           if(nonNull(api))
           {
@@ -98,12 +126,16 @@ import static java.util.Objects.nonNull;
       }
     }
 
-    response = encoder.error(String.valueOf(request));
+    response = errorEncoder.error(request != null ? request.id : "");
 
     log.trace("{} \u2192 {}", request, response);
 
     return response;
   }
+
+  protected abstract String get(Decoder.Request r, Encoder e);
+
+  protected abstract String put(Decoder.Request r, Encoder e);
 
   protected abstract String getAccount(Decoder.Request r, Encoder e);
 
@@ -122,10 +154,10 @@ import static java.util.Objects.nonNull;
   protected abstract String getUsers(Decoder.Request r, Encoder e);
 
   protected abstract String saveTransaction(Decoder.Request r, Encoder e);
-
-  final Decoder decoder;
-  final Encoder encoder;
   static final Map<Transport.Version, Map<String, BiFunction<Decoder.Request, Encoder, String>>>
     versions = new HashMap<>();
   static final Logger log = LoggerFactory.getLogger(AbstractReceiver.class);
+  protected final Codecs codecs;
+  protected final Decoder decoder;
+  protected final Encoder errorEncoder;
 }

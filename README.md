@@ -10,13 +10,13 @@ Add dependencies
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-kafka</artifactId>
-  <version>2016.9-ALPHA11-SNAPSHOT</version>
+  <version>2016.11-RC1-SNAPSHOT</version>
 </dependency>
 
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-transport</artifactId>
-  <version>2016.9-ALPHA11-SNAPSHOT</version>
+  <version>2016.11-RC1-SNAPSHOT</version>
 </dependency>
 ```
 For testing also add
@@ -25,7 +25,7 @@ For testing also add
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-transport</artifactId>
-  <version>2016.9-ALPHA11-SNAPSHOT</version>
+  <version>2016.11-RC1-SNAPSHOT</version>
   <type>test-jar</type>
   <scope>test</scope>
 </dependency>
@@ -359,12 +359,4 @@ Try a request
 
 ```
 http://localhost:8080/obp/v2.0.0/banks
-```
-
-Checking compatability with OBP-API with `KafkaMappedConnector.scala`
-
-```
-curl -v -H "Accept:application/json" -H "Content-Type:application/json" -X GET http://localhost:8080/obp/v2.0.0/bank
-curl -v -H "Accept:application/json" -H "Content-Type:application/json" -X GET http://localhost:8080/obp/v2.0.0/banks
-
 ```

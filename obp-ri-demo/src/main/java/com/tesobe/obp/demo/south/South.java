@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.demo.south;
@@ -38,7 +37,7 @@ import java.util.concurrent.locks.LockSupport;
       String producerTopic = flags.valueOf(flags.producerTopic);
 
       Transport.Factory factory = Transport.defaultFactory();
-      Receiver receiver = new DemoReceiver(factory.decoder(), factory.encoder(),
+      Receiver receiver = new DemoReceiver(factory.codecs(),
         DemoDatabase.simple());
       SimpleSouth south = new SimpleSouth(consumerTopic, producerTopic,
         new Props(South.class, consumerProps).toMap(),

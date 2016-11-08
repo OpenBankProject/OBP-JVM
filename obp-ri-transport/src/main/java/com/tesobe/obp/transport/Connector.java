@@ -1,13 +1,11 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.transport;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,8 +19,8 @@ import java.util.Optional;
   /**
    * Anonymously get an account.
    *
-   * @param bankId An invalid bank id means an empty result.
-   * An all white space bank id is invalid.
+   * @param bankId An invalid bankOld id means an empty result.
+   * An all white space bankOld id is invalid.
    * @param accountId An invalid account id means an empty result.
    * An all white space account id is invalid.
    *
@@ -37,8 +35,8 @@ import java.util.Optional;
     throws InterruptedException;
 
   /**
-   * @param bankId An invalid bank id means an empty result.
-   * An all white space bank id is invalid.
+   * @param bankId An invalid bankOld id means an empty result.
+   * An all white space bankOld id is invalid.
    * @param accountId An invalid account id means an empty result.
    * An all white space account id is invalid.
    * @param userId An invalid user id means an empty result.
@@ -62,8 +60,8 @@ import java.util.Optional;
    * The resulting iterable's {@code next()} will not produce {@code null} but
    * fields in the accounts returned may be {@code null}.
    *
-   * @param bankId An invalid bank id means an empty result.
-   * An all white space bank id is invalid.
+   * @param bankId An invalid bankOld id means an empty result.
+   * An all white space bankOld id is invalid.
    * @param userId An invalid user id means an empty result.
    * An all white space user id is invalid.
    *
@@ -75,9 +73,9 @@ import java.util.Optional;
     throws InterruptedException;
 
   /**
-   * Anonymous request for a bank.
+   * Anonymous request for a bankOld.
    *
-   * @param bankId the bank's id. Not a UUID.
+   * @param bankId the bankOld's id. Not a UUID.
    *
    * @return empty if the bankId is invalid
    *
@@ -86,13 +84,15 @@ import java.util.Optional;
   Optional<Bank> getBank(String bankId) throws InterruptedException;
 
   /**
-   * @param bankId An invalid bank id means an empty result.
-   * An all white space bank id is invalid.
+   * @param bankId An invalid bankOld id means an empty result.
+   * An all white space bankOld id is invalid.
    * @param userId An invalid user id means an empty result.
    * An all white space user id is invalid.
    *
-   * @return An empty result if the bank is not explicitly linked to the user.
-   * If the bank is public but not linked to the user, empty will be returned.
+   * @return An empty result if the bankOld is not explicitly linked to the
+   * user.
+   * If the bankOld is public but not linked to the user, empty will be
+   * returned.
    *
    * @throws InterruptedException Network trouble
    */
@@ -164,27 +164,27 @@ import java.util.Optional;
     String otherAccountCurrency, String transactionType)
     throws InterruptedException;
 
-  /**
-   * A pager in source sort order with offset zero, infinite page size and no
-   * constraints.
-   *
-   * @return a pager
-   */
-  Pager pager();
-
-  /**
-   * @param offset zero is first item
-   * @param size set to zero to disregard
-   * @param field set to null to disregard
-   * @param so set to null to disregard
-   * @param earliest set to null to disregard
-   * @param latest set to null to disregard
-   *
-   * @return a pager
-   */
-  @SuppressWarnings("SameParameterValue") Pager pager(int offset, int size,
-    Connector.SortField field, Connector.SortOrder so, ZonedDateTime earliest,
-    ZonedDateTime latest);
+//  /**
+//   * A pager in source sort order with offset zero, infinite page size and no
+//   * constraints.
+//   *
+//   * @return a pager
+//   */
+//  Pager pager();
+//
+//  /**
+//   * @param offset zero is first item
+//   * @param size set to zero to disregard
+//   * @param field set to null to disregard
+//   * @param so set to null to disregard
+//   * @param earliest set to null to disregard
+//   * @param latest set to null to disregard
+//   *
+//   * @return a pager
+//   */
+//  @SuppressWarnings("SameParameterValue") Pager pager(int offset, int size,
+//    com.tesobe.obp.transport.Pager.SortField field, com.tesobe.obp.transport.Pager.SortOrder so, ZonedDateTime earliest,
+//    ZonedDateTime latest);
 
   interface Pager
   {
@@ -197,15 +197,5 @@ import java.util.Optional;
     boolean hasMorePages();
 
     Pager nextPage();
-  }
-
-  enum SortField
-  {
-    completed, description, otherAccount, otherId, posted, type, value
-  }
-
-  enum SortOrder
-  {
-    ascending, descending, source
   }
 }

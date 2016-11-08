@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.transport.json;
@@ -10,14 +9,17 @@ package com.tesobe.obp.transport.json;
 import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Connector;
+import com.tesobe.obp.transport.Token;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.transport.User;
-import com.tesobe.obp.transport.spi.DefaultConnector;
+import com.tesobe.obp.transport.spi.ConnectorSep2016;
+import com.tesobe.obp.transport.spi.Encoder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Objects.nonNull;
 
@@ -26,10 +28,9 @@ import static java.util.Objects.nonNull;
  *
  * @since 2016.9
  */
-@SuppressWarnings("WeakerAccess") public class Encoder
-  implements com.tesobe.obp.transport.spi.Encoder
+@SuppressWarnings("WeakerAccess") public class EncoderSep2016 implements Encoder
 {
-  public Encoder(Transport.Version v)
+  public EncoderSep2016(Transport.Version v)
   {
     version = v;
   }
@@ -60,12 +61,12 @@ import static java.util.Objects.nonNull;
 
   @Override public Request getBank(String userId, String bankId)
   {
-    return request("get bank").put("user", userId).put("bank", bankId);
+    return request("get bankOld").put("user", userId).put("bank", bankId);
   }
 
   @Override public Request getBank(String bankId)
   {
-    return request("get bank").put("bank", bankId);
+    return request("get bankOld").put("bank", bankId);
   }
 
   @Override public Request getBanks()
@@ -236,7 +237,7 @@ import static java.util.Objects.nonNull;
     return null;
   }
 
-  private void json(Transaction t, JSONArray result)
+  protected void json(Transaction t, JSONArray result)
   {
     if(nonNull(t))
     {
@@ -270,7 +271,7 @@ import static java.util.Objects.nonNull;
     return null;
   }
 
-  private void json(User u, JSONArray result)
+  protected void json(User u, JSONArray result)
   {
     if(nonNull(u))
     {
@@ -347,6 +348,11 @@ import static java.util.Objects.nonNull;
     return result.toString();
   }
 
+  @Override public String token(Token t)
+  {
+    return notFound();
+  }
+
   @Override public String error(String message)
   {
     return new JSONObject().put("error", message).toString();
@@ -379,9 +385,22 @@ import static java.util.Objects.nonNull;
       return request.toString();
     }
 
+    public RequestBuilder put(String key, Map<?, ?> value)
+    {
+      if(value != null && !value.isEmpty())
+      {
+        request.put(key, value);
+      }
+
+      return this;
+    }
+
     public RequestBuilder put(String key, String value)
     {
-      request.put(key, value);
+      if(value != null) // todo test for empty?
+      {
+        request.put(key, value);
+      }
 
       return this;
     }
@@ -395,10 +414,10 @@ import static java.util.Objects.nonNull;
 
     public RequestBuilder put(Connector.Pager p)
     {
-      if(p instanceof DefaultConnector.DefaultPager)
+      if(p instanceof ConnectorSep2016.DefaultPager)
       {
-        DefaultConnector.DefaultPager pager
-          = DefaultConnector.DefaultPager.class.cast(p);
+        ConnectorSep2016.DefaultPager pager
+          = ConnectorSep2016.DefaultPager.class.cast(p);
 
         if(pager.offset != 0)
         {

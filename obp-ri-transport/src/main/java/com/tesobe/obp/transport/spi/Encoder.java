@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.transport.spi;
@@ -10,16 +9,30 @@ package com.tesobe.obp.transport.spi;
 import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Connector;
+import com.tesobe.obp.transport.Token;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.User;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @since 2016.9
  */
 public interface Encoder
 {
+  default Request get(String caller, Network.Target t, String userId,
+    String bankId, String accountId, String transactionId)
+  {
+    return null;
+  }
+
+  default Request put(String caller, Network.Target t,
+    Map<String, String> fields)
+  {
+    return null;
+  }
+
   Request getAccount(String bankId, String accountId);
 
   Request getAccount(String userId, String bankId, String accountId);
@@ -78,11 +91,6 @@ public interface Encoder
 
   String users(List<? extends User> users);
 
-  interface Request
-  {
-    String toString();
-  }
-
   default String account()
   {
     return account(null);
@@ -96,5 +104,22 @@ public interface Encoder
   default String transaction()
   {
     return transaction(null);
+  }
+
+  default String user()
+  {
+    return user(null);
+  }
+
+  String token(Token t);
+
+  default String token()
+  {
+    return token(null);
+  }
+
+  interface Request
+  {
+    String toString();
   }
 }

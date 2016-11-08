@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 
@@ -13,13 +12,25 @@ import static java.util.Objects.nonNull;
 /**
  * Implements {@link AbstractReceiver}'s abstract methods without functionality
  * returning {@code "null"} or {@code "[]"}.
+ *
+ * @deprecated use ReceiverNov2016
  */
 @SuppressWarnings("WeakerAccess") public class DefaultReceiver
   extends AbstractReceiver
 {
-  public DefaultReceiver(Decoder d, Encoder e)
+  public DefaultReceiver(Codecs cs)
   {
-    super(d, e);
+    super(cs);
+  }
+
+  @Override protected String get(Decoder.Request r, Encoder e)
+  {
+    return "null";
+  }
+
+  @Override protected String put(Decoder.Request r, Encoder e)
+  {
+    return "null";
   }
 
   @Override protected String getAccount(Decoder.Request r, Encoder e)

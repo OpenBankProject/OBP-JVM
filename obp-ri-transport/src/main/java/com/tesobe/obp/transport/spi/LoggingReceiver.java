@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 
@@ -53,8 +52,7 @@ public class LoggingReceiver implements Receiver
 
     return response;
   }
-
-  private final Receiver receiver;
   protected static final Logger log = LoggerFactory
     .getLogger(LoggingReceiver.class);
+  private final Receiver receiver;
 }

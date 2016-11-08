@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.demo.south;
@@ -18,9 +17,9 @@ import java.util.List;
 @SuppressWarnings("WeakerAccess") public class DemoReceiver
   extends DefaultReceiver
 {
-  public DemoReceiver(Decoder d, Encoder e, DemoDatabase db)
+  public DemoReceiver(Codecs cs, DemoDatabase db)
   {
-    super(d, e);
+    super(cs);
 
     database = db;
   }
@@ -60,7 +59,7 @@ import java.util.List;
   }
 
   /**
-   * Only returns a bank if bankId is present.
+   * Only returns a bankOld if bankId is present.
    *
    * @param r request
    * @param e response encoder
@@ -167,8 +166,6 @@ import java.util.List;
 
     return e.transactionId("tid-x");
   }
-
-  final DemoDatabase database;
-
   static final Logger log = LoggerFactory.getLogger(DemoReceiver.class);
+  final DemoDatabase database;
 }

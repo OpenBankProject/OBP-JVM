@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 
@@ -44,7 +43,7 @@ import static org.junit.Assert.assertThat;
       .orElseThrow(RuntimeException::new);
 
     decoder = factory.decoder();
-    responder = new MockReceiver(decoder, factory.encoder());
+    responder = new MockReceiver(factory.codecs());
   }
 
   @Test public void getAccount() throws Exception
@@ -93,13 +92,12 @@ import static org.junit.Assert.assertThat;
     String bankId = "id-1";
     String userId = "user-1";
     String request = new JSONObject()
-      .put("version", Sep2016)
-      .put("name", "get bank")
+      .put("version", Sep2016).put("name", "get bankOld")
       .put("bank", bankId)
       .put("user", userId)
       .toString();
     String response = responder.respond(new Message(id, request));
-    Optional<Bank> bank = decoder.bank(response);
+    Optional<Bank> bank = decoder.bankOld(response);
 
     assertThat(bank, optionallyReturns("id", "id-1"));
   }
@@ -126,7 +124,7 @@ import static org.junit.Assert.assertThat;
   {
     String id = UUID.randomUUID().toString();
     String accountId = "account-x";
-    String bankId = "bank-x";
+    String bankId = "bankOld-x";
     String userId = "user-x";
     String transactionId = "transaction-x";
     String request = new JSONObject()
@@ -147,7 +145,7 @@ import static org.junit.Assert.assertThat;
   {
     String id = UUID.randomUUID().toString();
     String accountId = "account-x";
-    String bankId = "bank-x";
+    String bankId = "bankOld-x";
     String userId = "user-x";
     String request = new JSONObject()
       .put("version", Sep2016)
@@ -158,7 +156,7 @@ import static org.junit.Assert.assertThat;
       .put("size", 2)
       .toString();
     String response = responder.respond(new Message(id, request));
-    Decoder.Response r = decoder.transactions(response);
+    Decoder.ResponseOld r = decoder.transactions(response);
     Iterable<? extends Transaction> transactions = r.transactions();
     List<String> ids = new ArrayList<>();
 

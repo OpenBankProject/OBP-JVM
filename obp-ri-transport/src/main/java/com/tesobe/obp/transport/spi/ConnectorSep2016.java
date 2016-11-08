@@ -1,4 +1,9 @@
-// Copyright
+/*
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ *
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
+ *
+ */
 package com.tesobe.obp.transport.spi;
 
 import com.tesobe.obp.transport.Account;
@@ -24,10 +29,10 @@ import java.util.UUID;
  *
  * @since 2016.9
  */
-@SuppressWarnings("WeakerAccess") public class DefaultConnector
+@SuppressWarnings("WeakerAccess") public class ConnectorSep2016
   implements Connector
 {
-  public DefaultConnector(Transport.Version v, Encoder e, Decoder d, Sender s)
+  public ConnectorSep2016(Transport.Version v, Encoder e, Decoder d, Sender s)
   {
     decoder = d;
     encoder = e;
@@ -60,8 +65,7 @@ import java.util.UUID;
   }
 
 
-  @Override
-  public Iterable<Account> getAccounts(String bankId, String userId)
+  @Override public Iterable<Account> getAccounts(String bankId, String userId)
     throws InterruptedException
   {
     String id = UUID.randomUUID().toString();
@@ -101,8 +105,8 @@ import java.util.UUID;
   }
 
   @Override
-  public Iterable<Transaction> getTransactions(String bankId,
-    String accountId, String userId) throws InterruptedException
+  public Iterable<Transaction> getTransactions(String bankId, String accountId,
+    String userId) throws InterruptedException
   {
     return pager().getTransactions(bankId, accountId, userId);
   }
@@ -128,7 +132,7 @@ import java.util.UUID;
 
     log.trace("{} \u2192 {}", request, response);
 
-    return decoder.bank(response);
+    return decoder.bankOld(response);
   }
 
   @Override public Optional<Bank> getBank(String bankId, String userId)
@@ -140,11 +144,10 @@ import java.util.UUID;
 
     log.trace("{} \u2192 {}", request, response);
 
-    return decoder.bank(response);
+    return decoder.bankOld(response);
   }
 
-  @Override public Iterable<Bank> getBanks()
-    throws InterruptedException
+  @Override public Iterable<Bank> getBanks() throws InterruptedException
   {
     String id = UUID.randomUUID().toString();
     String request = encoder.getBanks().toString();
@@ -171,8 +174,8 @@ import java.util.UUID;
   }
 
   @Override
-  public Iterable<Transaction> getTransactions(String bankId,
-    String accountId) throws InterruptedException
+  public Iterable<Transaction> getTransactions(String bankId, String accountId)
+    throws InterruptedException
   {
     return pager().getTransactions(bankId, accountId);
   }
@@ -189,8 +192,7 @@ import java.util.UUID;
     return decoder.user(response);
   }
 
-  @Override public Iterable<User> getUsers()
-    throws InterruptedException
+  @Override public Iterable<User> getUsers() throws InterruptedException
   {
     String id = UUID.randomUUID().toString();
     String request = encoder.getUsers().toString();
@@ -222,8 +224,7 @@ import java.util.UUID;
     String id = UUID.randomUUID().toString();
     String request = encoder
       .saveTransaction(userId, accountId, currency, amount, otherAccountId,
-        otherAccountCurrency, transactionType)
-      .toString();
+        otherAccountCurrency, transactionType).toString();
     String response = sender.send(new Message(id, request));
 
     log.trace("{} \u2192 {}", request, response);
@@ -231,35 +232,38 @@ import java.util.UUID;
     return decoder.transactionId(response);
   }
 
-  @Override public Pager pager()
+  public Pager pager()
   {
     return new DefaultPager();
   }
 
-  @Override
-  public Pager pager(int offset, int size, SortField field, SortOrder so,
+  public Pager pager(int offset, int size,
+    com.tesobe.obp.transport.Pager.SortField field,
+    com.tesobe.obp.transport.Pager.SortOrder so,
     ZonedDateTime earliest, ZonedDateTime latest)
   {
     return new DefaultPager(offset, size, field, so, earliest, latest);
   }
 
+  protected static final Logger log = LoggerFactory.getLogger(
+    ConnectorSep2016.class);
   protected final Transport.Version version;
   protected final Decoder decoder;
   protected final Encoder encoder;
   protected final Sender sender;
-
-  protected static final Logger log = LoggerFactory.getLogger(
-    DefaultConnector.class);
 
   @SuppressWarnings("WeakerAccess") public class DefaultPager
     implements Pager, Serializable
   {
     public DefaultPager()
     {
-      this(0, 50, SortField.completed, SortOrder.descending, null, null);
+      this(0, 50, com.tesobe.obp.transport.Pager.SortField.completed,
+        com.tesobe.obp.transport.Pager.SortOrder.descending, null, null);
     }
 
-    public DefaultPager(int offset, int size, SortField field, SortOrder so,
+    public DefaultPager(int offset, int size,
+      com.tesobe.obp.transport.Pager.SortField field,
+      com.tesobe.obp.transport.Pager.SortOrder so,
       ZonedDateTime earliest, ZonedDateTime latest)
     {
       this.offset = offset;
@@ -270,8 +274,9 @@ import java.util.UUID;
       this.latest = latest;
     }
 
-    @Override public List<Transaction> getTransactions(String bankId,
-      String accountId) throws InterruptedException
+    @Override
+    public List<Transaction> getTransactions(String bankId, String accountId)
+      throws InterruptedException
     {
       String id = UUID.randomUUID().toString();
       String request = encoder
@@ -279,7 +284,7 @@ import java.util.UUID;
         .toString();
       String response = sender.send(new Message(id, request));
       ArrayList<Transaction> page = new ArrayList<>();
-      Decoder.Response r = decoder.transactions(response);
+      Decoder.ResponseOld r = decoder.transactions(response);
 
       more = r.more();
 
@@ -288,15 +293,16 @@ import java.util.UUID;
       return r.transactions();
     }
 
-    @Override public List<Transaction> getTransactions(String bankId,
-      String accountId, String userId) throws InterruptedException
+    @Override
+    public List<Transaction> getTransactions(String bankId, String accountId,
+      String userId) throws InterruptedException
     {
       String id = UUID.randomUUID().toString();
       String request = encoder
         .getTransactions(this, bankId, accountId, userId)
         .toString();
       String response = sender.send(new Message(id, request));
-      Decoder.Response r = decoder.transactions(response);
+      Decoder.ResponseOld r = decoder.transactions(response);
 
       more = r.more();
 
@@ -315,14 +321,13 @@ import java.util.UUID;
       return new DefaultPager(size, size, field, sortOrder, earliest, latest);
     }
 
-    protected boolean more;
+    static final long serialVersionUID = 42L;
     public final int offset;
     public final int size;
-    public final SortField field;
-    public final SortOrder sortOrder;
+    public final com.tesobe.obp.transport.Pager.SortField field;
+    public final com.tesobe.obp.transport.Pager.SortOrder sortOrder;
     public final ZonedDateTime earliest;
     public final ZonedDateTime latest;
-
-    static final long serialVersionUID = 42L;
+    protected boolean more;
   }
 }

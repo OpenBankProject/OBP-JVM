@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.demo.north;
@@ -47,23 +46,24 @@ import static spark.Spark.staticFileLocation;
     get("/obp/", this::index);
     get("/obp/demo", this::index);
     get("/obp/demo/", this::index);
-    get("/obp/demo/bank/:bank", this::getBank);
-    get("/obp/demo/bank/:bank/account/:account", this::getAccount);
-    get("/obp/demo/bank/:bank/accounts", this::getAccounts);
-    get("/obp/demo/bank/:bank/account/:account/transaction/:transaction",
+    get("/obp/demo/bankOld/:bankOld", this::getBank);
+    get("/obp/demo/bankOld/:bankOld/account/:account", this::getAccount);
+    get("/obp/demo/bankOld/:bankOld/accounts", this::getAccounts);
+    get("/obp/demo/bankOld/:bankOld/account/:account/transaction/:transaction",
       this::getTransaction);
-    get("/obp/demo/bank/:bank/account/:account/transactions",
+    get("/obp/demo/bankOld/:bankOld/account/:account/transactions",
       this::getTransactions);
     get("/obp/demo/banks", this::getBanks);
     get("/obp/demo/user/:user", this::getUser);
     get("/obp/demo/user/:user/banks", this::getBanks);
-    get("/obp/demo/user/:user/bank/:bank", this::getBank);
-    get("/obp/demo/user/:user/bank/:bank/account/:account", this::getAccount);
-    get("/obp/demo/user/:user/bank/:bank/accounts", this::getAccounts);
-    get(
-      "/obp/demo/user/:user/bank/:bank/account/:account/transaction/:transaction",
+    get("/obp/demo/user/:user/bankOld/:bankOld", this::getBank);
+    get("/obp/demo/user/:user/bankOld/:bankOld/account/:account",
+      this::getAccount);
+    get("/obp/demo/user/:user/bankOld/:bankOld/accounts", this::getAccounts);
+    get("/obp/demo/user/:user/bankOld/:bankOld/account/:account/transaction"
+        + "/:transaction",
       this::getTransaction);
-    get("/obp/demo/user/:user/bank/:bank/account/:account/transactions",
+    get("/obp/demo/user/:user/bankOld/:bankOld/account/:account/transactions",
       this::getTransactions);
 
     awaitInitialization();
@@ -75,7 +75,7 @@ import static spark.Spark.staticFileLocation;
 
     try
     {
-      String bankId = request.params(":bank");
+      String bankId = request.params(":bankOld");
       String accountId = request.params(":account");
       String userId = request.params(":user");
       Optional<Account> account;
@@ -113,7 +113,7 @@ import static spark.Spark.staticFileLocation;
 
     try
     {
-      String bankId = request.params(":bank");
+      String bankId = request.params(":bankOld");
       String accountId = request.params(":account");
       String userId = request.params(":user");
       Optional<Account> account;
@@ -142,7 +142,7 @@ import static spark.Spark.staticFileLocation;
 
     try
     {
-      String bankId = request.params(":bank");
+      String bankId = request.params(":bankOld");
       String userId = request.params(":user");
       Iterable<Account> accounts;
       List<Id> items = new ArrayList<>();
@@ -173,7 +173,7 @@ import static spark.Spark.staticFileLocation;
 
     try
     {
-      String bankId = request.params(":bank");
+      String bankId = request.params(":bankOld");
       String userId = request.params(":user");
       Optional<Bank> bank;
 
@@ -230,7 +230,7 @@ import static spark.Spark.staticFileLocation;
 
     try
     {
-      String bankId = request.params(":bank");
+      String bankId = request.params(":bankOld");
       String accountId = request.params(":account");
       String transactionId = request.params(":transaction");
       String userId = request.params(":user");
@@ -262,7 +262,7 @@ import static spark.Spark.staticFileLocation;
 
     try
     {
-      String bankId = request.params(":bank");
+      String bankId = request.params(":bankOld");
       String accountId = request.params(":account");
       String userId = request.params(":user");
 
@@ -311,10 +311,9 @@ import static spark.Spark.staticFileLocation;
     }
   }
 
+  final static Logger log = LoggerFactory.getLogger(Rest.class);
   protected final Connector connector;
   protected final Html html;
-
-  final static Logger log = LoggerFactory.getLogger(Rest.class);
 
   public static class Anonymous implements User
   {

@@ -1,23 +1,30 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.transport;
 
+import com.tesobe.obp.transport.json.DecoderNov2016;
+import com.tesobe.obp.transport.json.DecoderSep2016;
+import com.tesobe.obp.transport.json.EncoderNov2016;
+import com.tesobe.obp.transport.json.EncoderSep2016;
+import com.tesobe.obp.transport.spi.ConnectorNov2016;
+import com.tesobe.obp.transport.spi.ConnectorSep2016;
 import com.tesobe.obp.transport.spi.Decoder;
-import com.tesobe.obp.transport.spi.DefaultConnector;
 import com.tesobe.obp.transport.spi.Encoder;
+import com.tesobe.obp.transport.spi.Receiver;
 import com.tesobe.obp.util.DefaultMetrics;
 import com.tesobe.obp.util.Metrics;
+import com.tesobe.obp.util.Pair;
 
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
 
 import static com.tesobe.obp.transport.Transport.Encoding.json;
+import static com.tesobe.obp.transport.Transport.Version.Nov2016;
 import static com.tesobe.obp.transport.Transport.Version.Sep2016;
 
 /**
@@ -99,12 +106,23 @@ import static com.tesobe.obp.transport.Transport.Version.Sep2016;
       {
         return Transport.encoder(v, e);
       }
+
+      @Override public Receiver.Codecs codecs()
+      {
+        return Transport.codecs();
+      }
     });
   }
 
   static Connector connector(Version v, Encoder e, Decoder d, Sender s)
   {
-    return new DefaultConnector(v, e, d, s);
+    switch(v)
+    {
+      case Sep2016:
+        return new ConnectorSep2016(v, e, d, s);
+      default:
+        return new ConnectorNov2016(v, e, d, s);
+    }
   }
 
   static Decoder decoder(Version v, Encoding e)
@@ -115,6 +133,27 @@ import static com.tesobe.obp.transport.Transport.Version.Sep2016;
   static Encoder encoder(Version v, Encoding e)
   {
     return encoders.get(e).get(v);
+  }
+
+  static Receiver.Codecs codecs()
+  {
+    return codecs;
+  }
+
+  static final Receiver.Codecs codecs;
+  static final EnumMap<Encoding, Map<Version, Decoder>> decoders
+    = new EnumMap<>(Encoding.class);
+  static final EnumMap<Encoding, Map<Version, Encoder>> encoders
+    = new EnumMap<>(Encoding.class);
+
+  public enum Version
+  {
+    Sep2016, Nov2016
+  }
+
+  public enum Encoding
+  {
+    json
   }
 
   public interface Factory
@@ -132,32 +171,25 @@ import static com.tesobe.obp.transport.Transport.Version.Sep2016;
     Decoder decoder();
 
     Encoder encoder();
-  }
 
-  public enum Version
-  {
-    Sep2016
+    Receiver.Codecs codecs();
   }
-
-  public enum Encoding
-  {
-    json
-  }
-
-  static final EnumMap<Encoding, Map<Version, Decoder>> decoders
-    = new EnumMap<>(Encoding.class);
-  static final EnumMap<Encoding, Map<Version, Encoder>> encoders
-    = new EnumMap<>(Encoding.class);
 
   static
   {
     EnumMap<Version, Decoder> ds = new EnumMap<>(Version.class);
     EnumMap<Version, Encoder> es = new EnumMap<>(Version.class);
 
-    ds.put(Sep2016, new com.tesobe.obp.transport.json.Decoder(Sep2016));
+    ds.put(Sep2016, new DecoderSep2016(Sep2016));
+    ds.put(Nov2016, new DecoderNov2016(Nov2016));
 
-    es.put(Sep2016, new com.tesobe.obp.transport.json.Encoder(Sep2016));
+    es.put(Sep2016, new EncoderSep2016(Sep2016));
+    es.put(Nov2016, new EncoderNov2016(Nov2016));
 
+    codecs = new Receiver.Codecs(es.get(Nov2016), ds.get(Nov2016));
+
+    codecs.put(Sep2016, new Pair<>(es.get(Sep2016), ds.get(Sep2016)));
+    codecs.put(Nov2016, new Pair<>(es.get(Nov2016), ds.get(Nov2016)));
     decoders.put(json, ds);
     encoders.put(json, es);
   }

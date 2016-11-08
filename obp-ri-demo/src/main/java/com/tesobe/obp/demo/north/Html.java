@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.demo.north;
@@ -47,11 +46,11 @@ import static java.util.stream.StreamSupport.stream;
   {
     url = format("http://%s:%s/obp/demo", ip, port);
 
-    accountsUrl = "/bank/%s/accounts";
-    bankDetailUrl = "/bank/%s";
+    accountsUrl = "/bankOld/%s/accounts";
+    bankDetailUrl = "/bankOld/%s";
     banksUrl = "/banks";
     banksLink = a("Banks").withHref(format(url, banksUrl)).withAlt(banksUrl);
-    transactionsUrl = "/bank/%s/account/%s/transactions";
+    transactionsUrl = "/bankOld/%s/account/%s/transactions";
     userUrl = "/user/%s%s";
 
     bottom = div().withClass("clear");
@@ -357,23 +356,21 @@ import static java.util.stream.StreamSupport.stream;
     }
   }
 
+  protected static final Map<String, String> LOCALIZED = new HashMap<>();
   protected final String accountsUrl;
   protected final String bankDetailUrl;
   protected final String banksUrl;
   protected final String transactionsUrl;
   protected final String url;
   protected final String userUrl;
-
   protected final ContainerTag banksLink;
   protected final ContainerTag bottom;
 
-  protected static final Map<String, String> LOCALIZED = new HashMap<>();
-
   static
   {
-    // Account: id amount	bank	currency	iban	label	number	type
+    // Account: id amount	bankOld	currency	iban	label	number	type
     // Bank: id	fullName	logo	shortName	url
-    // Transaction: account	balance	bank	completed	description	otherAccount
+    // Transaction: account	balance	bankOld	completed	description	otherAccount
     //   otherId	posted type	value
     LOCALIZED.put("account", "Account");
     LOCALIZED.put("amount", "Balance");

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 
@@ -32,13 +31,15 @@ import static org.junit.Assert.assertThat;
  * <p>
  * If the request contained an id for a specific item, that id is set on the
  * returned item to allow the test to check for the id.
+ *
+ * @deprecated use MockResponder
  */
 @SuppressWarnings({"WeakerAccess", "OptionalGetWithoutIsPresent"})
 class MockReceiver extends DefaultReceiver
 {
-  public MockReceiver(Decoder decoder, Encoder encoder)
+  public MockReceiver(Codecs cs)
   {
-    super(decoder, encoder);
+    super(cs);
   }
 
   @Override protected String getAccount(Decoder.Request r, Encoder e)

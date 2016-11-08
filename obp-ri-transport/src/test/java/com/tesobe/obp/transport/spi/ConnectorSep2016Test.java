@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 
@@ -12,6 +11,7 @@ import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Connector;
 import com.tesobe.obp.transport.Message;
+import com.tesobe.obp.transport.Sender;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.transport.User;
@@ -19,7 +19,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -34,25 +33,25 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
-public class DefaultConnectorTest
+public class ConnectorSep2016Test
 {
   @Before public void defaultConnector()
   {
     Transport.Factory factory = Transport.defaultFactory();
-    Receiver receiver = new MockReceiver(factory.decoder(),
-      factory.encoder());
+    Receiver receiver = new MockReceiver(factory.codecs());
     final BlockingQueue<String> in = new SynchronousQueue<>();
     final BlockingQueue<Message> out = new SynchronousQueue<>();
-
-    // north: sender
-    connector = factory.connector(request ->
+    final Sender sender = request ->
     {
       out.put(request);
 
       return in.take();
-    });
+    };
 
-    // south: receiver
+    // north: sender
+    connector = factory.connector(sender);
+
+    // south: receiver in a background thread
     service.submit(new Callable<Void>()
     {
       @Override @SuppressWarnings({"InfiniteLoopStatement"}) public Void call()
@@ -75,7 +74,7 @@ public class DefaultConnectorTest
   @Test public void getAccount() throws Exception
   {
     String accountId = "account-x";
-    String bankId = "id-x";
+    String bankId = "bank-x";
     String userId = "user-x";
 
     Optional<Account> anonymous;
@@ -193,26 +192,27 @@ public class DefaultConnectorTest
     assertThat(owned.iterator().next().id(), is("id-0"));
   }
 
-  @Test public void pageTransactions() throws Exception
-  {
-    String accountId = "account-x";
-    String bankId = "bank-x";
-    String userId = "user-x";
-    Connector.Pager pager = connector.pager(0, 3, null, null, null, null);
+//  @Test public void pageTransactions() throws Exception
+//  {
+//    String accountId = "account-x";
+//    String bankId = "bank-x";
+//    String userId = "user-x";
+//    Connector.Pager pager = connector.pager(0, 3, null, null, null, null);
+//
+//    List<? extends Transaction> owned;
+//
+//    owned = pager.getTransactions(bankId, accountId, userId);
+//
+//    assertThat(pager.hasMorePages(), is(true));
+//    assertThat(owned.size(), is(3));
+//
+//    pager = pager.nextPage();
+//    owned = pager.getTransactions(bankId, accountId, userId);
+//
+//    assertThat(pager.hasMorePages(), is(false));
+//    assertThat(owned.size(), is(1));
+//  }
 
-    List<? extends Transaction> owned;
-
-    owned = pager.getTransactions(bankId, accountId, userId);
-
-    assertThat(pager.hasMorePages(), is(true));
-    assertThat(owned.size(), is(3));
-
-    pager = pager.nextPage();
-    owned = pager.getTransactions(bankId, accountId, userId);
-
-    assertThat(pager.hasMorePages(), is(false));
-    assertThat(owned.size(), is(1));
-  }
   @Test public void getUser() throws Exception
   {
     String userId = "user-x@example.org";

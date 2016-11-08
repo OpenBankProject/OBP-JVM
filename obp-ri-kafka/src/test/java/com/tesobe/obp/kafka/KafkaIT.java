@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.kafka;
@@ -46,9 +45,8 @@ import org.slf4j.LoggerFactory;
 
     north.shutdown();
   }
-
-  static Transport.Factory factory = Transport.defaultFactory();
   static final Logger log = LoggerFactory.getLogger(KafkaIT.class);
+  static Transport.Factory factory = Transport.defaultFactory();
 //
 //  public static class RemoteSouth
 //  {

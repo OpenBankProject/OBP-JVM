@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.kafka;
@@ -208,6 +207,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
     return props;
   }
 
+  static final Logger log = LoggerFactory.getLogger(SimpleTransport.class);
   protected final String consumerTopic;
   protected final String producerTopic;
   protected final KafkaConsumer<String, String> consumer;
@@ -215,6 +215,4 @@ import java.util.concurrent.atomic.AtomicBoolean;
   protected final AtomicBoolean done = new AtomicBoolean(false);
   protected final ExecutorService service = Executors.newSingleThreadExecutor();
   protected final Channel in = new Channel();
-
-  static final Logger log = LoggerFactory.getLogger(SimpleTransport.class);
 }
