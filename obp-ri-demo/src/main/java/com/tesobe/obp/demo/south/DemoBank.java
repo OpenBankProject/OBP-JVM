@@ -14,12 +14,11 @@ import java.util.List;
 @SuppressWarnings("WeakerAccess") public class DemoBank
   implements Bank, Accessible, Open
 {
-  public DemoBank(String id, String shortName, String fullName, String logo,
+  public DemoBank(String id, String name, String logo,
     String url, boolean open)
   {
     this.id = id;
-    this.shortName = shortName;
-    this.fullName = fullName;
+    this.name = name;
     this.logo = logo;
     this.url = url;
     this.open = open;
@@ -31,14 +30,9 @@ import java.util.List;
     return id;
   }
 
-  @Override public String shortName()
+  @Override public String name()
   {
-    return shortName;
-  }
-
-  @Override public String fullName()
-  {
-    return fullName;
+    return name;
   }
 
   @Override public String logo()
@@ -58,7 +52,7 @@ import java.util.List;
 
   @Override public String toString()
   {
-    return id + ":" + shortName;
+    return id + ":" + name;
   }
 
   @Override public List<DemoUser> customers()
@@ -67,8 +61,7 @@ import java.util.List;
   }
 
   final String id;
-  final String shortName;
-  final String fullName;
+  final String name;
   final String logo;
   final String url;
   final boolean open;

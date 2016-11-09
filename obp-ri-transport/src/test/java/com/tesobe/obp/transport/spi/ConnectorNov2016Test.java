@@ -19,6 +19,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -89,8 +90,8 @@ public class ConnectorNov2016Test
     anonymous = connector.getAccount(bankId, accountId);
     owned = connector.getAccount(bankId, accountId, userId);
 
-    assertThat(anonymous, optionallyReturns("id", "account-x"));
-    assertThat(owned, optionallyReturns("id", "account-x"));
+    assertThat(anonymous, optionallyReturns("accountId", "account-x"));
+    assertThat(owned, optionallyReturns("accountId", "account-x"));
   }
 
   @Test public void getAccounts() throws Exception
@@ -112,16 +113,16 @@ public class ConnectorNov2016Test
     {
       anonymousCount.incrementAndGet();
 
-      assertThat(account.bank(), is(bankId));
-      assertThat(account.id(), anyOf(is("id-1"), is("id-2")));
+      assertThat(account.bankId(), is(bankId));
+      assertThat(account.id(), anyOf(is("accountId-1"), is("accountId-2")));
     });
 
     owned.forEach(account ->
     {
       ownedCount.incrementAndGet();
 
-      assertThat(account.bank(), is(bankId));
-      assertThat(account.id(), anyOf(is("id-1"), is("id-2")));
+      assertThat(account.bankId(), is(bankId));
+      assertThat(account.id(), anyOf(is("accountId-1"), is("accountId-2")));
     });
 
     assertThat("Number of anonymous accounts", anonymousCount.get(), is(2));
@@ -136,18 +137,11 @@ public class ConnectorNov2016Test
     Optional<Bank> anonymous;
     Optional<Bank> owned;
 
-    try
-    {
-      anonymous = connector.getBank(bankId);
-      owned = connector.getBank(bankId, userId);
+    anonymous = connector.getBank(bankId);
+    owned = connector.getBank(bankId, userId);
 
-      assertThat(anonymous, optionallyReturns("id", "bank-x"));
-      assertThat(owned, optionallyReturns("id", "bank-x"));
-    }
-    catch(Exception e)
-    {
-      e.printStackTrace();
-    }
+    assertThat(anonymous, optionallyReturns("bankId", "bank-x"));
+    assertThat(owned, optionallyReturns("bankId", "bank-x"));
   }
 
   @Test public void getBanks() throws Exception
@@ -170,14 +164,14 @@ public class ConnectorNov2016Test
     {
       anonymousCount.incrementAndGet();
 
-      assertThat(bank.id(), anyOf(is("id-1"), is("id-2")));
+      assertThat(bank.id(), anyOf(is("bankId-1"), is("bankId-2")));
     });
 
     owned.forEach(bank ->
     {
       ownedCount.incrementAndGet();
 
-      assertThat(bank.id(), anyOf(is("id-1"), is("id-2")));
+      assertThat(bank.id(), anyOf(is("bankId-1"), is("bankId-2")));
     });
 
     assertThat("Number of anonymous banks", anonymousCount.get(), is(2));
@@ -197,8 +191,8 @@ public class ConnectorNov2016Test
     anonymous = connector.getTransaction(bankId, accountId, tid);
     owned = connector.getTransaction(bankId, accountId, tid, userId);
 
-    assertThat(anonymous, optionallyReturns("id", "transaction-x"));
-    assertThat(owned, optionallyReturns("id", "transaction-x"));
+    assertThat(anonymous, optionallyReturns("transactionId", "transaction-x"));
+    assertThat(owned, optionallyReturns("transactionId", "transaction-x"));
   }
 
   @Test public void getTransactions() throws Exception
@@ -213,8 +207,8 @@ public class ConnectorNov2016Test
     anonymous = connector.getTransactions(bankId, accountId);
     owned = connector.getTransactions(bankId, accountId, userId);
 
-    assertThat(anonymous.iterator().next().id(), is("id-0"));
-    assertThat(owned.iterator().next().id(), is("id-0"));
+    assertThat(anonymous.iterator().next().id(), is("transactionId-0"));
+    assertThat(owned.iterator().next().id(), is("transactionId-0"));
   }
 
 //  @Test public void pageTransactions() throws Exception
@@ -280,17 +274,17 @@ public class ConnectorNov2016Test
     assertThat("Number of owned users", ownedCount.get(), is(2));
   }
 
-  @Test public void saveTransaction() throws Exception
+  @Test public void createTransaction()
   {
     String userId = "user-x";
     String accountId = "account-x";
     String currency = "currency-x";
-    String amount = "amount-x";
+    BigDecimal amount = BigDecimal.TEN;
     String otherAccountId = "account-y";
     String otherAccountCurrency = "currency-y";
     String transactionType = "type-x";
 
-    Optional<String> tid = connector.saveTransaction(userId, accountId,
+    Optional<String> tid = connector.createTransaction(userId, accountId,
       currency, amount, otherAccountId, otherAccountCurrency, transactionType);
 
     assertThat(tid, returns("get", "tid-x"));

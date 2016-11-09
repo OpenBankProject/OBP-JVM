@@ -11,7 +11,9 @@ import com.tesobe.obp.transport.Bank;
 import org.json.JSONObject;
 
 /**
- * Todo error handling
+ * Writes a bank to JSON .
+ * Missing fields will be skipped.
+ * The constructor trusts that the bank is not null.
  */
 @SuppressWarnings("WeakerAccess") class BankEncoder
 {
@@ -25,9 +27,8 @@ import org.json.JSONObject;
   public JSONObject toJson()
   {
     return new JSONObject()
-      .put("id", bank.id())
-      .put("short", bank.shortName())
-      .put("name", bank.fullName())
+      .put("bankId", bank.bankId())
+      .put("name", bank.name())
       .put("logo", bank.logo())
       .put("url", bank.url());
   }

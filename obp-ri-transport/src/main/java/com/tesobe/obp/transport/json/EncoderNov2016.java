@@ -17,6 +17,7 @@ import com.tesobe.obp.transport.spi.Network;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -109,12 +110,15 @@ public class EncoderNov2016 extends EncoderSep2016 implements Encoder
   }
 
   @Override public Request put(String caller, Network.Target t,
-    Map<String, String> fields)
+    Map<String, String> fields, Map<String, BigDecimal> money)
   {
+    JSONObject fs = new JSONObject(fields);
+
+    money.forEach(fs::put);
+
     return request("put")
       .put("north", caller)
-      .put("target", String.valueOf(t))
-      .put("fields", fields);
+      .put("target", String.valueOf(t)).put("fields", fs);
   }
 
 
@@ -188,7 +192,9 @@ public class EncoderNov2016 extends EncoderSep2016 implements Encoder
 
     if(nonNull(t))
     {
-      result.put("id", t.id());
+      result.put("error", t.error());
+
+      t.id().map(id -> result.put("id", id));
     }
 
     return result.toString();

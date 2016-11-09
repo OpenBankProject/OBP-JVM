@@ -6,6 +6,7 @@
  */
 package com.tesobe.obp.transport;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -136,7 +137,6 @@ import java.util.Optional;
    * @return a page of transactions
    *
    * @throws InterruptedException network trouble
-   * @deprecated use {@link Pager#getTransactions(String, String, String)}
    */
   Iterable<Transaction> getTransactions(String bankId, String accountId,
     String userId) throws InterruptedException;
@@ -148,7 +148,6 @@ import java.util.Optional;
    * @return a page of transactions
    *
    * @throws InterruptedException network trouble
-   * @deprecated use {@link Pager#getTransactions(String, String)}
    */
   Iterable<Transaction> getTransactions(String bankId, String accountId)
     throws InterruptedException;
@@ -159,10 +158,9 @@ import java.util.Optional;
 
   Iterable<User> getUsers(String userId) throws InterruptedException;
 
-  Optional<String> saveTransaction(String userId, String accountId,
-    String currency, String amount, String otherAccountId,
-    String otherAccountCurrency, String transactionType)
-    throws InterruptedException;
+  Optional<String> createTransaction(String userId, String accountId,
+    String currency, BigDecimal amount, String otherAccountId,
+    String otherAccountCurrency, String transactionType);
 
 //  /**
 //   * A pager in source sort order with offset zero, infinite page size and no

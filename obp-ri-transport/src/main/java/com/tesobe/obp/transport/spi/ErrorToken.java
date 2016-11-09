@@ -4,34 +4,28 @@
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
-package com.tesobe.obp.transport.json;
+package com.tesobe.obp.transport.spi;
 
 import com.tesobe.obp.transport.Token;
-import org.json.JSONObject;
 
 import java.util.Optional;
 
-/**
- *
- */
-class TokenDecoder implements Token
+class ErrorToken implements Token
 {
-  TokenDecoder(JSONObject token)
+  ErrorToken(String message)
   {
-    assert token != null;
-
-    json = token;
+    this.message = message;
   }
 
   @Override public Optional<String> id()
   {
-    return Optional.ofNullable(json.optString("id", null));
+    return Optional.empty();
   }
 
   @Override public String error()
   {
-    return "";
+    return message;
   }
 
-  private final JSONObject json;
+  final String message;
 }

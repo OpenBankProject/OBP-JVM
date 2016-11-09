@@ -80,7 +80,7 @@ import static org.junit.Assert.assertThat;
     Iterable<? extends Account> accounts = decoder.accounts(response);
     List<String> ids = new ArrayList<>();
 
-    accounts.forEach(account -> assertThat(account.bank(), is(bankId)));
+    accounts.forEach(account -> assertThat(account.bankId(), is(bankId)));
     accounts.forEach(account -> ids.add(account.id()));
 
     assertThat(ids, equalTo(Arrays.asList("id-1", "id-2")));

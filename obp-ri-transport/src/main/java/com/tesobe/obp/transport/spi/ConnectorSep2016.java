@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -216,20 +217,11 @@ import java.util.UUID;
   }
 
   @Override
-  public Optional<String> saveTransaction(String userId, String accountId,
-    String currency, String amount, String otherAccountId,
+  public Optional<String> createTransaction(String userId, String accountId,
+    String currency, BigDecimal amount, String otherAccountId,
     String otherAccountCurrency, String transactionType)
-    throws InterruptedException
   {
-    String id = UUID.randomUUID().toString();
-    String request = encoder
-      .saveTransaction(userId, accountId, currency, amount, otherAccountId,
-        otherAccountCurrency, transactionType).toString();
-    String response = sender.send(new Message(id, request));
-
-    log.trace("{} \u2192 {}", request, response);
-
-    return decoder.transactionId(response);
+    return Optional.empty();
   }
 
   public Pager pager()

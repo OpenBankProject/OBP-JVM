@@ -16,13 +16,16 @@ import static java.util.Arrays.asList;
  */
 public interface Account extends Id
 {
-  String id();
+  default String accountId()
+  {
+    return id();
+  }
 
-  String amount();
+  String balanceAmount();
 
-  String bank();
+  String bankId();
 
-  String currency();
+  String balanceCurrency();
 
   String iban();
 
@@ -32,11 +35,13 @@ public interface Account extends Id
 
   String type();
 
+  String userId();
+
   default List<String> fields()
   {
     return FIELDS;
   }
 
-  List<String> FIELDS = asList("id", "amount", "bank", "currency", "iban",
-    "label", "number", "type");
+  List<String> FIELDS = asList("accountId", "balanceAmount", "bankId",
+    "balanceCurrency", "iban", "label", "number", "type", "userId");
 }

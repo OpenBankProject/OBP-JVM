@@ -11,7 +11,9 @@ import com.tesobe.obp.transport.Bank;
 import org.json.JSONObject;
 
 /**
- * Todo error handling
+ * Reads a JSON bank.
+ * Unexpected fields will be ignored, missing fields default to {@code null}.
+ * The constructor trusts that the JSON is not null.
  */
 class BankDecoder implements Bank
 {
@@ -24,17 +26,12 @@ class BankDecoder implements Bank
 
   @Override public String id()
   {
-    return json.optString("id", null);
+    return json.optString("bankId", null);
   }
 
-  @Override public String shortName()
+  @Override public String name()
   {
     return json.optString("short", null);
-  }
-
-  @Override public String fullName()
-  {
-    return json.optString("name", null);
   }
 
   @Override public String logo()

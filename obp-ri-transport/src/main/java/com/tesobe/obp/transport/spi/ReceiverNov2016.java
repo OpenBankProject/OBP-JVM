@@ -107,7 +107,9 @@ import java.util.function.Supplier;
     assert r != null;
 
     Optional<Network.Target> target = r.target();
-    String result = target.map(t -> put(r, e, t)).orElse("???"); // todo fix
+    String result = target
+      .map(t -> put(r, e, t))
+      .orElse(e.token(new ErrorToken("Target missing!")));
 
     return result;
   }
@@ -120,7 +122,7 @@ import java.util.function.Supplier;
     {
       case transaction:
       {
-        return optPut(r, responder::saveTransaction, e::token, e::token);
+        return optPut(r, responder::createTransaction, e::token, e::token);
       }
       default:
         throw new RuntimeException("cannot put " + t);
@@ -128,10 +130,10 @@ import java.util.function.Supplier;
   }
 
   private <T> String optPut(Decoder.Request r,
-    Function<Decoder.Fields, Optional<T>> respond, Function<T, String> encode,
+    Function<Decoder.Fields, T> respond, Function<T, String> encode,
     Supplier<String> fail)
   {
-    return respond.apply(r.fields()).map(encode).orElseGet(fail);
+    return encode.apply(respond.apply(r.fields()));
   }
 
   final Responder responder;

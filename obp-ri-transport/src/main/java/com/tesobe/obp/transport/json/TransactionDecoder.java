@@ -10,12 +10,15 @@ package com.tesobe.obp.transport.json;
 import com.tesobe.obp.transport.Transaction;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 import static com.tesobe.obp.transport.json.Json.zonedDateTimeFromJson;
 
 /**
- * todo error handling
+ * Reads a JSON transaction.
+ * Unexpected fields will be ignored, missing fields default to {@code null}.
+ * The constructor trusts that the JSON is not null.
  */
 @SuppressWarnings("WeakerAccess") class TransactionDecoder
   implements Transaction
@@ -29,36 +32,42 @@ import static com.tesobe.obp.transport.json.Json.zonedDateTimeFromJson;
 
   @Override public String id()
   {
-    return json.optString("id", null);
+    return json.optString("transactionId", null);
   }
 
-  @Override public String account()
+  @Override public BigDecimal amount()
   {
-    return json.optString("account", null);
+    return json.optBigDecimal("amount", null);
   }
 
-  @Override public String bank()
+  @Override public String accountId()
   {
-    return json.optString("bank", null);
+    return json.optString("accountId", null);
   }
 
-  @Override public String otherId()
+  @Override public String bankId()
   {
-    JSONObject other = json.optJSONObject("other");
-
-    return other != null ? other.optString("id") : null;
+    return json.optString("bankId", null);
   }
 
-  @Override public String otherAccount()
+  @Override public String counterpartyId()
   {
-    JSONObject other = json.optJSONObject("other");
-
-    return other != null ? other.optString("account") : null;
+    return json.optString("counterpartyId", null);
   }
 
-  @Override public String type()
+  @Override public String counterpartyName()
   {
-    return json.optString("type", null);
+    return json.optString("counterpartyName", null);
+  }
+
+  @Override public ZonedDateTime completedDate()
+  {
+    return zonedDateTimeFromJson(json.optString("completedDate", null));
+  }
+
+  @Override public String currency()
+  {
+    return json.optString("currency", null);
   }
 
   @Override public String description()
@@ -66,24 +75,29 @@ import static com.tesobe.obp.transport.json.Json.zonedDateTimeFromJson;
     return json.optString("description", null);
   }
 
-  @Override public ZonedDateTime posted()
+  @Override public BigDecimal newBalanceAmount()
   {
-    return zonedDateTimeFromJson(json.optString("posted", null));
+    return json.optBigDecimal("newBalanceAmount", null);
   }
 
-  @Override public ZonedDateTime completed()
+  @Override public String newBalanceCurrency()
   {
-    return zonedDateTimeFromJson(json.optString("completed", null));
+    return json.optString("newBalanceCurrency", null);
   }
 
-  @Override public String balance()
+  @Override public ZonedDateTime postedDate()
   {
-    return json.optString("balance", null);
+    return zonedDateTimeFromJson(json.optString("postedDate", null));
   }
 
-  @Override public String value()
+  @Override public String type()
   {
-    return json.optString("value", null);
+    return json.optString("type", null);
+  }
+
+  @Override public String userId()
+  {
+    return json.optString("userId", null);
   }
 
   @Override public String toString()

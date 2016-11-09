@@ -7,6 +7,7 @@
 
 package com.tesobe.obp.transport;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -16,33 +17,44 @@ import static java.util.Arrays.asList;
  */
 public interface Transaction extends Id
 {
-  String id();
+  String accountId();
 
-  String account();
+  BigDecimal amount();
 
-  String bank();
+  String bankId();
 
-  String otherId();
+  ZonedDateTime completedDate();
 
-  String otherAccount();
+  String counterpartyId();
 
-  String type();
+  String counterpartyName();
+
+  String currency();
 
   String description();
 
-  ZonedDateTime posted();
+  BigDecimal newBalanceAmount();
 
-  ZonedDateTime completed();
+  String newBalanceCurrency();
 
-  String balance();
+  ZonedDateTime postedDate();
 
-  String value();
+  default String transactionId()
+  {
+    return id();
+  }
+
+  String type();
+
+  String userId();
 
   default List<String> fields()
   {
     return FIELDS;
   }
 
-  List<String> FIELDS = asList("id", "account", "balance", "bank", "completed",
-    "description", "otherAccount", "otherId", "posted", "type", "value");
+  List<String> FIELDS = asList("accountId", "amount", "bankId", "completedDate",
+    "counterpartyId", "counterpartyName", "currency", "description",
+    "newBalanceAmount", "newBalanceCurrency", "postedDate", "transactionId",
+    "type", "userId");
 }

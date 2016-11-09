@@ -27,7 +27,9 @@ public class MockResponder extends DefaultResponder
   @Override
   public Optional<Account> getAccount(Decoder.Pager p, Decoder.Parameters ps)
   {
-    return ps.accountId().map(id -> generate(Account.class, 1, "id", id));
+    return ps
+      .accountId()
+      .map(id -> generate(Account.class, 1, "accountId", id));
   }
 
   @Override
@@ -37,8 +39,8 @@ public class MockResponder extends DefaultResponder
     {
       List<Account> accounts = new ArrayList<>();
 
-      accounts.add(generate(Account.class, 1, "bank", bankId));
-      accounts.add(generate(Account.class, 2, "bank", bankId));
+      accounts.add(generate(Account.class, 1, "bankId", bankId));
+      accounts.add(generate(Account.class, 2, "bankId", bankId));
 
       return accounts;
 
@@ -48,7 +50,7 @@ public class MockResponder extends DefaultResponder
   @Override
   public Optional<Bank> getBank(Decoder.Pager p, Decoder.Parameters ps)
   {
-    return ps.bankId().map(id -> generate(Bank.class, 1, "id", id));
+    return ps.bankId().map(id -> generate(Bank.class, 1, "bankId", id));
   }
 
   @Override public List<Bank> getBanks(Decoder.Pager p, Decoder.Parameters ps)
@@ -66,7 +68,7 @@ public class MockResponder extends DefaultResponder
   {
     return ps
       .transactionId()
-      .map(id -> generate(Transaction.class, 1, "id", id));
+      .map(id -> generate(Transaction.class, 1, "transactionId", id));
   }
 
   @Override public List<Transaction> getTransactions(Decoder.Pager pager,
@@ -97,10 +99,11 @@ public class MockResponder extends DefaultResponder
     return users;
   }
 
-  @Override public Optional<Token> saveTransaction(Decoder.Fields fs)
+  @Override public Token createTransaction(Decoder.Fields fs)
   {
-    try
-    {
+    return generate(Token.class, 0, "id", Optional.of("tid-x"));
+//    try
+//    {
 //      assertThat(fs.accountId(), isPresent());
 //      assertThat(fs.amount(), isPresent());
 //      assertThat(fs.currency(), isPresent());
@@ -108,12 +111,12 @@ public class MockResponder extends DefaultResponder
 //      assertThat(fs.otherAccountCurrency(), isPresent());
 //      assertThat(fs.transactionType(), isPresent());
 //      assertThat(fs.userId(), isPresent());
-
-      return Optional.of(generate(Token.class, 0, "id", "tid-x"));
-    }
-    catch(Error e)
-    {
-      return Optional.empty();
-    }
+//
+//      return Optional.of(generate(Token.class, 0, "id", "tid-x"));
+//    }
+//    catch(Error e)
+//    {
+//      return Optional.empty();
+//    }
   }
 }

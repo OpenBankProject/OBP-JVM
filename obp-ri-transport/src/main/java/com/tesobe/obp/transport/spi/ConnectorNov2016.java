@@ -17,6 +17,7 @@ import com.tesobe.obp.transport.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -220,26 +221,28 @@ import static com.tesobe.obp.transport.spi.Network.Target.banks;
   }
 
   @Override
-  public Optional<String> saveTransaction(String userId, String accountId,
-    String currency, String amount, String otherAccountId,
+  public Optional<String> createTransaction(String userId, String accountId,
+    String currency, BigDecimal amount, String otherAccountId,
     String otherAccountCurrency, String transactionType)
-    throws InterruptedException
   {
     Map<String, String> fields = new HashMap<>();
+    Map<String, BigDecimal> money = new HashMap<>();
 
     fields.put("user", userId);
     fields.put("account", accountId);
     fields.put("currency", currency);
-    fields.put("amount", amount);
     fields.put("otherId", otherAccountId);
     fields.put("otherCurrency", otherAccountCurrency);
     fields.put("transactionType", transactionType);
 
-    Optional<Token> result = network
-      .session()
-      .put("saveTransaction", Network.Target.transaction, Token.class, fields);
+    money.put("amount", amount);
 
-    return result.map(Token::id);
+    Token token = network
+      .session()
+      .put("createTransaction", Network.Target.transaction, Token.class, fields,
+        money);
+
+    return token.id();
   }
 
   protected static final Logger log = LoggerFactory.getLogger(

@@ -15,13 +15,14 @@ import static java.util.Arrays.asList;
  */
 public interface Bank extends Id
 {
-  String id();
-
-  String shortName();
-
-  String fullName();
+  default String bankId()
+  {
+    return id();
+  }
 
   String logo();
+
+  String name();
 
   String url();
 
@@ -30,5 +31,5 @@ public interface Bank extends Id
     return FIELDS;
   }
 
-  List<String> FIELDS = asList("id", "fullName", "logo", "shortName", "url");
+  List<String> FIELDS = asList("bankId", "name", "logo", "url");
 }

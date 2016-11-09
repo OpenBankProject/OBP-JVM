@@ -55,22 +55,22 @@ import java.util.List;
     return id;
   }
 
-  @Override public String account()
+  @Override public String accountId()
   {
     return account != null ? account.id() : null;
   }
 
-  @Override public String bank()
+  @Override public String bankId()
   {
     return bank != null ? bank.id() : null;
   }
 
-  @Override public String otherId()
+  @Override public String counterpartyId()
   {
     return otherId != null ? otherId.id() : null;
   }
 
-  @Override public String otherAccount()
+  @Override public String counterpartyName()
   {
     return otherAccount != null ? otherAccount.id() : null;
   }
@@ -85,22 +85,22 @@ import java.util.List;
     return description;
   }
 
-  @Override public ZonedDateTime posted()
+  @Override public ZonedDateTime postedDate()
   {
     return posted;
   }
 
-  @Override public ZonedDateTime completed()
+  @Override public ZonedDateTime completedDate()
   {
     return completed;
   }
 
-  @Override public String balance()
+  @Override public BigDecimal newBalanceAmount()
   {
     return balance != null ? balance.toPlainString() : null;
   }
 
-  @Override public String value()
+  @Override public BigDecimal amount()
   {
     return value != null ? value.toPlainString() : null;
   }

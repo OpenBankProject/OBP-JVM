@@ -10,8 +10,11 @@ package com.tesobe.obp.transport.json;
 import com.tesobe.obp.transport.Transaction;
 import org.json.JSONObject;
 
-import static java.util.Objects.nonNull;
-
+/**
+ * Writes a transaction to JSON .
+ * Missing fields will be skipped.
+ * The constructor trusts that the transaction is not null.
+ */
 @SuppressWarnings("WeakerAccess") class TransactionEncoder
 {
   public TransactionEncoder(Transaction t)
@@ -23,25 +26,21 @@ import static java.util.Objects.nonNull;
 
   public JSONObject toJson()
   {
-    JSONObject json = new JSONObject()
-      .put("id", transaction.id())
-      .put("account", transaction.account())
-      .put("bank", transaction.bank())
+    return new JSONObject()
+      .put("transactionId", transaction.transactionId())
+      .put("accountId", transaction.accountId())
+      .put("bankId", transaction.bankId())
       .put("type", transaction.type())
       .put("description", transaction.description())
-      .put("posted", Json.toJson(transaction.posted()))
-      .put("completed", Json.toJson(transaction.completed()))
-      .put("balance", transaction.balance())
-      .put("value", transaction.value());
-
-    if(nonNull(transaction.otherId()) && nonNull(transaction.otherAccount()))
-    {
-      json.put("other", new JSONObject()
-        .put("id", transaction.otherId())
-        .put("account", transaction.otherAccount()));
-    }
-
-    return json;
+      .put("postedDate", Json.toJson(transaction.postedDate()))
+      .put("completedDate", Json.toJson(transaction.completedDate()))
+      .put("newBalanceAmount", transaction.newBalanceAmount())
+      .put("newBalanceCurrency", transaction.newBalanceCurrency())
+      .put("amount", transaction.amount())
+      .put("currency", transaction.currency())
+      .put("counterpartyId", transaction.counterpartyId())
+      .put("counterpartyName", transaction.counterpartyName())
+      .put("userId", transaction.userId());
   }
 
   @Override public String toString()

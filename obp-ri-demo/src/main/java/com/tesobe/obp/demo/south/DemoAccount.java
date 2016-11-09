@@ -45,17 +45,17 @@ public class DemoAccount implements Account, Accessible, Open
     return id;
   }
 
-  @Override public String amount()
+  @Override public String balanceAmount()
   {
     return amount.toPlainString();
   }
 
-  @Override public String bank()
+  @Override public String bankId()
   {
     return bank.id();
   }
 
-  @Override public String currency()
+  @Override public String balanceCurrency()
   {
     return currency;
   }

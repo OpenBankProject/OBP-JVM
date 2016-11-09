@@ -60,8 +60,8 @@ class MockReceiver extends DefaultReceiver
     {
       List<Account> accounts = new ArrayList<>();
 
-      accounts.add(generate(Account.class, 1, "bank", bankId));
-      accounts.add(generate(Account.class, 2, "bank", bankId));
+      accounts.add(generate(Account.class, 1, "bankId", bankId));
+      accounts.add(generate(Account.class, 2, "bankId", bankId));
 
       return e.accounts(accounts);
 

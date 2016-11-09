@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -81,29 +82,38 @@ import java.util.UUID;
   }
 
 
-  protected <T extends Token> Optional<T> put(Session s, String caller,
-    Target t, Class<T> type, Map<String, String> fields)
-    throws InterruptedException
+  protected <T extends Token> T put(Session s, String caller, Target t,
+    Class<T> type, Map<String, String> fields, Map<String, BigDecimal> money)
   {
     assert s != null;
     assert t != null;
     assert type != null;
 
-    Encoder.Request request = encoder.put(caller, t, fields);
+    Encoder.Request request = encoder.put(caller, t, fields, money);
 
     String id = UUID.randomUUID().toString();
     Message message = new Message(id, request.toString());
 
     log.trace("{}", request);
 
-    String response = sender.send(message);
-    Optional<Token> token = decoder.token(response);
+    try
+    {
+      String response = sender.send(message);
+      Optional<Token> token = decoder.token(response);
 
-    log.trace("\u2192 {}", response);
+      log.trace("\u2192 {}", response);
 
-    return token.map(type::cast);
+      return token
+        .map(type::cast)
+        .orElseGet(() -> type.cast(new ErrorToken("Cannot decode response!")));
+    }
+    catch(InterruptedException e)
+    {
+      log.error("\u2192 {}", id, e);
+
+      return type.cast(new ErrorToken(e.getMessage()));
+    }
   }
-
 
   public static Target target(String target)
   {
@@ -164,19 +174,19 @@ import java.util.UUID;
     }
 
     /**
+     * @param <T> the return type
      * @param caller caller's name: information only: null allowed
      * @param t the action requested: null not allowed
      * @param type the return type
-     * @param fields values to submit
-     * @param <T> the return type
+     * @param fields string fields
+     * @param money big decimal fields
      *
      * @return a token
      *
-     * @throws InterruptedException     network trouble
      * @throws IllegalArgumentException target or type is null
      */
-    public <T extends Token> Optional<T> put(String caller, Target t,
-      Class<T> type, Map<String, String> fields) throws InterruptedException
+    public <T extends Token> T put(String caller, Target t, Class<T> type,
+      Map<String, String> fields, Map<String, BigDecimal> money)
     {
       if(t == null)
       {
@@ -188,7 +198,7 @@ import java.util.UUID;
         throw new IllegalArgumentException("Type must not be null!");
       }
 
-      return Network.this.put(this, caller, t, type, fields);
+      return Network.this.put(this, caller, t, type, fields, money);
     }
   }
 

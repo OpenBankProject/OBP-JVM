@@ -67,8 +67,8 @@ import java.util.Optional;
     return Collections.emptyList();
   }
 
-  @Override public Optional<Token> saveTransaction(Decoder.Fields fs)
+  @Override public Token createTransaction(Decoder.Fields fs)
   {
-    return Optional.empty();
+    return new ErrorToken("Not implemented: Responder.createTransaction");
   }
 }

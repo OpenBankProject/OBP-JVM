@@ -11,7 +11,9 @@ import com.tesobe.obp.transport.Account;
 import org.json.JSONObject;
 
 /**
- * Todo error handling
+ * Reads a JSON account.
+ * Unexpected fields will be ignored, missing fields default to {@code null}.
+ * The constructor trusts that the JSON is not null.
  */
 class AccountDecoder implements Account
 {
@@ -22,14 +24,29 @@ class AccountDecoder implements Account
     json = account;
   }
 
-  @Override public String id()
+  @Override public String balanceAmount()
   {
-    return json.optString("id", null);
+    return json.optString("balanceAmount", null);
   }
 
-  @Override public String bank()
+  @Override public String balanceCurrency()
   {
-    return json.optString("bank", null);
+    return json.optString("balanceCurrency", null);
+  }
+
+  @Override public String bankId()
+  {
+    return json.optString("bankId", null);
+  }
+
+  @Override public String iban()
+  {
+    return json.optString("iban", null);
+  }
+
+  @Override public String id()
+  {
+    return json.optString("accountId", null);
   }
 
   @Override public String label()
@@ -47,19 +64,9 @@ class AccountDecoder implements Account
     return json.optString("type", null);
   }
 
-  @Override public String currency()
+  @Override public String userId()
   {
-    return json.optString("currency", null);
-  }
-
-  @Override public String amount()
-  {
-    return json.optString("amount", null);
-  }
-
-  @Override public String iban()
-  {
-    return json.optString("iban", null);
+    return json.optString("userId", null);
   }
 
   @Override public String toString()

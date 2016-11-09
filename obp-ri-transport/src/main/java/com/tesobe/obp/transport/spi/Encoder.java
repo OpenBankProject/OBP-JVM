@@ -13,6 +13,7 @@ import com.tesobe.obp.transport.Token;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.User;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ public interface Encoder
   }
 
   default Request put(String caller, Network.Target t,
-    Map<String, String> fields)
+    Map<String, String> fields, Map<String, BigDecimal> money)
   {
     return null;
   }

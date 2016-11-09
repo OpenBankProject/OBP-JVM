@@ -11,26 +11,31 @@ import com.tesobe.obp.transport.Account;
 import org.json.JSONObject;
 
 /**
- * Todo error handling
+ * Writes an account to JSON .
+ * Missing fields will be skipped.
+ * The constructor trusts that the account is not null.
  */
 @SuppressWarnings("WeakerAccess") class AccountEncoder
 {
   public AccountEncoder(Account a)
   {
+    assert a != null;
+
     account = a;
   }
 
   public JSONObject toJson()
   {
     return new JSONObject()
-      .put("id", account.id())
-      .put("bank", account.bank())
+      .put("balanceAmount", account.balanceAmount())
+      .put("balanceCurrency", account.balanceCurrency())
+      .put("bankId", account.bankId())
+      .put("iban", account.iban())
       .put("label", account.label())
+      .put("accountId", account.accountId())
       .put("number", account.number())
       .put("type", account.type())
-      .put("currency", account.currency())
-      .put("amount", account.amount())
-      .put("iban", account.iban());
+      .put("userId", account.userId());
   }
 
   private final Account account;

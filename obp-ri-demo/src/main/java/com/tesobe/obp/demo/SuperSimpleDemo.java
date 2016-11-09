@@ -59,14 +59,9 @@ public class SuperSimpleDemo
             return r.bankId().get();
           }
 
-          @Override public String shortName()
+          @Override public String name()
           {
             return "My Bank";
-          }
-
-          @Override public String fullName()
-          {
-            return "My Very Own Bank";
           }
 
           @Override public String logo()

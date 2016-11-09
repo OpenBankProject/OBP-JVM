@@ -412,6 +412,13 @@ import static java.util.Objects.nonNull;
       return this;
     }
 
+    public RequestBuilder put(String key, JSONObject value)
+    {
+      request.put(key, value);
+
+      return this;
+    }
+
     public RequestBuilder put(Connector.Pager p)
     {
       if(p instanceof ConnectorSep2016.DefaultPager)

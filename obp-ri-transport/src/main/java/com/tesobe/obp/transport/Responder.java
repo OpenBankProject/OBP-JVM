@@ -30,5 +30,5 @@ public interface Responder
 
   List<User> getUsers(Decoder.Pager pager, Decoder.Parameters ps);
 
-  Optional<Token> saveTransaction(Decoder.Fields fs);
+  Token createTransaction(Decoder.Fields fs);
 }

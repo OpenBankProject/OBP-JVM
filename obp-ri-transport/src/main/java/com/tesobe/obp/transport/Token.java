@@ -6,12 +6,25 @@
  */
 package com.tesobe.obp.transport;
 
+import java.util.Optional;
+
 /**
  * Result of a put.
  */
 public interface Token
 {
-  String id();
+  default Optional<String> id()
+  {
+    return Optional.empty();
+  }
 
-  String error();
+  default String error()
+  {
+    return "";
+  }
+
+  default boolean isValid()
+  {
+    return id().isPresent();
+  }
 }

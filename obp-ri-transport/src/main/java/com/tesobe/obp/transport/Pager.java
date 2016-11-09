@@ -12,7 +12,7 @@ public interface Pager
 
   Pager nextPage();
 
-  enum SortField
+  enum SortField // todo rm!
   {
     completed, description, otherAccount, otherId, posted, type, value
   }

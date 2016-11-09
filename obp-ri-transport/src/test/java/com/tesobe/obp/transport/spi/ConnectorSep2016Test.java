@@ -27,7 +27,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
 
 import static com.tesobe.obp.util.MethodMatcher.optionallyReturns;
-import static com.tesobe.obp.util.MethodMatcher.returns;
 import static org.hamcrest.core.AnyOf.anyOf;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -102,13 +101,13 @@ public class ConnectorSep2016Test
 
     anonymous.forEach(account ->
     {
-      assertThat(account.bank(), is(bankId));
+      assertThat(account.bankId(), is(bankId));
       assertThat(account.id(), anyOf(is("id-1"), is("id-2")));
     });
 
     owned.forEach(account ->
     {
-      assertThat(account.bank(), is(bankId));
+      assertThat(account.bankId(), is(bankId));
       assertThat(account.id(), anyOf(is("id-1"), is("id-2")));
     });
   }
@@ -220,23 +219,6 @@ public class ConnectorSep2016Test
     Optional<User> user = connector.getUser(userId);
 
     assertThat(user, optionallyReturns("email", userId));
-  }
-
-  @Test public void saveTransaction() throws Exception
-  {
-    String userId = "user-x";
-    String accountId = "account-x";
-    String currency = "currency-x";
-    String amount = "amount-x";
-    String otherAccountId = "account-y";
-    String otherAccountCurrency = "currency-y";
-    String transactionType = "type-x";
-
-    Optional<String> tid = connector
-      .saveTransaction(userId, accountId, currency, amount, otherAccountId,
-        otherAccountCurrency, transactionType);
-
-    assertThat(tid, returns("get", "tid-x"));
   }
 
   private Connector connector;
