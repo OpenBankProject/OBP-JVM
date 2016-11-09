@@ -8,7 +8,6 @@ package com.tesobe.obp.transport.spi;
 
 import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
-import com.tesobe.obp.transport.Connector;
 import com.tesobe.obp.transport.Token;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.User;
@@ -55,20 +54,11 @@ public interface Encoder
   Request getTransaction(String bankId, String accountId, String transactionId,
     String userId);
 
-  Request getTransactions(Connector.Pager p, String bankId, String accountId,
-    String userId);
-
-  Request getTransactions(Connector.Pager p, String bankId, String accountId);
-
   Request getUser(String userId);
 
   Request getUsers(String userId);
 
   Request getUsers();
-
-  Request saveTransaction(String userId, String accountId, String currency,
-    String amount, String otherAccountId, String otherAccountCurrency,
-    String transactionType);
 
   String account(Account a);
 

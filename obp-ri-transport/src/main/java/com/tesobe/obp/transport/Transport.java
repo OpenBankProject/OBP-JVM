@@ -11,7 +11,6 @@ import com.tesobe.obp.transport.json.DecoderSep2016;
 import com.tesobe.obp.transport.json.EncoderNov2016;
 import com.tesobe.obp.transport.json.EncoderSep2016;
 import com.tesobe.obp.transport.spi.ConnectorNov2016;
-import com.tesobe.obp.transport.spi.ConnectorSep2016;
 import com.tesobe.obp.transport.spi.Decoder;
 import com.tesobe.obp.transport.spi.Encoder;
 import com.tesobe.obp.transport.spi.Receiver;
@@ -118,8 +117,6 @@ import static com.tesobe.obp.transport.Transport.Version.Sep2016;
   {
     switch(v)
     {
-      case Sep2016:
-        return new ConnectorSep2016(v, e, d, s);
       default:
         return new ConnectorNov2016(v, e, d, s);
     }

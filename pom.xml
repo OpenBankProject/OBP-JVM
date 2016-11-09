@@ -19,7 +19,7 @@
 
   <modules>
     <module>obp-ri-core</module>
-    <module>obp-ri-demo</module>
+    <!--<module>obp-ri-demo</module>-->
     <module>obp-ri-kafka</module>
     <module>obp-ri-transport</module>
   </modules>

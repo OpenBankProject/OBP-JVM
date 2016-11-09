@@ -8,12 +8,10 @@ package com.tesobe.obp.transport.json;
 
 import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
-import com.tesobe.obp.transport.Connector;
 import com.tesobe.obp.transport.Token;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.transport.User;
-import com.tesobe.obp.transport.spi.ConnectorSep2016;
 import com.tesobe.obp.transport.spi.Encoder;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -98,24 +96,24 @@ import static java.util.Objects.nonNull;
       .put("transaction", transactionId);
   }
 
-  @Override public Request getTransactions(Connector.Pager p, String bankId,
-    String accountId)
-  {
-    return request("get transactions")
-      .put(p)
-      .put("bank", bankId)
-      .put("account", accountId);
-  }
+//  @Override public Request getTransactions(Connector.Pager p, String bankId,
+//    String accountId)
+//  {
+//    return request("get transactions")
+//      .put(p)
+//      .put("bank", bankId)
+//      .put("account", accountId);
+//  }
 
-  @Override public Request getTransactions(Connector.Pager p, String bankId,
-    String accountId, String userId)
-  {
-    return request("get transactions")
-      .put(p)
-      .put("bank", bankId)
-      .put("account", accountId)
-      .put("user", userId);
-  }
+//  @Override public Request getTransactions(Connector.Pager p, String bankId,
+//    String accountId, String userId)
+//  {
+//    return request("get transactions")
+//      .put(p)
+//      .put("bank", bankId)
+//      .put("account", accountId)
+//      .put("user", userId);
+//  }
 
   @Override public Request getUser(String userId)
   {
@@ -130,20 +128,6 @@ import static java.util.Objects.nonNull;
   @Override public Request getUsers()
   {
     return request("get users");
-  }
-
-  @Override public Request saveTransaction(String userId, String accountId,
-    String currency, String amount, String otherAccountId,
-    String otherAccountCurrency, String transactionType)
-  {
-    return request("save transaction")
-      .put("user", userId)
-      .put("account", accountId)
-      .put("currency", currency)
-      .put("amount", amount)
-      .put("otherId", otherAccountId)
-      .put("otherCurrency", otherAccountCurrency)
-      .put("transactionType", transactionType);
   }
 
   protected RequestBuilder request(String name)
@@ -419,46 +403,46 @@ import static java.util.Objects.nonNull;
       return this;
     }
 
-    public RequestBuilder put(Connector.Pager p)
-    {
-      if(p instanceof ConnectorSep2016.DefaultPager)
-      {
-        ConnectorSep2016.DefaultPager pager
-          = ConnectorSep2016.DefaultPager.class.cast(p);
-
-        if(pager.offset != 0)
-        {
-          request.put("offset", pager.offset);
-        }
-
-        if(pager.size != 0)
-        {
-          request.put("size", pager.size);
-        }
-
-        if(nonNull(pager.field))
-        {
-          request.put("sort by", pager.field.toString());
-        }
-
-        if(nonNull(pager.sortOrder))
-        {
-          request.put("sort", pager.sortOrder.toString());
-        }
-
-        if(nonNull(pager.earliest))
-        {
-          request.put("earliest", Json.toJson(pager.earliest));
-        }
-
-        if(nonNull(pager.latest))
-        {
-          request.put("latest", Json.toJson(pager.latest));
-        }
-      }
-
-      return this;
-    }
+//    public RequestBuilder put(Connector.Pager p)
+//    {
+//      if(p instanceof ConnectorSep2016.DefaultPager)
+//      {
+//        ConnectorSep2016.DefaultPager pager
+//          = ConnectorSep2016.DefaultPager.class.cast(p);
+//
+//        if(pager.offset != 0)
+//        {
+//          request.put("offset", pager.offset);
+//        }
+//
+//        if(pager.size != 0)
+//        {
+//          request.put("size", pager.size);
+//        }
+//
+//        if(nonNull(pager.field))
+//        {
+//          request.put("sort by", pager.field.toString());
+//        }
+//
+//        if(nonNull(pager.sortOrder))
+//        {
+//          request.put("sort", pager.sortOrder.toString());
+//        }
+//
+//        if(nonNull(pager.earliest))
+//        {
+//          request.put("earliest", Json.toJson(pager.earliest));
+//        }
+//
+//        if(nonNull(pager.latest))
+//        {
+//          request.put("latest", Json.toJson(pager.latest));
+//        }
+//      }
+//
+//      return this;
+//    }
 
     final String name;
     final JSONObject request = new JSONObject();

@@ -125,7 +125,6 @@ public class DecoderNov2016 extends DecoderSep2016
   {
     public Request0(String request)
     {
-
       super(request);
     }
 
