@@ -37,19 +37,6 @@ import static java.util.Objects.nonNull;
     decoder = cs.requestDecoder;
     errorEncoder = cs.errorEncoder;
 
-    Map<String, BiFunction<Decoder.Request, Encoder, String>> sep2016
-      = new HashMap<>();
-
-    sep2016.put("get account", this::getAccount);
-    sep2016.put("get accounts", this::getAccounts);
-    sep2016.put("get bankOld", this::getBank);
-    sep2016.put("get banks", this::getBanks);
-    sep2016.put("get transaction", this::getTransaction);
-    sep2016.put("get transactions", this::getTransactions);
-    sep2016.put("get user", this::getUser);
-    sep2016.put("get users", this::getUsers);
-    sep2016.put("save transaction", this::saveTransaction);
-
     Map<String, BiFunction<Decoder.Request, Encoder, String>> nov2016
       = new HashMap<>();
 
@@ -57,17 +44,6 @@ import static java.util.Objects.nonNull;
     nov2016.put("put", this::put);
 
     versions.put(Transport.Version.Nov2016, nov2016);
-    versions.put(Transport.Version.Sep2016, sep2016);
-  }
-
-  protected Pair<Encoder, Decoder> newest(
-    EnumMap<Transport.Version, Pair<Encoder, Decoder>> cs)
-  {
-    List<Transport.Version> sorted = new ArrayList<>(cs.keySet());
-
-    sorted.sort(Collections.reverseOrder());
-
-    return cs.get(sorted.get(0));
   }
 
   /**
@@ -137,23 +113,6 @@ import static java.util.Objects.nonNull;
 
   protected abstract String put(Decoder.Request r, Encoder e);
 
-  protected abstract String getAccount(Decoder.Request r, Encoder e);
-
-  protected abstract String getAccounts(Decoder.Request r, Encoder e);
-
-  protected abstract String getBank(Decoder.Request r, Encoder e);
-
-  protected abstract String getBanks(Decoder.Request r, Encoder e);
-
-  protected abstract String getTransaction(Decoder.Request r, Encoder e);
-
-  protected abstract String getTransactions(Decoder.Request r, Encoder e);
-
-  protected abstract String getUser(Decoder.Request r, Encoder e);
-
-  protected abstract String getUsers(Decoder.Request r, Encoder e);
-
-  protected abstract String saveTransaction(Decoder.Request r, Encoder e);
   static final Map<Transport.Version, Map<String, BiFunction<Decoder.Request, Encoder, String>>>
     versions = new HashMap<>();
   static final Logger log = LoggerFactory.getLogger(AbstractReceiver.class);

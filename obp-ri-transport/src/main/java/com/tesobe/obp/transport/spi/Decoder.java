@@ -92,7 +92,7 @@ public interface Decoder
 
     int size();
 
-    Optional<com.tesobe.obp.transport.Pager.SortField> field();
+    Optional<String> field();
 
     Optional<com.tesobe.obp.transport.Pager.SortOrder> sort();
 

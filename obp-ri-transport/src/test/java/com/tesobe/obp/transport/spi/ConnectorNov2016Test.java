@@ -72,7 +72,6 @@ public class ConnectorNov2016Test
     });
   }
 
-
   @After public void shutdown()
   {
     service.shutdown();

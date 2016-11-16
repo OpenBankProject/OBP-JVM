@@ -207,15 +207,15 @@ import java.util.UUID;
   {
     public DefaultPager()
     {
-      this(0, 50, SortField.completed, SortOrder.descending, null, null);
+      this(0, 50, "completed", SortOrder.descending, null, null);
     }
 
-    public DefaultPager(int offset, int size, SortField field,
+    public DefaultPager(int offset, int size, String sortField,
       Pager.SortOrder so, ZonedDateTime earliest, ZonedDateTime latest)
     {
       this.offset = offset;
       this.size = size;
-      this.field = field;
+      this.field = sortField;
       this.sortOrder = so;
       this.earliest = earliest;
       this.latest = latest;
@@ -269,7 +269,7 @@ import java.util.UUID;
     static final long serialVersionUID = 42L;
     public final int offset;
     public final int size;
-    public final Pager.SortField field;
+    public final String field;
     public final Pager.SortOrder sortOrder;
     public final ZonedDateTime earliest;
     public final ZonedDateTime latest;

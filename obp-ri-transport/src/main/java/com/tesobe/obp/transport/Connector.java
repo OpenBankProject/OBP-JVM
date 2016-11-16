@@ -7,7 +7,6 @@
 package com.tesobe.obp.transport;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -184,16 +183,4 @@ import java.util.Optional;
 //    com.tesobe.obp.transport.Pager.SortField field, com.tesobe.obp.transport.Pager.SortOrder so, ZonedDateTime earliest,
 //    ZonedDateTime latest);
 
-  interface Pager
-  {
-    List<Transaction> getTransactions(String bankId, String accountId)
-      throws InterruptedException;
-
-    List<Transaction> getTransactions(String bankId, String accountId,
-      String userId) throws InterruptedException;
-
-    boolean hasMorePages();
-
-    Pager nextPage();
-  }
 }

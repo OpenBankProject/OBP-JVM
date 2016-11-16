@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * todo document
  */
 @SuppressWarnings("WeakerAccess") public class ReceiverNov2016
-  extends DefaultReceiver
+  extends AbstractReceiver
 {
   public ReceiverNov2016(Responder r, Codecs cs)
   {
@@ -107,11 +107,10 @@ import java.util.function.Supplier;
     assert r != null;
 
     Optional<Network.Target> target = r.target();
-    String result = target
+
+    return target
       .map(t -> put(r, e, t))
       .orElse(e.token(new ErrorToken("Target missing!")));
-
-    return result;
   }
 
   protected String put(Decoder.Request r, Encoder e, Network.Target t)
@@ -121,17 +120,14 @@ import java.util.function.Supplier;
     switch(t)
     {
       case transaction:
-      {
-        return optPut(r, responder::createTransaction, e::token, e::token);
-      }
+        return optPut(r, responder::createTransaction, e::token);
       default:
-        throw new RuntimeException("cannot put " + t);
+        return e.token(new ErrorToken("Unknown target: " + t));
     }
   }
 
   private <T> String optPut(Decoder.Request r,
-    Function<Decoder.Fields, T> respond, Function<T, String> encode,
-    Supplier<String> fail)
+    Function<Decoder.Fields, T> respond, Function<T, String> encode)
   {
     return encode.apply(respond.apply(r.fields()));
   }

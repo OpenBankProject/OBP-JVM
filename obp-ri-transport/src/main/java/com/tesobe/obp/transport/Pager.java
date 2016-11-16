@@ -12,11 +12,6 @@ public interface Pager
 
   Pager nextPage();
 
-  enum SortField // todo rm!
-  {
-    completed, description, otherAccount, otherId, posted, type, value
-  }
-
   enum SortOrder
   {
     ascending, descending, source

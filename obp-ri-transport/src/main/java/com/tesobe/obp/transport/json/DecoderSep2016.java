@@ -501,10 +501,9 @@ import static java.util.Objects.nonNull;
       return json.optInt("size", 0);
     }
 
-    @Override public Optional<com.tesobe.obp.transport.Pager.SortField> field()
+    @Override public Optional<String> field()
     {
-      return Optional.ofNullable(
-        json.optEnum(com.tesobe.obp.transport.Pager.SortField.class, "field"));
+      return Optional.ofNullable(json.optString("field", null));
     }
 
     @Override public Optional<com.tesobe.obp.transport.Pager.SortOrder> sort()
