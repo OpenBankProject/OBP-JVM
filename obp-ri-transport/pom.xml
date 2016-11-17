@@ -11,7 +11,7 @@
   <parent>
     <artifactId>obp-ri</artifactId>
     <groupId>com.tesobe.obp</groupId>
-    <version>2016.9-ALPHA11-SNAPSHOT</version>
+    <version>2016.11-RC1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 

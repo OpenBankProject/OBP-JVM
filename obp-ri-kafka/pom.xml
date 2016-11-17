@@ -13,7 +13,7 @@
   <parent>
     <artifactId>obp-ri</artifactId>
     <groupId>com.tesobe.obp</groupId>
-    <version>2016.9-ALPHA11-SNAPSHOT</version>
+    <version>2016.11-RC1-SNAPSHOT</version>
   </parent>
 
   <artifactId>obp-ri-kafka</artifactId>
@@ -39,11 +39,6 @@
       <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <!-- todo rm -->
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
     </dependency>
   </dependencies>
 
