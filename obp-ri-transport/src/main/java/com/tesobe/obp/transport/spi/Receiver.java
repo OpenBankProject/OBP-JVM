@@ -6,8 +6,7 @@
  */
 package com.tesobe.obp.transport.spi;
 
-import com.tesobe.obp.transport.Message;
-import com.tesobe.obp.transport.Transport;
+import com.tesobe.obp.transport.*;
 import com.tesobe.obp.util.Pair;
 
 import java.util.EnumMap;

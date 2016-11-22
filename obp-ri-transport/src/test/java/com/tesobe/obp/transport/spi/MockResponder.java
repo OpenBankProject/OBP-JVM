@@ -6,15 +6,9 @@
  */
 package com.tesobe.obp.transport.spi;
 
-import com.tesobe.obp.transport.Account;
-import com.tesobe.obp.transport.Bank;
-import com.tesobe.obp.transport.Token;
-import com.tesobe.obp.transport.Transaction;
-import com.tesobe.obp.transport.User;
+import com.tesobe.obp.transport.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.tesobe.obp.util.ImplGen.generate;
 import static java.util.Collections.emptyList;

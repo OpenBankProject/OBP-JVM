@@ -6,21 +6,12 @@
  */
 package com.tesobe.obp.transport;
 
-import com.tesobe.obp.transport.json.DecoderNov2016;
-import com.tesobe.obp.transport.json.DecoderSep2016;
-import com.tesobe.obp.transport.json.EncoderNov2016;
-import com.tesobe.obp.transport.json.EncoderSep2016;
+import com.tesobe.obp.transport.json.*;
 import com.tesobe.obp.transport.spi.ConnectorNov2016;
-import com.tesobe.obp.transport.spi.Decoder;
-import com.tesobe.obp.transport.spi.Encoder;
 import com.tesobe.obp.transport.spi.Receiver;
-import com.tesobe.obp.util.DefaultMetrics;
-import com.tesobe.obp.util.Metrics;
-import com.tesobe.obp.util.Pair;
+import com.tesobe.obp.util.*;
 
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static com.tesobe.obp.transport.Transport.Encoding.json;
 import static com.tesobe.obp.transport.Transport.Version.Nov2016;
@@ -137,6 +128,13 @@ import static com.tesobe.obp.transport.Transport.Version.Sep2016;
     return codecs;
   }
 
+  public static Target target(String target)
+  {
+    return targets.get(target);
+  }
+
+  public static final Map<String, Target> targets = new HashMap<>();
+
   static final Receiver.Codecs codecs;
   static final EnumMap<Encoding, Map<Version, Decoder>> decoders
     = new EnumMap<>(Encoding.class);
@@ -151,6 +149,11 @@ import static com.tesobe.obp.transport.Transport.Version.Sep2016;
   public enum Encoding
   {
     json
+  }
+
+  public enum Target
+  {
+    account, accounts, bank, banks, transaction, transactions, user, users
   }
 
   public interface Factory

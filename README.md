@@ -136,8 +136,8 @@ Examples for all methods in the connector are here:
 
 The serializing and deserializing of data onto the transport medium is **specified** by two classes:
 
-  * `com.tesobe.obp.transport.spi.Encoder`
-  * `com.tesobe.obp.transport.spi.Decoder`
+  * `com.tesobe.obp.transport.Encoder`
+  * `com.tesobe.obp.transport.Decoder`
   
 It is **implemented** using JSON by
 

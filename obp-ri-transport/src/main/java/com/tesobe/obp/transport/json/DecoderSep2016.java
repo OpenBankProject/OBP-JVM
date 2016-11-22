@@ -6,27 +6,13 @@
  */
 package com.tesobe.obp.transport.json;
 
-import com.tesobe.obp.transport.Account;
-import com.tesobe.obp.transport.Bank;
-import com.tesobe.obp.transport.Token;
-import com.tesobe.obp.transport.Transaction;
-import com.tesobe.obp.transport.Transport;
-import com.tesobe.obp.transport.User;
-import com.tesobe.obp.transport.spi.Decoder;
-import com.tesobe.obp.transport.spi.Network;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import com.tesobe.obp.transport.*;
+import org.json.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -485,10 +471,10 @@ import static java.util.Objects.nonNull;
       return Optional.ofNullable(json.optString("transactionType", null));
     }
 
-    @Override public Optional<Network.Target> target()
+    @Override public Optional<Transport.Target> target()
     {
       return Optional.ofNullable(
-        Network.target(json.optString("target", null)));
+        Transport.target(json.optString("target", null)));
     }
 
     @Override public int offset()

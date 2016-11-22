@@ -7,6 +7,8 @@
 package com.tesobe.obp.transport;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -23,12 +25,10 @@ import java.util.Optional;
    * An all white space bankOld id is invalid.
    * @param accountId An invalid account id means an empty result.
    * An all white space account id is invalid.
-   *
    * @return An empty result if the account is not explicitly linked to the
    * user.
    * If the account is public but not linked to the user, empty will be
    * returned.
-   *
    * @throws InterruptedException Network trouble
    */
   Optional<Account> getAccount(String bankId, String accountId)
@@ -41,12 +41,10 @@ import java.util.Optional;
    * An all white space account id is invalid.
    * @param userId An invalid user id means an empty result.
    * An all white space user id is invalid.
-   *
    * @return An empty result if the account is not explicitly linked to the
    * user.
    * If the account is public but not linked to the user, empty will be
    * returned.
-   *
    * @throws InterruptedException Network trouble
    */
   Optional<Account> getAccount(String bankId, String accountId, String userId)
@@ -64,9 +62,7 @@ import java.util.Optional;
    * An all white space bankOld id is invalid.
    * @param userId An invalid user id means an empty result.
    * An all white space user id is invalid.
-   *
    * @return The user's private banks or an empty result.
-   *
    * @throws InterruptedException Network trouble
    */
   Iterable<Account> getAccounts(String bankId, String userId)
@@ -76,9 +72,7 @@ import java.util.Optional;
    * Anonymous request for a bankOld.
    *
    * @param bankId the bankOld's id. Not a UUID.
-   *
    * @return empty if the bankId is invalid
-   *
    * @throws InterruptedException Network trouble
    */
   Optional<Bank> getBank(String bankId) throws InterruptedException;
@@ -88,12 +82,10 @@ import java.util.Optional;
    * An all white space bankOld id is invalid.
    * @param userId An invalid user id means an empty result.
    * An all white space user id is invalid.
-   *
    * @return An empty result if the bankOld is not explicitly linked to the
    * user.
    * If the bankOld is public but not linked to the user, empty will be
    * returned.
-   *
    * @throws InterruptedException Network trouble
    */
   Optional<Bank> getBank(String bankId, String userId)
@@ -103,7 +95,6 @@ import java.util.Optional;
    * Anonymously get banks.
    *
    * @return never null
-   *
    * @throws InterruptedException Network trouble
    */
   Iterable<Bank> getBanks() throws InterruptedException;
@@ -115,9 +106,7 @@ import java.util.Optional;
    * fields in the banks returned may be {@code null}.
    *
    * @param userId An invalid user id means an empty result.
-   *
    * @return The user's private banks or an empty result.
-   *
    * @throws InterruptedException Network trouble
    */
   Iterable<Bank> getBanks(String userId) throws InterruptedException;
@@ -132,9 +121,7 @@ import java.util.Optional;
    * @param bankId Not a UUID
    * @param accountId A UUID
    * @param userId A UUID
-   *
    * @return a page of transactions
-   *
    * @throws InterruptedException network trouble
    */
   Iterable<Transaction> getTransactions(String bankId, String accountId,
@@ -143,13 +130,17 @@ import java.util.Optional;
   /**
    * @param bankId Not a UUID
    * @param accountId A UUID
-   *
    * @return a page of transactions
-   *
    * @throws InterruptedException network trouble
    */
   Iterable<Transaction> getTransactions(String bankId, String accountId)
     throws InterruptedException;
+
+  List<Transaction> getTransactions(Pager p, String bankId, String accountId)
+    throws InterruptedException;
+
+  List<Transaction> getTransactions(Pager p, String bankId, String accountId,
+    String userId) throws InterruptedException;
 
   Optional<User> getUser(String userId) throws InterruptedException;
 
@@ -161,26 +152,34 @@ import java.util.Optional;
     String currency, BigDecimal amount, String otherAccountId,
     String otherAccountCurrency, String transactionType);
 
-//  /**
-//   * A pager in source sort order with offset zero, infinite page size and no
-//   * constraints.
-//   *
-//   * @return a pager
-//   */
-//  Pager pager();
-//
-//  /**
-//   * @param offset zero is first item
-//   * @param size set to zero to disregard
-//   * @param field set to null to disregard
-//   * @param so set to null to disregard
-//   * @param earliest set to null to disregard
-//   * @param latest set to null to disregard
-//   *
-//   * @return a pager
-//   */
-//  @SuppressWarnings("SameParameterValue") Pager pager(int offset, int size,
-//    com.tesobe.obp.transport.Pager.SortField field, com.tesobe.obp.transport.Pager.SortOrder so, ZonedDateTime earliest,
-//    ZonedDateTime latest);
+  /**
+   * A pager in source sort order with offset zero, infinite page size and no
+   * constraints.
+   *
+   * @return a pager
+   */
+  Pager pager();
 
+  /**
+   * The result set produced on the south side is split into pages that are
+   * sent individually. First any timestamp filter is applied, then the result
+   * is sorted. Then, starting at offset pageSize many items are sent.
+   *
+   * @param pageSize the maximum number of items sent. Set to zero to return
+   * all
+   * items.
+   * @param offset the index into the result set of the first item to send
+   * @param sortField the name of the field to sort the result set by. If
+   * not set, or not matching a sortable field, no sorting is done
+   * @param so how to sort, see {@link Pager.SortOrder}.
+   * @param timestampField the field that is used with earliest and latest
+   * below.
+   * If not set, or not matching a filterable field, no filtering by time is
+   * done.
+   * @param earliest first timestamp value to include in result set
+   * @param latest last timestamp value to include in result set
+   * @return a pager
+   */
+  Pager pager(int pageSize, int offset, String sortField, Pager.SortOrder so,
+    String timestampField, ZonedDateTime earliest, ZonedDateTime latest);
 }

@@ -7,8 +7,6 @@
 
 package com.tesobe.obp.transport;
 
-import com.tesobe.obp.transport.spi.Decoder;
-
 import java.util.List;
 import java.util.Optional;
 

@@ -6,12 +6,10 @@
  */
 package com.tesobe.obp.transport.spi;
 
-import com.tesobe.obp.transport.Responder;
+import com.tesobe.obp.transport.*;
 
 import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 /**
  * todo document
@@ -34,13 +32,13 @@ import java.util.function.Supplier;
    */
   @Override protected String get(Decoder.Request r, Encoder e)
   {
-    Optional<Network.Target> target = r.target();
+    Optional<Transport.Target> target = r.target();
     String result = target.map(t -> get(r, e, t)).orElse("???"); // todo fix
 
     return result;
   }
 
-  protected String get(Decoder.Request r, Encoder e, Network.Target target)
+  protected String get(Decoder.Request r, Encoder e, Transport.Target target)
   {
     assert target != null;
 
@@ -106,14 +104,14 @@ import java.util.function.Supplier;
   {
     assert r != null;
 
-    Optional<Network.Target> target = r.target();
+    Optional<Transport.Target> target = r.target();
 
     return target
       .map(t -> put(r, e, t))
       .orElse(e.token(new ErrorToken("Target missing!")));
   }
 
-  protected String put(Decoder.Request r, Encoder e, Network.Target t)
+  protected String put(Decoder.Request r, Encoder e, Transport.Target t)
   {
     assert t != null;
 

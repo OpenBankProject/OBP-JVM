@@ -6,14 +6,7 @@
  */
 package com.tesobe.obp.transport.json;
 
-import com.tesobe.obp.transport.Account;
-import com.tesobe.obp.transport.Bank;
-import com.tesobe.obp.transport.Token;
-import com.tesobe.obp.transport.Transaction;
-import com.tesobe.obp.transport.Transport;
-import com.tesobe.obp.transport.User;
-import com.tesobe.obp.transport.spi.Encoder;
-import com.tesobe.obp.transport.spi.Network;
+import com.tesobe.obp.transport.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -97,7 +90,7 @@ public class EncoderNov2016 extends EncoderSep2016 implements Encoder
     return result.toString();
   }
 
-  @Override public Request get(String caller, Network.Target t, String userId,
+  @Override public Request get(String caller, Transport.Target t, String userId,
     String bankId, String accountId, String transactionId)
   {
     return request("get")
@@ -109,7 +102,7 @@ public class EncoderNov2016 extends EncoderSep2016 implements Encoder
       .put("user", userId);
   }
 
-  @Override public Request put(String caller, Network.Target t,
+  @Override public Request put(String caller, Transport.Target t,
     Map<String, String> fields, Map<String, BigDecimal> money)
   {
     JSONObject fs = new JSONObject(fields);

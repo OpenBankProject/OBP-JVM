@@ -7,25 +7,12 @@
 
 package com.tesobe.obp.transport.spi;
 
-import com.tesobe.obp.transport.Account;
-import com.tesobe.obp.transport.Bank;
-import com.tesobe.obp.transport.Connector;
-import com.tesobe.obp.transport.Message;
-import com.tesobe.obp.transport.Sender;
-import com.tesobe.obp.transport.Transaction;
-import com.tesobe.obp.transport.Transport;
-import com.tesobe.obp.transport.User;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import com.tesobe.obp.transport.*;
+import org.junit.*;
 
 import java.math.BigDecimal;
 import java.util.Optional;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
@@ -205,6 +192,23 @@ public class ConnectorNov2016Test
 
     anonymous = connector.getTransactions(bankId, accountId);
     owned = connector.getTransactions(bankId, accountId, userId);
+
+    assertThat(anonymous.iterator().next().id(), is("transactionId-0"));
+    assertThat(owned.iterator().next().id(), is("transactionId-0"));
+  }
+
+  @Test public void getPagedTransactions() throws Exception
+  {
+    String accountId = "account-x";
+    String bankId = "bank-x";
+    String userId = "user-x";
+
+    Iterable<? extends Transaction> anonymous;
+    Iterable<? extends Transaction> owned;
+    Pager pager = connector.pager();
+
+    anonymous = connector.getTransactions(pager, bankId, accountId);
+    owned = connector.getTransactions(pager, bankId, accountId, userId);
 
     assertThat(anonymous.iterator().next().id(), is("transactionId-0"));
     assertThat(owned.iterator().next().id(), is("transactionId-0"));

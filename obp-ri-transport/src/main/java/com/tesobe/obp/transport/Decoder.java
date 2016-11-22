@@ -4,15 +4,7 @@
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
-package com.tesobe.obp.transport.spi;
-
-import com.tesobe.obp.transport.Account;
-import com.tesobe.obp.transport.Bank;
-import com.tesobe.obp.transport.Id;
-import com.tesobe.obp.transport.Token;
-import com.tesobe.obp.transport.Transaction;
-import com.tesobe.obp.transport.Transport;
-import com.tesobe.obp.transport.User;
+package com.tesobe.obp.transport;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -86,7 +78,7 @@ public interface Decoder
 
     Optional<String> transactionType();
 
-    Optional<Network.Target> target();
+    Optional<Transport.Target> target();
 
     int offset();
 

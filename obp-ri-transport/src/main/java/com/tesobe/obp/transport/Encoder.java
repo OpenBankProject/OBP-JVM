@@ -4,13 +4,7 @@
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
-package com.tesobe.obp.transport.spi;
-
-import com.tesobe.obp.transport.Account;
-import com.tesobe.obp.transport.Bank;
-import com.tesobe.obp.transport.Token;
-import com.tesobe.obp.transport.Transaction;
-import com.tesobe.obp.transport.User;
+package com.tesobe.obp.transport;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,13 +15,13 @@ import java.util.Map;
  */
 public interface Encoder
 {
-  default Request get(String caller, Network.Target t, String userId,
+  default Request get(String caller, Transport.Target t, String userId,
     String bankId, String accountId, String transactionId)
   {
     return null;
   }
 
-  default Request put(String caller, Network.Target t,
+  default Request put(String caller, Transport.Target t,
     Map<String, String> fields, Map<String, BigDecimal> money)
   {
     return null;
@@ -70,15 +64,17 @@ public interface Encoder
 
   String error(String message);
 
+  String token(Token t);
+
   String transaction(Transaction t);
 
   String transactions(List<? extends Transaction> ts);
 
   String transactions(List<? extends Transaction> ts, boolean more);
 
-  String user(User u);
-
   String transactionId(String s);
+
+  String user(User u);
 
   String users(List<? extends User> users);
 
@@ -92,6 +88,11 @@ public interface Encoder
     return bank(null);
   }
 
+  default String token()
+  {
+    return token(null);
+  }
+
   default String transaction()
   {
     return transaction(null);
@@ -100,13 +101,6 @@ public interface Encoder
   default String user()
   {
     return user(null);
-  }
-
-  String token(Token t);
-
-  default String token()
-  {
-    return token(null);
   }
 
   interface Request
