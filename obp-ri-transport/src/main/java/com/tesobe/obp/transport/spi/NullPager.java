@@ -25,5 +25,25 @@ class NullPager implements Pager, Serializable
     throw new RuntimeException("No more pages available!");
   }
 
+  @Override public int offset()
+  {
+    return 0;
+  }
+
+  @Override public int size()
+  {
+    return Integer.MAX_VALUE;
+  }
+
+  @Override public Filter<?> filter()
+  {
+    return null;
+  }
+
+  @Override public Sorter sorter()
+  {
+    return null;
+  }
+
   static final long serialVersionUID = 42L;
 }

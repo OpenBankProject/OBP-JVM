@@ -90,16 +90,15 @@ public class EncoderNov2016 extends EncoderSep2016 implements Encoder
     return result.toString();
   }
 
-  @Override public Request get(String caller, Transport.Target t, String userId,
+  @Override
+  public Request get(String caller, Transport.Target t, Pager p, String userId,
     String bankId, String accountId, String transactionId)
   {
     return request("get")
       .put("north", caller)
-      .put("target", String.valueOf(t))
-      .put("account", accountId)
-      .put("bank", bankId)
-      .put("transaction", transactionId)
-      .put("user", userId);
+      .put("target", String.valueOf(t)).put(p).put("accountId", accountId)
+      .put("bankId", bankId).put("transactionId", transactionId)
+      .put("userId", userId);
   }
 
   @Override public Request put(String caller, Transport.Target t,
@@ -109,11 +108,9 @@ public class EncoderNov2016 extends EncoderSep2016 implements Encoder
 
     money.forEach(fs::put);
 
-    return request("put")
-      .put("north", caller)
-      .put("target", String.valueOf(t)).put("fields", fs);
+    return request("put").put("north", caller).put("target", String.valueOf(t))
+      .put("fields", fs);
   }
-
 
   @Override public String transaction(Transaction t)
   {

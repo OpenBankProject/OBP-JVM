@@ -9,7 +9,10 @@ package com.tesobe.obp.transport.json;
 import com.tesobe.obp.transport.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -27,39 +30,40 @@ import static java.util.Objects.nonNull;
     version = v;
   }
 
-  @Override public Request getAccount(String bankId, String accountId)
-  {
-    return request("get account").put("bank", bankId).put("account", accountId);
-  }
+//  @Override public Request getAccount(String bankId, String accountId)
+//  {
+//    return request("get account").put("bank", bankId).put("account",
+// accountId);
+//  }
+//
+//  @Override
+//  public Request getAccount(String userId, String bankId, String accountId)
+//  {
+//    return request("get account")
+//      .put("user", userId)
+//      .put("bank", bankId)
+//      .put("account", accountId);
+//  }
 
-  @Override
-  public Request getAccount(String userId, String bankId, String accountId)
-  {
-    return request("get account")
-      .put("user", userId)
-      .put("bank", bankId)
-      .put("account", accountId);
-  }
-
-  @Override public Request getAccounts(String bankId)
-  {
-    return request("get accounts").put("bank", bankId);
-  }
-
-  @Override public Request getAccounts(String userId, String bankId)
-  {
-    return request("get accounts").put("user", userId).put("bank", bankId);
-  }
-
-  @Override public Request getBank(String userId, String bankId)
-  {
-    return request("get bankOld").put("user", userId).put("bank", bankId);
-  }
-
-  @Override public Request getBank(String bankId)
-  {
-    return request("get bankOld").put("bank", bankId);
-  }
+//  @Override public Request getAccounts(String bankId)
+//  {
+//    return request("get accounts").put("bank", bankId);
+//  }
+//
+//  @Override public Request getAccounts(String userId, String bankId)
+//  {
+//    return request("get accounts").put("user", userId).put("bank", bankId);
+//  }
+//
+//  @Override public Request getBank(String userId, String bankId)
+//  {
+//    return request("get bankOld").put("user", userId).put("bank", bankId);
+//  }
+//
+//  @Override public Request getBank(String bankId)
+//  {
+//    return request("get bankOld").put("bank", bankId);
+//  }
 
   @Override public Request getBanks()
   {
@@ -71,24 +75,24 @@ import static java.util.Objects.nonNull;
     return request("get banks").put("user", userId);
   }
 
-  @Override public Request getTransaction(String bankId, String accountId,
-    String transactionId)
-  {
-    return request("get transaction")
-      .put("bank", bankId)
-      .put("account", accountId)
-      .put("transaction", transactionId);
-  }
-
-  @Override public Request getTransaction(String bankId, String accountId,
-    String transactionId, String userId)
-  {
-    return request("get transaction")
-      .put("bank", bankId)
-      .put("user", userId)
-      .put("account", accountId)
-      .put("transaction", transactionId);
-  }
+//  @Override public Request getTransaction(String bankId, String accountId,
+//    String transactionId)
+//  {
+//    return request("get transaction")
+//      .put("bank", bankId)
+//      .put("account", accountId)
+//      .put("transaction", transactionId);
+//  }
+//
+//  @Override public Request getTransaction(String bankId, String accountId,
+//    String transactionId, String userId)
+//  {
+//    return request("get transaction")
+//      .put("bank", bankId)
+//      .put("user", userId)
+//      .put("account", accountId)
+//      .put("transaction", transactionId);
+//  }
 
 //  @Override public Request getTransactions(Connector.Pager p, String bankId,
 //    String accountId)
@@ -109,20 +113,20 @@ import static java.util.Objects.nonNull;
 //      .put("user", userId);
 //  }
 
-  @Override public Request getUser(String userId)
-  {
-    return request("get user").put("user", userId);
-  }
-
-  @Override public Request getUsers(String userId)
-  {
-    return request("get users").put("user", userId);
-  }
-
-  @Override public Request getUsers()
-  {
-    return request("get users");
-  }
+//  @Override public Request getUser(String userId)
+//  {
+//    return request("get user").put("user", userId);
+//  }
+//
+//  @Override public Request getUsers(String userId)
+//  {
+//    return request("get users").put("user", userId);
+//  }
+//
+//  @Override public Request getUsers()
+//  {
+//    return request("get users");
+//  }
 
   protected RequestBuilder request(String name)
   {
@@ -346,6 +350,8 @@ import static java.util.Objects.nonNull;
     return getClass().getTypeName() + "-" + version;
   }
 
+  protected static final Logger log = LoggerFactory
+    .getLogger(EncoderSep2016.class);
   final Transport.Version version;
 
   class RequestBuilder implements Request
@@ -365,7 +371,7 @@ import static java.util.Objects.nonNull;
 
     public RequestBuilder put(String key, Map<?, ?> value)
     {
-      if(value != null && !value.isEmpty())
+      if(key != null && value != null && !value.isEmpty())
       {
         request.put(key, value);
       }
@@ -375,7 +381,14 @@ import static java.util.Objects.nonNull;
 
     public RequestBuilder put(String key, String value)
     {
-      if(value != null) // todo test for empty?
+      request.putOpt(key, value);
+
+      return this;
+    }
+
+    public RequestBuilder put(String key, int value)
+    {
+      if(key != null)
       {
         request.put(key, value);
       }
@@ -383,60 +396,85 @@ import static java.util.Objects.nonNull;
       return this;
     }
 
-    public RequestBuilder put(String key, int value)
-    {
-      request.put(key, value);
-
-      return this;
-    }
-
     public RequestBuilder put(String key, JSONObject value)
     {
-      request.put(key, value);
+      request.putOpt(key, value);
 
       return this;
     }
 
-//    public RequestBuilder put(Connector.Pager p)
-//    {
-//      if(p instanceof ConnectorSep2016.DefaultPager)
-//      {
-//        ConnectorSep2016.DefaultPager pager
-//          = ConnectorSep2016.DefaultPager.class.cast(p);
-//
-//        if(pager.offset != 0)
-//        {
-//          request.put("offset", pager.offset);
-//        }
-//
-//        if(pager.size != 0)
-//        {
-//          request.put("size", pager.size);
-//        }
-//
-//        if(nonNull(pager.field))
-//        {
-//          request.put("sort by", pager.field.toString());
-//        }
-//
-//        if(nonNull(pager.sortOrder))
-//        {
-//          request.put("sort", pager.sortOrder.toString());
-//        }
-//
-//        if(nonNull(pager.earliest))
-//        {
-//          request.put("earliest", Json.toJson(pager.earliest));
-//        }
-//
-//        if(nonNull(pager.latest))
-//        {
-//          request.put("latest", Json.toJson(pager.latest));
-//        }
-//      }
-//
-//      return this;
-//    }
+    public RequestBuilder put(Pager p)
+    {
+      if(p != null)
+      {
+        putIfNotZero("offset", p.offset());
+        putIfNotZero("size", p.size());
+        put(p.filter());
+        put(p.sorter());
+      }
+
+      return this;
+    }
+
+    public RequestBuilder putIfNotZero(String key, int value)
+    {
+      if(value != 0)
+      {
+        request.put(key, value);
+      }
+
+      return this;
+    }
+
+    public RequestBuilder put(Pager.Sorter s)
+    {
+      if(s != null && s.fields() != null && !s.fields().isEmpty())
+      {
+        JSONObject json = new JSONObject();
+
+        s.fields().forEach((k, v) -> json.putOpt(k, String.valueOf(v)));
+
+        put("sort", json);
+
+        if(s.fields().size() > 1)
+        {
+          JSONArray order = new JSONArray();
+
+          s.fields().forEach((k, v) -> order.put(k));
+
+          request.put("sortOrder", order);
+        }
+      }
+
+      return this;
+    }
+
+    public RequestBuilder put(Pager.Filter<?> f)
+    {
+      if(f != null)
+      {
+        if(ZonedDateTime.class.equals(f.type()))
+        {
+          @SuppressWarnings("unchecked") Pager.Filter<ZonedDateTime> filter
+            = (Pager.Filter<ZonedDateTime>)f;
+
+          JSONObject json = new JSONObject();
+
+          json.put("name", f.fieldName());
+          json.put("type", "timestamp");
+          json.put("low", Json.toJson(filter.lowerBound()));
+          json.put("high", Json.toJson(filter.higherBound()));
+
+          put("filter", json);
+        }
+        else
+        {
+          log.error("cannot serialize Pager.Filter of type " + f.type());
+        }
+      }
+
+      return this;
+    }
 
     final String name;
     final JSONObject request = new JSONObject();

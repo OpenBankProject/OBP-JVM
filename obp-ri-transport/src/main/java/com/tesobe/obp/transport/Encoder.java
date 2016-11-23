@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public interface Encoder
 {
-  default Request get(String caller, Transport.Target t, String userId,
+  default Request get(String caller, Transport.Target t, Pager p, String userId,
     String bankId, String accountId, String transactionId)
   {
     return null;
@@ -27,32 +27,34 @@ public interface Encoder
     return null;
   }
 
-  Request getAccount(String bankId, String accountId);
-
-  Request getAccount(String userId, String bankId, String accountId);
-
-  Request getAccounts(String bankId);
-
-  Request getAccounts(String userId, String bankId);
-
-  Request getBank(String bankId);
-
-  Request getBank(String userId, String bankId);
+//  Request getAccount(String bankId, String accountId);
+//
+//  Request getAccount(String userId, String bankId, String accountId);
+//
+//  Request getAccounts(String bankId);
+//
+//  Request getAccounts(String userId, String bankId);
+//
+//  Request getBank(String bankId);
+//
+//  Request getBank(String userId, String bankId);
 
   Request getBanks();
 
   Request getBanks(String userId);
-
-  Request getTransaction(String bankId, String accountId, String transactionId);
-
-  Request getTransaction(String bankId, String accountId, String transactionId,
-    String userId);
-
-  Request getUser(String userId);
-
-  Request getUsers(String userId);
-
-  Request getUsers();
+//
+//  Request getTransaction(String bankId, String accountId, String
+// transactionId);
+//
+//  Request getTransaction(String bankId, String accountId, String
+// transactionId,
+//    String userId);
+//
+//  Request getUser(String userId);
+//
+//  Request getUsers(String userId);
+//
+//  Request getUsers();
 
   String account(Account a);
 

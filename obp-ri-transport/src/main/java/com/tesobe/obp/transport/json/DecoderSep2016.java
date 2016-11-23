@@ -11,7 +11,6 @@ import org.json.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.ZonedDateTime;
 import java.util.*;
 
 import static java.util.Objects.isNull;
@@ -428,22 +427,22 @@ import static java.util.Objects.nonNull;
 
     @Override public Optional<String> accountId()
     {
-      return Optional.ofNullable(json.optString("account", null));
+      return Optional.ofNullable(json.optString("accountId", null));
     }
 
     @Override public Optional<String> bankId()
     {
-      return Optional.ofNullable(json.optString("bank", null));
+      return Optional.ofNullable(json.optString("bankId", null));
     }
 
     @Override public Optional<String> transactionId()
     {
-      return Optional.ofNullable(json.optString("transaction", null));
+      return Optional.ofNullable(json.optString("transactionId", null));
     }
 
     @Override public Optional<String> userId()
     {
-      return Optional.ofNullable(json.optString("user", null));
+      return Optional.ofNullable(json.optString("userId", null));
     }
 
     @Override public Optional<String> amount()
@@ -477,38 +476,38 @@ import static java.util.Objects.nonNull;
         Transport.target(json.optString("target", null)));
     }
 
-    @Override public int offset()
-    {
-      return json.optInt("offset", 0);
-    }
+//    @Override public int offset()
+//    {
+//      return json.optInt("offset", 0);
+//    }
 
-    @Override public int size()
-    {
-      return json.optInt("size", 0);
-    }
-
-    @Override public Optional<String> field()
-    {
-      return Optional.ofNullable(json.optString("field", null));
-    }
-
-    @Override public Optional<com.tesobe.obp.transport.Pager.SortOrder> sort()
-    {
-      return Optional.ofNullable(
-        json.optEnum(com.tesobe.obp.transport.Pager.SortOrder.class, "sort"));
-    }
-
-    @Override public Optional<ZonedDateTime> earliest()
-    {
-      return Optional.ofNullable(
-        Json.zonedDateTimeFromJson(json.optString("earliest", null)));
-    }
-
-    @Override public Optional<ZonedDateTime> latest()
-    {
-      return Optional.ofNullable(
-        Json.zonedDateTimeFromJson(json.optString("latest", null)));
-    }
+//    @Override public int size()
+//    {
+//      return json.optInt("size", 0);
+//    }
+//
+//    @Override public Optional<String> field()
+//    {
+//      return Optional.ofNullable(json.optString("field", null));
+//    }
+//
+//    @Override public Optional<com.tesobe.obp.transport.Pager.SortOrder> sort()
+//    {
+//      return Optional.ofNullable(
+//        json.optEnum(com.tesobe.obp.transport.Pager.SortOrder.class, "sort"));
+//    }
+//
+//    @Override public Optional<ZonedDateTime> earliest()
+//    {
+//      return Optional.ofNullable(
+//        Json.zonedDateTimeFromJson(json.optString("earliest", null)));
+//    }
+//
+//    @Override public Optional<ZonedDateTime> latest()
+//    {
+//      return Optional.ofNullable(
+//        Json.zonedDateTimeFromJson(json.optString("latest", null)));
+//    }
 
     /**
      * @return empty string if absent or without value

@@ -11,11 +11,16 @@ import com.tesobe.obp.transport.*;
 import org.junit.*;
 
 import java.math.BigDecimal;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
+import static com.tesobe.obp.transport.Pager.SortOrder.ascending;
+import static com.tesobe.obp.transport.Pager.SortOrder.descending;
 import static com.tesobe.obp.util.MethodMatcher.optionallyReturns;
 import static com.tesobe.obp.util.MethodMatcher.returns;
 import static org.hamcrest.core.AnyOf.anyOf;
@@ -29,8 +34,7 @@ public class ConnectorNov2016Test
   {
     Transport.Factory factory = Transport
       .factory(Transport.Version.Nov2016, Transport.Encoding.json)
-      .map(Function.identity())
-      .orElseThrow(IllegalArgumentException::new);
+      .map(Function.identity()).orElseThrow(IllegalArgumentException::new);
     Receiver receiver = new ReceiverNov2016(new MockResponder(),
       factory.codecs());
     final BlockingQueue<String> in = new SynchronousQueue<>();
@@ -202,38 +206,36 @@ public class ConnectorNov2016Test
     String accountId = "account-x";
     String bankId = "bank-x";
     String userId = "user-x";
+    List<Transaction> owned;
 
-    Iterable<? extends Transaction> anonymous;
-    Iterable<? extends Transaction> owned;
-    Pager pager = connector.pager();
+    ZonedDateTime earliest = ZonedDateTime
+      .of(1999, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")); // Jan 1st, 1999 00:00
+    ZonedDateTime latest = ZonedDateTime
+      .of(2000, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")); // Jan 1st, 2000 00:00
 
-    anonymous = connector.getTransactions(pager, bankId, accountId);
+    Pager.Filter filter = new DefaultPager.TimestampFilter("completedDate",
+      earliest, latest);
+    Pager.Sorter sorter = DefaultSorter.build("completedDate", descending)
+      .add("counterpartyId", ascending).toSorter();
+    Pager pager = connector.pager(3, 0, filter, sorter);
+
     owned = connector.getTransactions(pager, bankId, accountId, userId);
 
-    assertThat(anonymous.iterator().next().id(), is("transactionId-0"));
-    assertThat(owned.iterator().next().id(), is("transactionId-0"));
-  }
+    assertThat(pager.hasMorePages(), is(true));
+    assertThat(owned.size(), is(3));
 
-//  @Test public void pageTransactions() throws Exception
-//  {
-//    String accountId = "account-x";
-//    String bankId = "bank-x";
-//    String userId = "user-x";
-//    Connector.Pager pager = connector.pager(0, 3, null, null, null, null);
-//
-//    List<? extends Transaction> owned;
-//
-//    owned = pager.getTransactions(bankId, accountId, userId);
-//
-//    assertThat(pager.hasMorePages(), is(true));
-//    assertThat(owned.size(), is(3));
-//
-//    pager = pager.nextPage();
-//    owned = pager.getTransactions(bankId, accountId, userId);
-//
-//    assertThat(pager.hasMorePages(), is(false));
-//    assertThat(owned.size(), is(1));
-//  }
+    assertThat(owned.get(0).id(), is("transactionId-0"));
+    assertThat(owned.get(1).id(), is("transactionId-1"));
+    assertThat(owned.get(2).id(), is("transactionId-2"));
+
+    pager = pager.nextPage();
+    owned = connector.getTransactions(pager, bankId, accountId, userId);
+
+    assertThat(pager.hasMorePages(), is(false));
+    assertThat(owned.size(), is(1));
+
+    assertThat(owned.get(0).id(), is("transactionId-3"));
+  }
 
   @Test public void getUser() throws Exception
   {
@@ -287,8 +289,9 @@ public class ConnectorNov2016Test
     String otherAccountCurrency = "currency-y";
     String transactionType = "type-x";
 
-    Optional<String> tid = connector.createTransaction(userId, accountId,
-      currency, amount, otherAccountId, otherAccountCurrency, transactionType);
+    Optional<String> tid = connector
+      .createTransaction(userId, accountId, currency, amount, otherAccountId,
+        otherAccountCurrency, transactionType);
 
     assertThat(tid, returns("get", "tid-x"));
   }

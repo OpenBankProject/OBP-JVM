@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
 import java.util.*;
 
 import static com.tesobe.obp.transport.Transport.Target.banks;
@@ -181,7 +180,7 @@ import static com.tesobe.obp.transport.Transport.Target.banks;
   {
     Decoder.Response<Transaction> response = network.session(p)
       .get("getTransactions", Transport.Target.transactions, Transaction.class,
-        null, bankId, accountId, userId);
+        userId, bankId, accountId, null);
 
     return response.data();
   }
@@ -245,12 +244,10 @@ import static com.tesobe.obp.transport.Transport.Target.banks;
     return new NullPager();
   }
 
-  @Override public Pager pager(int pageSize, int offset, String sortField,
-    Pager.SortOrder so, String timestampField, ZonedDateTime earliest,
-    ZonedDateTime latest)
+  @Override
+  public Pager pager(int pageSize, int offset, Pager.Filter f, Pager.Sorter s)
   {
-    return new DefaultPager(pageSize, offset, sortField, so, timestampField,
-      earliest, latest);
+    return new DefaultPager(pageSize, offset, f, s);
   }
 
   protected static final Logger log = LoggerFactory

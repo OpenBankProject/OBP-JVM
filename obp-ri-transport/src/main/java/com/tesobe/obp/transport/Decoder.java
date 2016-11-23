@@ -6,7 +6,6 @@
  */
 package com.tesobe.obp.transport;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,18 +79,6 @@ public interface Decoder
 
     Optional<Transport.Target> target();
 
-    int offset();
-
-    int size();
-
-    Optional<String> field();
-
-    Optional<com.tesobe.obp.transport.Pager.SortOrder> sort();
-
-    Optional<ZonedDateTime> earliest();
-
-    Optional<ZonedDateTime> latest();
-
     default Pager pager()
     {
       return null;
@@ -127,7 +114,13 @@ public interface Decoder
 
   interface Pager
   {
+    int offset();
 
+    int size();
+
+    <T> Optional<com.tesobe.obp.transport.Pager.Filter<T>> filter(T type);
+
+    Optional<com.tesobe.obp.transport.Pager.Sorter> sorter();
   }
 
   interface Parameters

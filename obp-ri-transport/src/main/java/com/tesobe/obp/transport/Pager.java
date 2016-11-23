@@ -6,14 +6,47 @@
  */
 package com.tesobe.obp.transport;
 
+import java.util.SortedMap;
+
 public interface Pager
 {
   boolean hasMorePages();
 
   Pager nextPage();
 
+  int offset();
+
+  int size();
+
+  Filter<?> filter();
+
+  Sorter sorter();
+
   enum SortOrder
   {
     ascending, descending, source
+  }
+
+  interface Filter<T>
+  {
+    String fieldName();
+
+    Class<T> type();
+
+    T lowerBound();
+
+    T higherBound();
+  }
+
+  interface Sorter
+  {
+    /**
+     * Fields in the map are sorted in the order they appear in the map.
+     * If a field name in the map does not exist as a sortable field in the data
+     * it is skipped without warning.
+     *
+     * @return maps a field name to how it is sorted
+     */
+    SortedMap<String, SortOrder> fields();
   }
 }

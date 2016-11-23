@@ -45,7 +45,7 @@ import java.util.*;
    */
   public Session session()
   {
-    return new Session();
+    return session(new NullPager());
   }
 
   public Session session(Pager p)
@@ -63,7 +63,7 @@ import java.util.*;
     assert type != null;
 
     Encoder.Request request = encoder
-      .get(caller, t, userId, bankId, accountId, transactionId);
+      .get(caller, t, s.pager, userId, bankId, accountId, transactionId);
     String id = UUID.randomUUID().toString();
     Message message = new Message(id, request.toString());
 
@@ -76,7 +76,6 @@ import java.util.*;
 
     return result;
   }
-
 
   protected <T extends Token> T put(Session s, String caller,
     Transport.Target t,

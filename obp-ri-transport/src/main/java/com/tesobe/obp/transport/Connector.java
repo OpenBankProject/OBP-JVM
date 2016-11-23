@@ -7,7 +7,6 @@
 package com.tesobe.obp.transport;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -162,24 +161,15 @@ import java.util.Optional;
 
   /**
    * The result set produced on the south side is split into pages that are
-   * sent individually. First any timestamp filter is applied, then the result
-   * is sorted. Then, starting at offset pageSize many items are sent.
+   * sent individually. First any filter is applied, then the result
+   * is sorted. Then, starting at offset, pageSize many items are sent.
    *
    * @param pageSize the maximum number of items sent. Set to zero to return
-   * all
-   * items.
+   * all items.
    * @param offset the index into the result set of the first item to send
-   * @param sortField the name of the field to sort the result set by. If
-   * not set, or not matching a sortable field, no sorting is done
-   * @param so how to sort, see {@link Pager.SortOrder}.
-   * @param timestampField the field that is used with earliest and latest
-   * below.
-   * If not set, or not matching a filterable field, no filtering by time is
-   * done.
-   * @param earliest first timestamp value to include in result set
-   * @param latest last timestamp value to include in result set
+   * @param f a filter
+   * @param s a sorter
    * @return a pager
    */
-  Pager pager(int pageSize, int offset, String sortField, Pager.SortOrder so,
-    String timestampField, ZonedDateTime earliest, ZonedDateTime latest);
+  Pager pager(int pageSize, int offset, Pager.Filter f, Pager.Sorter s);
 }

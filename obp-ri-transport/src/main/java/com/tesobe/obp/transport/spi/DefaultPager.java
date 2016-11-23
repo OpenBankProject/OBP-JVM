@@ -17,58 +17,18 @@ import java.time.ZonedDateTime;
 @SuppressWarnings("WeakerAccess") class DefaultPager
   implements Pager, Serializable
 {
-  public DefaultPager(int pageSize, int offset, String sortField,
-    Pager.SortOrder so, String timestampField, ZonedDateTime earliest,
-    ZonedDateTime latest)
+  public DefaultPager(int size, int offset, Filter<?> f, Sorter s)
   {
     this.offset = offset;
-    this.size = pageSize;
-    this.sortField = sortField;
-    this.sortOrder = so;
-    this.timestamp = timestampField;
-    this.earliest = earliest;
-    this.latest = latest;
+    this.size = size;
+    filter = f;
+    sorter = s;
   }
 
-  public DefaultPager(int pageSize, int offset)
+  public DefaultPager(int size, int offset)
   {
-    this(pageSize, offset, null, null, null, null, null);
+    this(size, offset, null, null);
   }
-
-//    public List<Transaction> getTransactions(String bankId, String accountId)
-//      throws InterruptedException
-//    {
-//      String id = UUID.randomUUID().toString();
-//      String request = encoder
-//        .getTransactions(this, bankId, accountId)
-//        .toString();
-//      String response = sender.send(new Message(id, request));
-//      ArrayList<Transaction> page = new ArrayList<>();
-//      Decoder.ResponseOld r = decoder.transactions(response);
-//
-//      more = r.more();
-//
-//      log.trace("{} \u2192 {}", request, response);
-//
-//      return r.transactions();
-//    }
-
-//    public List<Transaction> getTransactions(String bankId, String accountId,
-//      String userId) throws InterruptedException
-//    {
-//      String id = UUID.randomUUID().toString();
-//      String request = encoder
-//        .getTransactions(this, bankId, accountId, userId)
-//        .toString();
-//      String response = sender.send(new Message(id, request));
-//      Decoder.ResponseOld r = decoder.transactions(response);
-//
-//      more = r.more();
-//
-//      log.trace("{} \u2192 {}", request, response);
-//
-//      return r.transactions();
-//    }
 
   @Override public boolean hasMorePages()
   {
@@ -80,13 +40,67 @@ import java.time.ZonedDateTime;
     return new DefaultPager(size, offset + size);
   }
 
+  @Override public int offset()
+  {
+    return offset;
+  }
+
+  @Override public int size()
+  {
+    return size;
+  }
+
+  @Override public Filter<?> filter()
+  {
+    return filter;
+  }
+
+  @Override public Sorter sorter()
+  {
+    return sorter;
+  }
+
   static final long serialVersionUID = 42L;
   public final int offset;
   public final int size;
-  public final String sortField;
-  public final String timestamp;
-  public final SortOrder sortOrder;
-  public final ZonedDateTime earliest;
-  public final ZonedDateTime latest;
+  public final Filter<?> filter;
+  public final Sorter sorter;
   protected boolean more;
+
+  public static class TimestampFilter
+    implements Filter<ZonedDateTime>, Serializable
+  {
+    public TimestampFilter(String fieldName, ZonedDateTime earliest,
+      ZonedDateTime latest)
+    {
+      this.fieldName = fieldName;
+      this.earliest = earliest;
+      this.latest = latest;
+    }
+
+    @Override public String fieldName()
+    {
+      return fieldName;
+    }
+
+    @Override public Class<ZonedDateTime> type()
+    {
+      return ZonedDateTime.class;
+    }
+
+    @Override public ZonedDateTime lowerBound()
+    {
+      return earliest;
+    }
+
+    @Override public ZonedDateTime higherBound()
+    {
+      return latest;
+    }
+
+    static final long serialVersionUID = 42L;
+    public final String fieldName;
+    public final ZonedDateTime earliest;
+    public final ZonedDateTime latest;
+  }
 }
