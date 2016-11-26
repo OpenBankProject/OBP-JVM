@@ -7,6 +7,7 @@
 package com.tesobe.obp.transport;
 
 import java.math.BigDecimal;
+import java.time.temporal.Temporal;
 import java.util.List;
 import java.util.Map;
 
@@ -15,54 +16,49 @@ import java.util.Map;
  */
 public interface Encoder
 {
-  default Request get(String caller, Transport.Target t, Pager p, String userId,
-    String bankId, String accountId, String transactionId)
+  Request get(String caller, Transport.Target t, Pager p, String state,
+    String userId, String bankId, String accountId, String transactionId);
+
+  Request put(String caller, Transport.Target t, Map<String, String> fields,
+    Map<String, BigDecimal> money, Map<String, Temporal> timestamps);
+
+  default String account()
   {
-    return null;
+    return account(null);
   }
-
-  default Request put(String caller, Transport.Target t,
-    Map<String, String> fields, Map<String, BigDecimal> money)
-  {
-    return null;
-  }
-
-//  Request getAccount(String bankId, String accountId);
-//
-//  Request getAccount(String userId, String bankId, String accountId);
-//
-//  Request getAccounts(String bankId);
-//
-//  Request getAccounts(String userId, String bankId);
-//
-//  Request getBank(String bankId);
-//
-//  Request getBank(String userId, String bankId);
-
-  Request getBanks();
-
-  Request getBanks(String userId);
-//
-//  Request getTransaction(String bankId, String accountId, String
-// transactionId);
-//
-//  Request getTransaction(String bankId, String accountId, String
-// transactionId,
-//    String userId);
-//
-//  Request getUser(String userId);
-//
-//  Request getUsers(String userId);
-//
-//  Request getUsers();
 
   String account(Account a);
 
-  String accounts(List<? extends Account> as);
+  default String accounts(List<? extends Account> as)
+  {
+    return accounts(as, false);
+  }
+
+  default String accounts(List<? extends Account> as, boolean more)
+  {
+    return accounts(as, more, null);
+  }
+
+  String accounts(List<? extends Account> as, boolean more, String state);
+
+  default String bank()
+  {
+    return bank(null);
+  }
 
   String bank(Bank b);
 
-  String banks(List<? extends Bank> bs);
+  default String banks(List<? extends Bank> bs)
+  {
+    return banks(bs, false);
+  }
+
+  default String banks(List<? extends Bank> bs, boolean more)
+  {
+    return banks(bs, more, null);
+  }
+
+  String banks(List<? extends Bank> bs, boolean more, String state);
 
   String error(String message);
 
@@ -70,25 +66,34 @@ public interface Encoder
 
   String transaction(Transaction t);
 
-  String transactions(List<? extends Transaction> ts);
+  default String transactions(List<? extends Transaction> ts)
+  {
+    return transactions(ts, false);
+  }
 
-  String transactions(List<? extends Transaction> ts, boolean more);
+  default String transactions(List<? extends Transaction> ts, boolean more)
+  {
+    return transactions(ts, more, null);
+  }
+
+  String transactions(List<? extends Transaction> ts, boolean more,
+    String state);
 
   String transactionId(String s);
 
   String user(User u);
 
-  String users(List<? extends User> users);
-
-  default String account()
+  default String users(List<? extends User> users)
   {
-    return account(null);
+    return users(users, false);
   }
 
-  default String bank()
+  default String users(List<? extends User> users, boolean more)
   {
-    return bank(null);
+    return users(users, more, null);
   }
+
+  String users(List<? extends User> users, boolean more, String state);
 
   default String token()
   {
@@ -104,6 +109,8 @@ public interface Encoder
   {
     return user(null);
   }
+
+  Transport.Version version();
 
   interface Request
   {

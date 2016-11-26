@@ -6,16 +6,21 @@
  */
 package com.tesobe.obp.transport;
 
-import com.tesobe.obp.transport.json.*;
+import com.tesobe.obp.transport.json.DecoderNov2016;
+import com.tesobe.obp.transport.json.EncoderNov2016;
 import com.tesobe.obp.transport.spi.ConnectorNov2016;
 import com.tesobe.obp.transport.spi.Receiver;
-import com.tesobe.obp.util.*;
+import com.tesobe.obp.util.DefaultMetrics;
+import com.tesobe.obp.util.Metrics;
+import com.tesobe.obp.util.Pair;
 
-import java.util.*;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.tesobe.obp.transport.Transport.Encoding.json;
 import static com.tesobe.obp.transport.Transport.Version.Nov2016;
-import static com.tesobe.obp.transport.Transport.Version.Sep2016;
 
 /**
  * Transport manages the different versions of the transport api.
@@ -180,16 +185,13 @@ import static com.tesobe.obp.transport.Transport.Version.Sep2016;
     EnumMap<Version, Decoder> ds = new EnumMap<>(Version.class);
     EnumMap<Version, Encoder> es = new EnumMap<>(Version.class);
 
-    ds.put(Sep2016, new DecoderSep2016(Sep2016));
     ds.put(Nov2016, new DecoderNov2016(Nov2016));
-
-    es.put(Sep2016, new EncoderSep2016(Sep2016));
     es.put(Nov2016, new EncoderNov2016(Nov2016));
 
     codecs = new Receiver.Codecs(es.get(Nov2016), ds.get(Nov2016));
 
-    codecs.put(Sep2016, new Pair<>(es.get(Sep2016), ds.get(Sep2016)));
     codecs.put(Nov2016, new Pair<>(es.get(Nov2016), ds.get(Nov2016)));
+
     decoders.put(json, ds);
     encoders.put(json, es);
   }

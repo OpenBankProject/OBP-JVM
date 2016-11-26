@@ -9,12 +9,11 @@ package com.tesobe.obp.transport.spi;
 import com.tesobe.obp.transport.Pager;
 
 import java.io.Serializable;
-import java.time.ZonedDateTime;
 
 /**
- * Default implementation of {@link Pager}.
+ * Default implementation of {@link Pager}. Mutable, sigh.
  */
-@SuppressWarnings("WeakerAccess") class DefaultPager
+@SuppressWarnings("WeakerAccess") public class DefaultPager
   implements Pager, Serializable
 {
   public DefaultPager(int size, int offset, Filter<?> f, Sorter s)
@@ -25,19 +24,19 @@ import java.time.ZonedDateTime;
     sorter = s;
   }
 
-  public DefaultPager(int size, int offset)
+  public DefaultPager(Pager p)
   {
-    this(size, offset, null, null);
+    this(p.size(), p.offset(), p.filter(), p.sorter());
   }
 
-  @Override public boolean hasMorePages()
+  @Override public synchronized boolean hasMorePages()
   {
     return more;
   }
 
-  @Override public Pager nextPage()
+  @Override public synchronized void nextPage()
   {
-    return new DefaultPager(size, offset + size);
+    offset += size;
   }
 
   @Override public int offset()
@@ -60,47 +59,21 @@ import java.time.ZonedDateTime;
     return sorter;
   }
 
+  synchronized void more(String aState, boolean aFlag)
+  {
+    more = aFlag;
+    state = aState;
+  }
+
+  synchronized String state()
+  {
+    return state;
+  }
   static final long serialVersionUID = 42L;
-  public final int offset;
-  public final int size;
   public final Filter<?> filter;
   public final Sorter sorter;
-  protected boolean more;
-
-  public static class TimestampFilter
-    implements Filter<ZonedDateTime>, Serializable
-  {
-    public TimestampFilter(String fieldName, ZonedDateTime earliest,
-      ZonedDateTime latest)
-    {
-      this.fieldName = fieldName;
-      this.earliest = earliest;
-      this.latest = latest;
-    }
-
-    @Override public String fieldName()
-    {
-      return fieldName;
-    }
-
-    @Override public Class<ZonedDateTime> type()
-    {
-      return ZonedDateTime.class;
-    }
-
-    @Override public ZonedDateTime lowerBound()
-    {
-      return earliest;
-    }
-
-    @Override public ZonedDateTime higherBound()
-    {
-      return latest;
-    }
-
-    static final long serialVersionUID = 42L;
-    public final String fieldName;
-    public final ZonedDateTime earliest;
-    public final ZonedDateTime latest;
-  }
+  private int offset;
+  private int size;
+  private boolean more;
+  private String state;
 }

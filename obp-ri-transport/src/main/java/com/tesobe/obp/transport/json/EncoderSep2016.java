@@ -6,14 +6,20 @@
  */
 package com.tesobe.obp.transport.json;
 
-import com.tesobe.obp.transport.*;
+import com.tesobe.obp.transport.Account;
+import com.tesobe.obp.transport.Bank;
+import com.tesobe.obp.transport.Encoder;
+import com.tesobe.obp.transport.Pager;
+import com.tesobe.obp.transport.Token;
+import com.tesobe.obp.transport.Transaction;
+import com.tesobe.obp.transport.Transport;
+import com.tesobe.obp.transport.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Map;
 
 import static java.util.Objects.nonNull;
@@ -23,7 +29,8 @@ import static java.util.Objects.nonNull;
  *
  * @since 2016.9
  */
-@SuppressWarnings("WeakerAccess") public class EncoderSep2016 implements Encoder
+@SuppressWarnings("WeakerAccess") public abstract class EncoderSep2016
+  implements Encoder
 {
   public EncoderSep2016(Transport.Version v)
   {
@@ -65,15 +72,15 @@ import static java.util.Objects.nonNull;
 //    return request("get bankOld").put("bank", bankId);
 //  }
 
-  @Override public Request getBanks()
-  {
-    return request("get banks");
-  }
-
-  @Override public Request getBanks(String userId)
-  {
-    return request("get banks").put("user", userId);
-  }
+//  @Override public Request getBanks()
+//  {
+//    return request("get banks");
+//  }
+//
+//  @Override public Request getBanks(String userId)
+//  {
+//    return request("get banks").put("user", userId);
+//  }
 
 //  @Override public Request getTransaction(String bankId, String accountId,
 //    String transactionId)
@@ -133,43 +140,9 @@ import static java.util.Objects.nonNull;
     return new RequestBuilder(name);
   }
 
-  @Override public String account(Account a)
-  {
-    JSONObject json = json(a);
 
-    return json != null ? json.toString() : notFound();
-  }
 
-  @Override public String accounts(List<? extends Account> accounts)
-  {
-    JSONArray result = new JSONArray();
 
-    if(nonNull(accounts))
-    {
-      accounts.forEach(account -> json(account, result));
-    }
-
-    return result.toString();
-  }
-
-  @Override public String bank(Bank b)
-  {
-    JSONObject json = json(b);
-
-    return json != null ? json.toString() : notFound();
-  }
-
-  @Override public String banks(List<? extends Bank> banks)
-  {
-    JSONArray result = new JSONArray();
-
-    if(nonNull(banks))
-    {
-      banks.forEach(bank -> json(bank, result));
-    }
-
-    return result.toString();
-  }
 
   protected JSONObject json(Account a)
   {
@@ -274,37 +247,8 @@ import static java.util.Objects.nonNull;
     return json != null ? json.toString() : JSONObject.NULL.toString();
   }
 
-  @Override public String transactions(List<? extends Transaction> ts)
-  {
-    JSONArray result = new JSONArray();
 
-    if(nonNull(ts))
-    {
-      ts.forEach(transaction -> json(transaction, result));
-    }
 
-    return result.toString();
-  }
-
-  @Override
-  public String transactions(List<? extends Transaction> ts, boolean more)
-  {
-    if(more)
-    {
-      JSONArray data = new JSONArray();
-
-      if(nonNull(ts))
-      {
-        ts.forEach(transaction -> json(transaction, data));
-      }
-
-      return new JSONObject().put("more", true).put("data", data).toString();
-    }
-    else
-    {
-      return transactions(ts);
-    }
-  }
 
   @Override public String user(User u)
   {
@@ -318,17 +262,6 @@ import static java.util.Objects.nonNull;
     return s;
   }
 
-  @Override public String users(List<? extends User> users)
-  {
-    JSONArray result = new JSONArray();
-
-    if(nonNull(users))
-    {
-      users.forEach(user -> json(user, result));
-    }
-
-    return result.toString();
-  }
 
   @Override public String token(Token t)
   {
@@ -408,7 +341,12 @@ import static java.util.Objects.nonNull;
       if(p != null)
       {
         putIfNotZero("offset", p.offset());
-        putIfNotZero("size", p.size());
+
+        if(p.size() != Pager.DEFAULT_SIZE)
+        {
+          put("size", p.size());
+        }
+
         put(p.filter());
         put(p.sorter());
       }
@@ -430,20 +368,14 @@ import static java.util.Objects.nonNull;
     {
       if(s != null && s.fields() != null && !s.fields().isEmpty())
       {
-        JSONObject json = new JSONObject();
+        JSONArray json = new JSONArray();
 
-        s.fields().forEach((k, v) -> json.putOpt(k, String.valueOf(v)));
-
-        put("sort", json);
-
-        if(s.fields().size() > 1)
+        s.fields().forEach((k, v) ->
         {
-          JSONArray order = new JSONArray();
+          json.put(new JSONObject().putOpt(k, String.valueOf(v)));
+        });
 
-          s.fields().forEach((k, v) -> order.put(k));
-
-          request.put("sortOrder", order);
-        }
+        request.put("sort", json);
       }
 
       return this;

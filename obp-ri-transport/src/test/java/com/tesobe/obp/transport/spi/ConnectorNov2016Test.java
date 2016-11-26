@@ -7,15 +7,28 @@
 
 package com.tesobe.obp.transport.spi;
 
-import com.tesobe.obp.transport.*;
-import org.junit.*;
+import com.tesobe.obp.transport.Account;
+import com.tesobe.obp.transport.Bank;
+import com.tesobe.obp.transport.Connector;
+import com.tesobe.obp.transport.Message;
+import com.tesobe.obp.transport.Pager;
+import com.tesobe.obp.transport.Sender;
+import com.tesobe.obp.transport.Transaction;
+import com.tesobe.obp.transport.Transport;
+import com.tesobe.obp.transport.User;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
@@ -23,6 +36,7 @@ import static com.tesobe.obp.transport.Pager.SortOrder.ascending;
 import static com.tesobe.obp.transport.Pager.SortOrder.descending;
 import static com.tesobe.obp.util.MethodMatcher.optionallyReturns;
 import static com.tesobe.obp.util.MethodMatcher.returns;
+import static com.tesobe.obp.util.Utils.UTC;
 import static org.hamcrest.core.AnyOf.anyOf;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -34,7 +48,8 @@ public class ConnectorNov2016Test
   {
     Transport.Factory factory = Transport
       .factory(Transport.Version.Nov2016, Transport.Encoding.json)
-      .map(Function.identity()).orElseThrow(IllegalArgumentException::new);
+      .map(Function.identity())
+      .orElseThrow(IllegalArgumentException::new);
     Receiver receiver = new ReceiverNov2016(new MockResponder(),
       factory.codecs());
     final BlockingQueue<String> in = new SynchronousQueue<>();
@@ -104,7 +119,7 @@ public class ConnectorNov2016Test
       anonymousCount.incrementAndGet();
 
       assertThat(account.bankId(), is(bankId));
-      assertThat(account.id(), anyOf(is("accountId-1"), is("accountId-2")));
+      assertThat(account.id(), anyOf(is("accountId-0"), is("accountId-1")));
     });
 
     owned.forEach(account ->
@@ -112,7 +127,7 @@ public class ConnectorNov2016Test
       ownedCount.incrementAndGet();
 
       assertThat(account.bankId(), is(bankId));
-      assertThat(account.id(), anyOf(is("accountId-1"), is("accountId-2")));
+      assertThat(account.id(), anyOf(is("accountId-0"), is("accountId-1")));
     });
 
     assertThat("Number of anonymous accounts", anonymousCount.get(), is(2));
@@ -154,14 +169,14 @@ public class ConnectorNov2016Test
     {
       anonymousCount.incrementAndGet();
 
-      assertThat(bank.id(), anyOf(is("bankId-1"), is("bankId-2")));
+      assertThat(bank.id(), anyOf(is("bankId-0"), is("bankId-1")));
     });
 
     owned.forEach(bank ->
     {
       ownedCount.incrementAndGet();
 
-      assertThat(bank.id(), anyOf(is("bankId-1"), is("bankId-2")));
+      assertThat(bank.id(), anyOf(is("bankId-0"), is("bankId-1")));
     });
 
     assertThat("Number of anonymous banks", anonymousCount.get(), is(2));
@@ -208,33 +223,35 @@ public class ConnectorNov2016Test
     String userId = "user-x";
     List<Transaction> owned;
 
-    ZonedDateTime earliest = ZonedDateTime
-      .of(1999, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")); // Jan 1st, 1999 00:00
-    ZonedDateTime latest = ZonedDateTime
-      .of(2000, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")); // Jan 1st, 2000 00:00
+    // Jan 1st, 1999 00:00 - Jan 1st, 2000 00:00
+    ZonedDateTime earliest = ZonedDateTime.of(1999, 1, 1, 0, 0, 0, 0, UTC);
+    ZonedDateTime latest = ZonedDateTime.of(2000, 1, 1, 0, 0, 0, 0, UTC);
 
-    Pager.Filter filter = new DefaultPager.TimestampFilter("completedDate",
+    Pager.Filter filter = new TimestampFilter("completedDate",
       earliest, latest);
     Pager.Sorter sorter = DefaultSorter.build("completedDate", descending)
-      .add("counterpartyId", ascending).toSorter();
+      .add("counterpartyId", ascending)
+      .toSorter();
     Pager pager = connector.pager(3, 0, filter, sorter);
 
     owned = connector.getTransactions(pager, bankId, accountId, userId);
 
-    assertThat(pager.hasMorePages(), is(true));
-    assertThat(owned.size(), is(3));
+    assertThat("pager.hasMorePages", pager.hasMorePages(), is(true));
+    assertThat("owned.size", owned.size(), is(3));
 
-    assertThat(owned.get(0).id(), is("transactionId-0"));
-    assertThat(owned.get(1).id(), is("transactionId-1"));
-    assertThat(owned.get(2).id(), is("transactionId-2"));
+    assertThat("owned.get(0)", owned.get(0).id(), is("transactionId-0"));
+    assertThat("owned.get(1)", owned.get(1).id(), is("transactionId-1"));
+    assertThat("owned.get(2)", owned.get(2).id(), is("transactionId-2"));
 
-    pager = pager.nextPage();
+    pager.nextPage();
+
     owned = connector.getTransactions(pager, bankId, accountId, userId);
 
-    assertThat(pager.hasMorePages(), is(false));
-    assertThat(owned.size(), is(1));
+    assertThat("pager.hasMorePages", pager.hasMorePages(), is(false));
+    assertThat("owned.size", owned.size(), is(2));
 
-    assertThat(owned.get(0).id(), is("transactionId-3"));
+    assertThat("owned.get(0)", owned.get(0).id(), is("transactionId-3"));
+    assertThat("owned.get(1)", owned.get(1).id(), is("transactionId-4"));
   }
 
   @Test public void getUser() throws Exception
@@ -265,14 +282,14 @@ public class ConnectorNov2016Test
     {
       anonymousCount.incrementAndGet();
 
-      assertThat(user.id(), anyOf(is("id-1"), is("id-2")));
+      assertThat(user.id(), anyOf(is("id-0"), is("id-1")));
     });
 
     owned.forEach(user ->
     {
       ownedCount.incrementAndGet();
 
-      assertThat(user.id(), anyOf(is("id-1"), is("id-2")));
+      assertThat(user.id(), anyOf(is("id-0"), is("id-1")));
     });
 
     assertThat("Number of anonymous users", anonymousCount.get(), is(2));
@@ -281,17 +298,25 @@ public class ConnectorNov2016Test
 
   @Test public void createTransaction()
   {
-    String userId = "user-x";
     String accountId = "account-x";
-    String currency = "currency-x";
     BigDecimal amount = BigDecimal.TEN;
-    String otherAccountId = "account-y";
-    String otherAccountCurrency = "currency-y";
-    String transactionType = "type-x";
+    String bankId = "bank-x";
+    ZonedDateTime completed = ZonedDateTime.of(1999, 1, 2, 0, 0, 0, 0, UTC);
+    String counterpartyId = "counterpartyId-x";
+    String counterpartyName = "counterpartyName-x";
+    String currency = "currency-x";
+    String description = "description-x";
+    BigDecimal newBalanceAmount = BigDecimal.ZERO;
+    String newBalanceCurrency = "newBalanceCurrency";
+    ZonedDateTime posted = ZonedDateTime.of(1999, 1, 2, 0, 0, 0, 0, UTC);
+    String transactionId = "transactionId-y";
+    String type = "type-x";
+    String userId = "user-x";
 
-    Optional<String> tid = connector
-      .createTransaction(userId, accountId, currency, amount, otherAccountId,
-        otherAccountCurrency, transactionType);
+    Optional<String> tid = connector.createTransaction(accountId, amount,
+      bankId, completed, counterpartyId, counterpartyName, currency,
+      description, newBalanceAmount, newBalanceCurrency, posted, transactionId,
+      type, userId);
 
     assertThat(tid, returns("get", "tid-x"));
   }

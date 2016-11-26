@@ -6,12 +6,23 @@
  */
 package com.tesobe.obp.transport.spi;
 
-import com.tesobe.obp.transport.*;
+import com.tesobe.obp.transport.Account;
+import com.tesobe.obp.transport.Bank;
+import com.tesobe.obp.transport.Decoder;
+import com.tesobe.obp.transport.Encoder;
+import com.tesobe.obp.transport.Token;
+import com.tesobe.obp.transport.Transaction;
+import com.tesobe.obp.transport.User;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static com.tesobe.obp.util.ImplGen.generate;
+import static com.tesobe.obp.util.MethodMatcher.get;
+import static com.tesobe.obp.util.MethodMatcher.isPresent;
 import static java.util.Collections.emptyList;
+import static org.junit.Assert.assertThat;
 
 /**
  * todo document
@@ -21,24 +32,31 @@ public class MockResponder extends DefaultResponder
   @Override
   public Optional<Account> getAccount(Decoder.Pager p, Decoder.Parameters ps)
   {
-    return ps
-      .accountId()
+    return ps.accountId()
       .map(id -> generate(Account.class, 1, "accountId", id));
   }
 
   @Override
-  public List<Account> getAccounts(Decoder.Pager p, Decoder.Parameters ps)
+  public String getAccounts(Decoder.Pager p, Decoder.Parameters ps, Encoder e)
   {
     return ps.bankId().map(bankId ->
     {
       List<Account> accounts = new ArrayList<>();
 
-      accounts.add(generate(Account.class, 1, "bankId", bankId));
-      accounts.add(generate(Account.class, 2, "bankId", bankId));
+      int offset = p.offset();
+      int size = p.size();
+      int count = Math.min(size, 2 - offset);
 
-      return accounts;
+      if(offset < 2)
+      {
+        for(int i = 0; i < count; ++i)
+        {
+          accounts.add(generate(Account.class, i + offset, "bankId", bankId));
+        }
+      }
 
-    }).orElse(emptyList());
+      return e.accounts(accounts, false);
+    }).orElseGet(() -> e.accounts(emptyList(), false));
   }
 
   @Override
@@ -51,8 +69,17 @@ public class MockResponder extends DefaultResponder
   {
     List<Bank> banks = new ArrayList<>();
 
-    banks.add(generate(Bank.class, 1));
-    banks.add(generate(Bank.class, 2));
+    int offset = p.offset();
+    int size = p.size();
+    int count = Math.min(size, 2 - offset);
+
+    if(offset < 2)
+    {
+      for(int i = 0; i < count; ++i)
+      {
+        banks.add(generate(Bank.class, i + offset));
+      }
+    }
 
     return banks;
   }
@@ -60,20 +87,42 @@ public class MockResponder extends DefaultResponder
   @Override public Optional<Transaction> getTransaction(Decoder.Pager p,
     Decoder.Parameters ps)
   {
-    return ps
-      .transactionId()
+    return ps.transactionId()
       .map(id -> generate(Transaction.class, 1, "transactionId", id));
   }
 
-  @Override public List<Transaction> getTransactions(Decoder.Pager pager,
-    Decoder.Parameters ps)
+  /**
+   * Return a total of five transactions.
+   *
+   * @param p pager
+   * @param ps parameters
+   * @param e encoder
+   *
+   * @return Five transactions in as many pages, as needed.
+   */
+  @Override public String getTransactions(Decoder.Pager p,
+    Decoder.Parameters ps, Encoder e)
   {
     List<Transaction> transactions = new ArrayList<>();
 
-    transactions.add(generate(Transaction.class, 0));
-    transactions.add(generate(Transaction.class, 1));
+    int offset = p.offset();
+    int size = p.size();
+    int count = Math.min(size, 5 - offset);
 
-    return transactions;
+    if(offset > 0) // this will fail if offset 0 has not been requested before
+    {
+      assertThat("state happy", p.state(), get("happy"));
+    }
+
+    if(offset < 5)
+    {
+      for(int i = 0; i < count; ++i)
+      {
+        transactions.add(generate(Transaction.class, i + offset));
+      }
+    }
+
+    return e.transactions(transactions, offset + size < 5, "happy");
   }
 
   @Override
@@ -82,35 +131,49 @@ public class MockResponder extends DefaultResponder
     return ps.userId().map(id -> generate(User.class, 1, "email", id));
   }
 
-  @Override
-  public List<User> getUsers(Decoder.Pager pager, Decoder.Parameters ps)
+  @Override public List<User> getUsers(Decoder.Pager p, Decoder.Parameters ps)
   {
     List<User> users = new ArrayList<>();
 
-    users.add(generate(User.class, 1));
-    users.add(generate(User.class, 2));
+    int offset = p.offset();
+    int size = p.size();
+    int count = Math.min(size, 2 - offset);
+
+    if(offset < 2)
+    {
+      for(int i = 0; i < count; ++i)
+      {
+        users.add(generate(User.class, i + offset));
+      }
+    }
 
     return users;
   }
 
   @Override public Token createTransaction(Decoder.Fields fs)
   {
-    return generate(Token.class, 0, "id", Optional.of("tid-x"));
-//    try
-//    {
-//      assertThat(fs.accountId(), isPresent());
-//      assertThat(fs.amount(), isPresent());
-//      assertThat(fs.currency(), isPresent());
-//      assertThat(fs.otherAccountId(), isPresent());
-//      assertThat(fs.otherAccountCurrency(), isPresent());
-//      assertThat(fs.transactionType(), isPresent());
-//      assertThat(fs.userId(), isPresent());
-//
-//      return Optional.of(generate(Token.class, 0, "id", "tid-x"));
-//    }
-//    catch(Error e)
-//    {
-//      return Optional.empty();
-//    }
+    try
+    {
+      assertThat("accountId", fs.accountId(), isPresent());
+      assertThat("amount", fs.amount(), isPresent());
+      assertThat("bankId", fs.bankId(), isPresent());
+      assertThat("completedDate", fs.completedDate(), isPresent());
+      assertThat("counterpartyId", fs.counterpartyId(), isPresent());
+      assertThat("counterpartyName", fs.counterpartyName(), isPresent());
+      assertThat("currency", fs.currency(), isPresent());
+      assertThat("description", fs.description(), isPresent());
+      assertThat("newBalanceAmount", fs.newBalanceAmount(), isPresent());
+      assertThat("newBalanceCurrency", fs.newBalanceCurrency(), isPresent());
+      assertThat("postedDate", fs.postedDate(), isPresent());
+      assertThat("transactionId", fs.transactionId(), isPresent());
+      assertThat("type", fs.type(), isPresent());
+      assertThat("userId", fs.userId(), isPresent());
+
+      return new ValidToken("tid-x");
+    }
+    catch(Error e) // !
+    {
+      return new ErrorToken(e.getMessage());
+    }
   }
 }

@@ -7,11 +7,23 @@
 
 package com.tesobe.obp.transport.spi;
 
-import com.tesobe.obp.transport.*;
+import com.tesobe.obp.transport.Account;
+import com.tesobe.obp.transport.Bank;
+import com.tesobe.obp.transport.Decoder;
+import com.tesobe.obp.transport.Message;
+import com.tesobe.obp.transport.Transaction;
+import com.tesobe.obp.transport.Transport;
+import com.tesobe.obp.transport.User;
 import org.json.JSONObject;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static com.tesobe.obp.transport.Transport.Encoding.json;
 import static com.tesobe.obp.transport.Transport.Version.Sep2016;
@@ -79,18 +91,18 @@ import static org.junit.Assert.assertThat;
 
   @Test public void getBank() throws Exception
   {
-    String id = UUID.randomUUID().toString();
-    String bankId = "id-1";
-    String userId = "user-1";
-    String request = new JSONObject()
-      .put("version", Sep2016).put("name", "get bankOld")
-      .put("bank", bankId)
-      .put("user", userId)
-      .toString();
-    String response = responder.respond(new Message(id, request));
-    Optional<Bank> bank = decoder.bankOld(response);
-
-    assertThat(bank, optionallyReturns("id", "id-1"));
+//    String id = UUID.randomUUID().toString();
+//    String bankId = "id-1";
+//    String userId = "user-1";
+//    String request = new JSONObject()
+//      .put("version", Sep2016).put("name", "get bankOld")
+//      .put("bank", bankId)
+//      .put("user", userId)
+//      .toString();
+//    String response = responder.respond(new Message(id, request));
+//    Optional<Bank> bank = decoder.bankOld(response);
+//
+//    assertThat(bank, optionallyReturns("id", "id-1"));
   }
 
   @Test public void getBanks() throws Exception

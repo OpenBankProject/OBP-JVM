@@ -39,9 +39,11 @@ public class DecoderNov2016 extends DecoderSep2016
     return Optional.of(new Request0(request));
   }
 
-  private <T extends Id> Response<T> add(List<T> result, JSONArray data,
-    Class<T> type, Function<JSONObject, Id> decoder)
+  private <T extends Id> List<T> add(JSONArray data, Class<T> type,
+    Function<JSONObject, Id> decoder)
   {
+    List<T> result = new ArrayList<T>();
+
     for(Object datum : data)
     {
       if(datum instanceof JSONObject)
@@ -50,18 +52,16 @@ public class DecoderNov2016 extends DecoderSep2016
       }
     }
 
-    return new Response<T>()
-    {
-      @Override public List<T> data()
-      {
-        return result;
-      }
-    };
+    return result;
   }
 
   @Override
   public <T extends Id> Response<T> get(Class<T> type, String response)
   {
+    List<T> result = Collections.emptyList();
+    boolean more = false;
+    String state = null;
+
     if(nonNull(response) && !response.equals("null"))
     {
       try
@@ -69,25 +69,30 @@ public class DecoderNov2016 extends DecoderSep2016
         JSONObject wrapper = new JSONObject(response);
         JSONArray data = wrapper.optJSONArray("data");
 
+        more = "more".equals(wrapper.optString("pager"));
+        state = wrapper.optString("state", null);
+
         if(nonNull(data))
         {
-          List<T> result = new ArrayList<>();
-
           if(type == Account.class)
           {
-            return add(result, data, type, AccountDecoder::new);
+            result = add(data, type, AccountDecoder::new);
           }
           else if(type == Bank.class)
           {
-            return add(result, data, type, BankDecoder::new);
+            result = add(data, type, BankDecoder::new);
           }
           else if(type == Transaction.class)
           {
-            return add(result, data, type, TransactionDecoder::new);
+            result = add(data, type, TransactionDecoder::new);
           }
           else if(type == User.class)
           {
-            return add(result, data, type, UserDecoder::new);
+            result = add(data, type, UserDecoder::new);
+          }
+          else
+          {
+            result = Collections.emptyList();
           }
         }
       }
@@ -99,13 +104,7 @@ public class DecoderNov2016 extends DecoderSep2016
       }
     }
 
-    return new Response<T>()
-    {
-      @Override public List<T> data()
-      {
-        return Collections.emptyList();
-      }
-    };
+    return new ValidResponse<T>(more, result, state);
   }
 
   @Override public Iterable<Bank> bank(String response)
@@ -119,85 +118,53 @@ public class DecoderNov2016 extends DecoderSep2016
     {
       return Collections.emptyList();
     }
+
+    @Override public boolean hasMorePages()
+    {
+      return false;
+    }
+
+    @Override public String state()
+    {
+      return null;
+    }
   }
 
-  public static class Request0 extends DefaultRequest
+  protected class ValidResponse<T> implements Response<T>
+  {
+    public ValidResponse(boolean more, List<T> result, String state)
+    {
+      this.more = more;
+      this.result = result;
+      this.state = state;
+    }
+
+    @Override public List<T> data()
+    {
+      return result;
+    }
+
+    @Override public boolean hasMorePages()
+    {
+      return more;
+    }
+
+    @Override public String state()
+    {
+      return state;
+    }
+
+    final boolean more;
+    final List<T> result;
+    final String state;
+  }
+
+  public class Request0 extends RequestDecoder
   {
     public Request0(String request)
     {
       super(request);
     }
 
-    @Override public Pager pager()
-    {
-      return null; // todo fix
-    }
-
-    @Override public Parameters parameters()
-    {
-      return new Parameters()
-      {
-        @Override public Optional<String> accountId()
-        {
-          return Request0.this.accountId();
-        }
-
-        @Override public Optional<String> bankId()
-        {
-          return Request0.this.bankId();
-        }
-
-        @Override public Optional<String> transactionId()
-        {
-          return Request0.this.transactionId();
-        }
-
-        @Override public Optional<String> userId()
-        {
-          return Request0.this.userId();
-        }
-      };
-    }
-
-    @Override public Fields fields()
-    {
-      return new Fields()
-      {
-        @Override public Optional<String> accountId()
-        {
-          return Request0.this.accountId();
-        }
-
-        @Override public Optional<String> amount()
-        {
-          return Request0.this.amount();
-        }
-
-        @Override public Optional<String> currency()
-        {
-          return Request0.this.currency();
-        }
-
-        @Override public Optional<String> otherAccountId()
-        {
-          return Request0.this.otherAccountId();
-        }
-
-        @Override public Optional<String> otherAccountCurrency()
-        {
-          return Request0.this.otherAccountCurrency();
-        }
-
-        @Override public Optional<String> transactionType()
-        {
-          return Request0.this.transactionType();
-        }
-
-        @Override public Optional<String> userId()
-        {
-          return Request0.this.userId();
-        }
-      };
-    }
   }
 }

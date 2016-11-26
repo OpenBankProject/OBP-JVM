@@ -18,7 +18,7 @@ import static java.util.Collections.unmodifiableSortedMap;
 /**
  * @see Pager.Sorter
  */
-@SuppressWarnings("WeakerAccess") class DefaultSorter
+@SuppressWarnings("WeakerAccess") public class DefaultSorter
   implements Pager.Sorter, Serializable
 {
   public DefaultSorter(String fieldName, Pager.SortOrder so)
@@ -40,7 +40,6 @@ import static java.util.Collections.unmodifiableSortedMap;
   {
     return new Builder(fieldName, so);
   }
-
   static final long serialVersionUID = 42L;
   final SortedMap<String, Pager.SortOrder> fields;
 

@@ -6,7 +6,10 @@
  */
 package com.tesobe.obp.transport.spi;
 
-import com.tesobe.obp.transport.*;
+import com.tesobe.obp.transport.Decoder;
+import com.tesobe.obp.transport.Encoder;
+import com.tesobe.obp.transport.Message;
+import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.util.Pair;
 
 import java.util.EnumMap;
@@ -25,6 +28,9 @@ import java.util.EnumMap;
    */
   String respond(Message request);
 
+  /**
+   *
+   */
   class Codecs extends EnumMap<Transport.Version, Pair<Encoder, Decoder>>
   {
     public Codecs(Encoder errorEncoder, Decoder requestDecoder)

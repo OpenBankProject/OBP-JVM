@@ -7,6 +7,7 @@
 package com.tesobe.obp.util;
 
 import java.lang.reflect.Method;
+import java.time.ZoneId;
 import java.util.Iterator;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
@@ -64,4 +65,6 @@ public class Utils
 
     return builder.build();
   }
+
+  public static ZoneId UTC = ZoneId.of("UTC");
 }

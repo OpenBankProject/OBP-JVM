@@ -14,7 +14,7 @@ public interface Responder
 {
   Optional<Account> getAccount(Decoder.Pager p, Decoder.Parameters ps);
 
-  List<Account> getAccounts(Decoder.Pager p, Decoder.Parameters ps);
+  String getAccounts(Decoder.Pager p, Decoder.Parameters ps, Encoder e);
 
   Optional<Bank> getBank(Decoder.Pager p, Decoder.Parameters ps);
 
@@ -22,7 +22,7 @@ public interface Responder
 
   Optional<Transaction> getTransaction(Decoder.Pager p, Decoder.Parameters ps);
 
-  List<Transaction> getTransactions(Decoder.Pager pager, Decoder.Parameters ps);
+  String getTransactions(Decoder.Pager p, Decoder.Parameters ps, Encoder e);
 
   Optional<User> getUser(Decoder.Pager p, Decoder.Parameters ps);
 

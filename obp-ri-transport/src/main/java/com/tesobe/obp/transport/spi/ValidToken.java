@@ -10,22 +10,30 @@ import com.tesobe.obp.transport.Token;
 
 import java.util.Optional;
 
-public class ErrorToken implements Token
+/**
+ * todo document
+ */
+public class ValidToken implements Token
 {
-  ErrorToken(String message)
+  public ValidToken(String id)
   {
-    this.message = message;
+    this.id = id;
   }
 
   @Override public Optional<String> id()
   {
-    return Optional.empty();
+    return Optional.of(id);
   }
 
   @Override public String error()
   {
-    return message;
+    return null;
   }
 
-  final String message;
+  @Override public boolean isValid()
+  {
+    return true;
+  }
+
+  final String id;
 }

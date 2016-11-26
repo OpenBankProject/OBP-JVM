@@ -20,19 +20,18 @@ class NullPager implements Pager, Serializable
     return false;
   }
 
-  @Override public Pager nextPage()
+  @Override public void nextPage()
   {
-    throw new RuntimeException("No more pages available!");
   }
 
   @Override public int offset()
   {
-    return 0;
+    return Pager.DEFAULT_OFFSET;
   }
 
   @Override public int size()
   {
-    return Integer.MAX_VALUE;
+    return Pager.DEFAULT_SIZE;
   }
 
   @Override public Filter<?> filter()

@@ -6,9 +6,18 @@
  */
 package com.tesobe.obp.transport.spi;
 
-import com.tesobe.obp.transport.*;
+import com.tesobe.obp.transport.Account;
+import com.tesobe.obp.transport.Bank;
+import com.tesobe.obp.transport.Decoder;
+import com.tesobe.obp.transport.Encoder;
+import com.tesobe.obp.transport.Responder;
+import com.tesobe.obp.transport.Token;
+import com.tesobe.obp.transport.Transaction;
+import com.tesobe.obp.transport.User;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @SuppressWarnings("WeakerAccess") public class DefaultResponder
   implements Responder
@@ -20,9 +29,9 @@ import java.util.*;
   }
 
   @Override
-  public List<Account> getAccounts(Decoder.Pager p, Decoder.Parameters ps)
+  public String getAccounts(Decoder.Pager p, Decoder.Parameters ps, Encoder e)
   {
-    return Collections.emptyList();
+    return e.accounts(Collections.emptyList(), false);
   }
 
   @Override
@@ -42,10 +51,11 @@ import java.util.*;
     return Optional.empty();
   }
 
-  @Override public List<Transaction> getTransactions(Decoder.Pager pager,
-    Decoder.Parameters ps)
+  @Override
+  public String getTransactions(Decoder.Pager p, Decoder.Parameters ps,
+    Encoder e)
   {
-    return Collections.emptyList();
+    return e.transactions(Collections.emptyList(), false);
   }
 
   @Override
@@ -62,6 +72,6 @@ import java.util.*;
 
   @Override public Token createTransaction(Decoder.Fields fs)
   {
-    return new ErrorToken("Not implemented: Responder.createTransaction");
+    return new ErrorToken("Not implemented!");
   }
 }

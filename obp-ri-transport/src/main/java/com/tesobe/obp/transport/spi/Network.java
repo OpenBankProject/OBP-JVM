@@ -6,12 +6,22 @@
  */
 package com.tesobe.obp.transport.spi;
 
-import com.tesobe.obp.transport.*;
+import com.tesobe.obp.transport.Decoder;
+import com.tesobe.obp.transport.Encoder;
+import com.tesobe.obp.transport.Id;
+import com.tesobe.obp.transport.Message;
+import com.tesobe.obp.transport.Pager;
+import com.tesobe.obp.transport.Sender;
+import com.tesobe.obp.transport.Token;
+import com.tesobe.obp.transport.Transport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.time.temporal.Temporal;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  */
@@ -55,15 +65,14 @@ import java.util.*;
 
   protected <T extends Id> Decoder.Response<T> get(Session s, String caller,
     Transport.Target t, Class<T> type, String userId, String bankId,
-    String accountId,
-    String transactionId) throws InterruptedException
+    String accountId, String transactionId) throws InterruptedException
   {
     assert s != null;
     assert t != null;
     assert type != null;
 
-    Encoder.Request request = encoder
-      .get(caller, t, s.pager, userId, bankId, accountId, transactionId);
+    Encoder.Request request = encoder.get(caller, t, s.pager, s.pager.state(),
+      userId, bankId, accountId, transactionId);
     String id = UUID.randomUUID().toString();
     Message message = new Message(id, request.toString());
 
@@ -78,14 +87,14 @@ import java.util.*;
   }
 
   protected <T extends Token> T put(Session s, String caller,
-    Transport.Target t,
-    Class<T> type, Map<String, String> fields, Map<String, BigDecimal> money)
+    Transport.Target t, Class<T> type, Map<String, String> fields,
+    Map<String, BigDecimal> money, Map<String, Temporal> timestamps)
   {
     assert s != null;
     assert t != null;
     assert type != null;
 
-    Encoder.Request request = encoder.put(caller, t, fields, money);
+    Encoder.Request request = encoder.put(caller, t, fields, money, timestamps);
 
     String id = UUID.randomUUID().toString();
     Message message = new Message(id, request.toString());
@@ -128,7 +137,9 @@ import java.util.*;
 
     public Session(Pager p)
     {
-      pager = p;
+      pager = p instanceof DefaultPager
+              ? DefaultPager.class.cast(p)
+              : new DefaultPager(p);
     }
 
     /**
@@ -143,14 +154,15 @@ import java.util.*;
      * @param accountId request filter: null allowed
      * @param transactionId request filter: null allowed
      * @param <T> user data type
+     *
      * @return A wrapper of result data or error
+     *
      * @throws InterruptedException     network trouble
      * @throws IllegalArgumentException target or type is null
      */
     public <T extends Id> Decoder.Response<T> get(String caller,
-      Transport.Target t,
-      Class<T> type, String userId, String bankId, String accountId,
-      String transactionId) throws InterruptedException
+      Transport.Target t, Class<T> type, String userId, String bankId,
+      String accountId, String transactionId) throws InterruptedException
     {
       if(t == null)
       {
@@ -162,8 +174,12 @@ import java.util.*;
         throw new IllegalArgumentException("Type must not be null!");
       }
 
-      return Network.this
-        .get(this, caller, t, type, userId, bankId, accountId, transactionId);
+      Decoder.Response<T> response = Network.this.get(this, caller, t, type,
+        userId, bankId, accountId, transactionId);
+
+      pager.more(response.state(), response.hasMorePages());
+
+      return response;
     }
 
     /**
@@ -173,12 +189,15 @@ import java.util.*;
      * @param type the return type
      * @param fields string fields
      * @param money big decimal fields
+     * @param timestamps temporal fields
+     *
      * @return a token
+     *
      * @throws IllegalArgumentException target or type is null
      */
     public <T extends Token> T put(String caller, Transport.Target t,
-      Class<T> type,
-      Map<String, String> fields, Map<String, BigDecimal> money)
+      Class<T> type, Map<String, String> fields, Map<String, BigDecimal> money,
+      Map<String, Temporal> timestamps)
     {
       if(t == null)
       {
@@ -190,10 +209,10 @@ import java.util.*;
         throw new IllegalArgumentException("Type must not be null!");
       }
 
-      return Network.this.put(this, caller, t, type, fields, money);
+      return Network.this.put(this, caller, t, type, fields, money, timestamps);
     }
 
-    Pager pager;
+    DefaultPager pager;
   }
 
   static

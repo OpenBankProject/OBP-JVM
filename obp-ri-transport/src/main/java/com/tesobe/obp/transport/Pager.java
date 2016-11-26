@@ -12,7 +12,7 @@ public interface Pager
 {
   boolean hasMorePages();
 
-  Pager nextPage();
+  void nextPage();
 
   int offset();
 
@@ -21,6 +21,9 @@ public interface Pager
   Filter<?> filter();
 
   Sorter sorter();
+
+  int DEFAULT_OFFSET = 0;
+  int DEFAULT_SIZE = Integer.MAX_VALUE;
 
   enum SortOrder
   {

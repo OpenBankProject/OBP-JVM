@@ -7,6 +7,7 @@
 package com.tesobe.obp.transport;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -147,9 +148,11 @@ import java.util.Optional;
 
   Iterable<User> getUsers(String userId) throws InterruptedException;
 
-  Optional<String> createTransaction(String userId, String accountId,
-    String currency, BigDecimal amount, String otherAccountId,
-    String otherAccountCurrency, String transactionType);
+  Optional<String> createTransaction(String accountId, BigDecimal amount,
+    String bankId, ZonedDateTime completedDate, String counterpartyId,
+    String counterpartyName, String currency, String description,
+    BigDecimal newBalanceAmount, String newBalanceCurrency,
+    ZonedDateTime postedDate, String transactionId, String type, String userId);
 
   /**
    * A pager in source sort order with offset zero, infinite page size and no

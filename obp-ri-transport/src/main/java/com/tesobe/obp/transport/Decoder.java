@@ -14,10 +14,7 @@ import java.util.Optional;
  */
 public interface Decoder
 {
-  default <T extends Id> Response<T> get(Class<T> data, String response)
-  {
-    return null;
-  }
+  <T extends Id> Response<T> get(Class<T> data, String response);
 
   default Iterable<Bank> bank(String response)
   {
@@ -31,11 +28,6 @@ public interface Decoder
   Optional<Account> account(String response);
 
   Iterable<Account> accounts(String response);
-
-  /**
-   * @deprecated
-   */
-  Optional<Bank> bankOld(String response);
 
   Iterable<Bank> banks(String response);
 
@@ -59,40 +51,31 @@ public interface Decoder
 
     String version();
 
-    Optional<String> accountId();
-
-    Optional<String> bankId();
-
-    Optional<String> transactionId();
-
-    Optional<String> userId();
-
-    Optional<String> amount();
-
-    Optional<String> currency();
-
-    Optional<String> otherAccountId();
-
-    Optional<String> otherAccountCurrency();
-
-    Optional<String> transactionType();
+//    Optional<String> accountId();
+//
+//    Optional<String> bankId();
+//
+//    Optional<String> transactionId();
+//
+//    Optional<String> userId();
+//
+//    Optional<String> amount();
+//
+//    Optional<String> currency();
+//
+//    Optional<String> otherAccountId();
+//
+//    Optional<String> otherAccountCurrency();
+//
+//    Optional<String> transactionType();
 
     Optional<Transport.Target> target();
 
-    default Pager pager()
-    {
-      return null;
-    }
+    Pager pager();
 
-    default Parameters parameters()
-    {
-      return null;
-    }
+    Parameters parameters();
 
-    default Fields fields()
-    {
-      return null;
-    }
+    Fields fields();
   }
 
   interface Fields
@@ -101,13 +84,27 @@ public interface Decoder
 
     Optional<String> amount();
 
+    Optional<String> bankId();
+
+    Optional<String> completedDate();
+
+    Optional<String> counterpartyId();
+
+    Optional<String> counterpartyName();
+
+    Optional<String> description();
+
     Optional<String> currency();
 
-    Optional<String> otherAccountId();
+    Optional<String> newBalanceAmount();
 
-    Optional<String> otherAccountCurrency();
+    Optional<String> newBalanceCurrency();
 
-    Optional<String> transactionType();
+    Optional<String> postedDate();
+
+    Optional<String> transactionId();
+
+    Optional<String> type();
 
     Optional<String> userId();
   }
@@ -117,6 +114,8 @@ public interface Decoder
     int offset();
 
     int size();
+
+    Optional<String> state();
 
     <T> Optional<com.tesobe.obp.transport.Pager.Filter<T>> filter(T type);
 
@@ -137,12 +136,14 @@ public interface Decoder
   interface Response<T>
   {
     List<T> data();
+
+    boolean hasMorePages();
+
+    String state();
   }
 
   interface ResponseOld
   {
-    boolean more();
-
     List<Transaction> transactions();
   }
 }

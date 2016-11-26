@@ -6,10 +6,16 @@
  */
 package com.tesobe.obp.transport.spi;
 
-import com.tesobe.obp.transport.*;
+import com.tesobe.obp.transport.Decoder;
+import com.tesobe.obp.transport.Encoder;
+import com.tesobe.obp.transport.Responder;
+import com.tesobe.obp.transport.Transport;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * todo document
@@ -26,16 +32,15 @@ import java.util.function.*;
 
   /**
    * @param r request, already decoded
-   * @param e result encoder
+   * @param e response encoder
    *
-   * @return result
+   * @return response
    */
   @Override protected String get(Decoder.Request r, Encoder e)
   {
-    Optional<Transport.Target> target = r.target();
-    String result = target.map(t -> get(r, e, t)).orElse("???"); // todo fix
-
-    return result;
+    return r.target()
+      .map(t -> get(r, e, t))
+      .orElse(errorEncoder.error("Target missing!"));
   }
 
   protected String get(Decoder.Request r, Encoder e, Transport.Target target)
@@ -46,15 +51,15 @@ import java.util.function.*;
     {
       case account:
       {
-        return optGet(r, responder::getAccount, e::account, e::account);
+        return maybeGet(r, responder::getAccount, e::account, e::account);
       }
       case accounts:
       {
-        return get(r, responder::getAccounts, e::accounts);
+        return responder.getAccounts(r.pager(), r.parameters(), e);
       }
       case bank:
       {
-        return optGet(r, responder::getBank, e::bank, e::bank);
+        return maybeGet(r, responder::getBank, e::bank, e::bank);
       }
       case banks:
       {
@@ -62,16 +67,16 @@ import java.util.function.*;
       }
       case transaction:
       {
-        return optGet(r, responder::getTransaction, e::transaction,
+        return maybeGet(r, responder::getTransaction, e::transaction,
           e::transaction);
       }
       case transactions:
       {
-        return get(r, responder::getTransactions, e::transactions);
+        return responder.getTransactions(r.pager(), r.parameters(), e);
       }
       case user:
       {
-        return optGet(r, responder::getUser, e::user, e::user);
+        return maybeGet(r, responder::getUser, e::user, e::user);
       }
       case users:
       {
@@ -79,19 +84,22 @@ import java.util.function.*;
       }
     }
 
-    throw new RuntimeException("cannot get " + target);
+    log.error("Unknown target: " + target);
+
+    return e.error(target.toString()); // todo too much information?
   }
 
   private <T> String get(Decoder.Request r,
-    BiFunction<Decoder.Pager, Decoder.Parameters, T> respond,
-    Function<T, String> encode)
+    BiFunction<Decoder.Pager, Decoder.Parameters, List<T>> respond,
+    Function<List<T>, String> encode)
   {
     Decoder.Pager pager = r.pager();
+
 
     return encode.apply(respond.apply(pager, r.parameters()));
   }
 
-  private <T> String optGet(Decoder.Request r,
+  private <T> String maybeGet(Decoder.Request r,
     BiFunction<Decoder.Pager, Decoder.Parameters, Optional<T>> respond,
     Function<T, String> encode, Supplier<String> fail)
   {
@@ -106,8 +114,7 @@ import java.util.function.*;
 
     Optional<Transport.Target> target = r.target();
 
-    return target
-      .map(t -> put(r, e, t))
+    return target.map(t -> put(r, e, t))
       .orElse(e.token(new ErrorToken("Target missing!")));
   }
 

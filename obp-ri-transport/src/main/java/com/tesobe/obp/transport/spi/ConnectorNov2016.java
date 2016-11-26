@@ -6,17 +6,33 @@
  */
 package com.tesobe.obp.transport.spi;
 
-import com.tesobe.obp.transport.*;
+import com.tesobe.obp.transport.Account;
+import com.tesobe.obp.transport.Bank;
+import com.tesobe.obp.transport.Connector;
+import com.tesobe.obp.transport.Decoder;
+import com.tesobe.obp.transport.Encoder;
+import com.tesobe.obp.transport.Pager;
+import com.tesobe.obp.transport.Sender;
+import com.tesobe.obp.transport.Token;
+import com.tesobe.obp.transport.Transaction;
+import com.tesobe.obp.transport.Transport;
+import com.tesobe.obp.transport.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.time.ZonedDateTime;
+import java.time.temporal.Temporal;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.tesobe.obp.transport.Transport.Target.banks;
 
 /**
- * Compatible to mid 2016 OBP-API.
+ * Compatible to end 2016 OBP-API.
  *
  * @since 2016.9
  */
@@ -216,25 +232,36 @@ import static com.tesobe.obp.transport.Transport.Target.banks;
   }
 
   @Override
-  public Optional<String> createTransaction(String userId, String accountId,
-    String currency, BigDecimal amount, String otherAccountId,
-    String otherAccountCurrency, String transactionType)
+  public Optional<String> createTransaction(String accountId, BigDecimal amount,
+    String bankId, ZonedDateTime completedDate, String counterpartyId,
+    String counterpartyName, String currency, String description,
+    BigDecimal newBalanceAmount, String newBalanceCurrency,
+    ZonedDateTime postedDate, String transactionId, String type, String userId)
   {
     Map<String, String> fields = new HashMap<>();
     Map<String, BigDecimal> money = new HashMap<>();
+    Map<String, Temporal> timestamps = new HashMap<>();
 
-    fields.put("user", userId);
-    fields.put("account", accountId);
+    fields.put("accountId", accountId);
+    fields.put("bankId", bankId);
+    fields.put("counterpartyId", counterpartyId);
+    fields.put("counterpartyName", counterpartyName);
     fields.put("currency", currency);
-    fields.put("otherId", otherAccountId);
-    fields.put("otherCurrency", otherAccountCurrency);
-    fields.put("transactionType", transactionType);
+    fields.put("description", description);
+    fields.put("newBalanceCurrency", newBalanceCurrency);
+    fields.put("transactionId", transactionId);
+    fields.put("type", type);
+    fields.put("userId", userId);
 
     money.put("amount", amount);
+    money.put("newBalanceAmount", newBalanceAmount);
+
+    timestamps.put("completedDate", completedDate);
+    timestamps.put("postedDate", postedDate);
 
     Token token = network.session()
       .put("createTransaction", Transport.Target.transaction, Token.class,
-        fields, money);
+        fields, money, timestamps);
 
     return token.id();
   }
@@ -250,8 +277,8 @@ import static com.tesobe.obp.transport.Transport.Target.banks;
     return new DefaultPager(pageSize, offset, f, s);
   }
 
-  protected static final Logger log = LoggerFactory
-    .getLogger(ConnectorNov2016.class);
+  protected static final Logger log = LoggerFactory.getLogger(
+    ConnectorNov2016.class);
   protected final Decoder decoder;
   protected final Encoder encoder;
   protected final Network network;
