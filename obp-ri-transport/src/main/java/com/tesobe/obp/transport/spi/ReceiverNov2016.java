@@ -38,9 +38,18 @@ import java.util.function.Supplier;
    */
   @Override protected String get(Decoder.Request r, Encoder e)
   {
-    return r.target()
-      .map(t -> get(r, e, t))
-      .orElse(errorEncoder.error("Target missing!"));
+    try
+    {
+      return r.target()
+        .map(t -> get(r, e, t))
+        .orElse(errorEncoder.error("Target missing!"));
+    }
+    catch(Error x) // !
+    {
+      log.error(r.raw(), x);
+
+      return errorEncoder.error(x.getMessage());
+    }
   }
 
   protected String get(Decoder.Request r, Encoder e, Transport.Target target)
@@ -112,10 +121,19 @@ import java.util.function.Supplier;
   {
     assert r != null;
 
-    Optional<Transport.Target> target = r.target();
+    try
+    {
+      Optional<Transport.Target> target = r.target();
 
-    return target.map(t -> put(r, e, t))
-      .orElse(e.token(new ErrorToken("Target missing!")));
+      return target.map(t -> put(r, e, t))
+        .orElse(e.token(new ErrorToken("Target missing!")));
+    }
+    catch(Error x) // !
+    {
+      log.error(r.raw(), x);
+
+      return errorEncoder.error(x.getMessage());
+    }
   }
 
   protected String put(Decoder.Request r, Encoder e, Transport.Target t)

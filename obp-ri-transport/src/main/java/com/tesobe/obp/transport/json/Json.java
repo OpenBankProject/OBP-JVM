@@ -7,9 +7,8 @@
 
 package com.tesobe.obp.transport.json;
 
-import com.tesobe.obp.util.Utils;
-
 import java.time.DateTimeException;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -28,7 +27,7 @@ import static java.util.Objects.nonNull;
   {
     if(nonNull(dt))
     {
-      return dt.withZoneSameInstant(Utils.UTC).format(FORMATTER);
+      return dt.withZoneSameInstant(ZoneOffset.UTC).format(FORMATTER);
     }
 
     return null;

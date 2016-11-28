@@ -14,14 +14,18 @@ import com.tesobe.obp.transport.Token;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.User;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.tesobe.obp.util.ImplGen.generate;
-import static com.tesobe.obp.util.MethodMatcher.get;
 import static com.tesobe.obp.util.MethodMatcher.isPresent;
+import static java.time.ZoneOffset.UTC;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.synchronizedMap;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -92,37 +96,65 @@ public class MockResponder extends DefaultResponder
   }
 
   /**
-   * Return a total of five transactions.
+   * Return a total of seventeen transactions, posted one per day counting down
+   * from January 1st, 1999..
    *
    * @param p pager
    * @param ps parameters
    * @param e encoder
    *
-   * @return Five transactions in as many pages, as needed.
+   * @return 17 transactions in as many pages, as needed.
    */
   @Override public String getTransactions(Decoder.Pager p,
     Decoder.Parameters ps, Encoder e)
   {
-    List<Transaction> transactions = new ArrayList<>();
+    List<Transaction> transactions = p.state()
+      .map(cache::get)
+      .orElseGet(ArrayList::new);
 
-    int offset = p.offset();
-    int size = p.size();
-    int count = Math.min(size, 5 - offset);
-
-    if(offset > 0) // this will fail if offset 0 has not been requested before
+    if(transactions.isEmpty())
     {
-      assertThat("state happy", p.state(), get("happy"));
+      int numTransactions = 17;
+      ZonedDateTime completed = ZonedDateTime.of(1999, 1, 31, 0, 0, 0, 0, UTC);
+
+      for(int i = 0; i < numTransactions; ++i)
+      {
+        int dayOfMonth = Math.min(i + 1, 27); // safe month length
+        ZonedDateTime posted = ZonedDateTime.of(1999, 1, dayOfMonth, 0, 0, 0, 0,
+          UTC);
+        transactions.add(
+          generate(Transaction.class, i, "completedDate", completed,
+            "postedDate", posted));
+      }
+
+      cache.put(ps.requestId(), transactions);
     }
 
-    if(offset < 5)
+    // figure out which transactions to send an in what order
+    int offset = p.offset();
+
+    if(offset < transactions.size())
     {
+      List<Transaction> sorted = p.sorter()
+        .map(s -> s.sort(transactions, Transaction.class))
+        .orElse(transactions);
+
+      int size = p.size();
+      int count = Math.min(size, transactions.size() - offset);
+      TimestampMatcher matcher = new TimestampMatcher(
+        p.filter("timestamp", ZonedDateTime.class));
+
       for(int i = 0; i < count; ++i)
       {
-        transactions.add(generate(Transaction.class, i + offset));
+        if(matcher.matches(transaction))
+        {
+          transactions.add(transaction);
+        }
       }
     }
 
-    return e.transactions(transactions, offset + size < 5, "happy");
+
+    return e.transactions(sorted, offset + size < 15, "happy");
   }
 
   @Override
@@ -176,4 +208,6 @@ public class MockResponder extends DefaultResponder
       return new ErrorToken(e.getMessage());
     }
   }
+
+  Map<String, List<Transaction>> cache = synchronizedMap(new HashMap<>());
 }

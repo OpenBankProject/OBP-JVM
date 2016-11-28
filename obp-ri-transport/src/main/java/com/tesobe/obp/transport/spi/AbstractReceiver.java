@@ -58,7 +58,7 @@ import static java.util.Objects.nonNull;
     {
       try
       {
-        return decoder.request(request.payload)
+        return decoder.request(request.id, request.payload)
           .map(this::respond)
           .orElseGet(() -> errorEncoder.error(request.id));
       }
@@ -88,7 +88,7 @@ import static java.util.Objects.nonNull;
 
     return version == decoder.version()
            ? respond(request, pair.first)
-           : pair.second.request(request.raw())
+           : pair.second.request(request.requestId(), request.raw())
              .map(decoded -> respond(decoded, pair.first))
              .orElseGet(() -> pair.first.error("Could not decode!"));
   }

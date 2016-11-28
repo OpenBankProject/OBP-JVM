@@ -9,6 +9,7 @@ package com.tesobe.obp.transport.spi;
 import com.tesobe.obp.transport.Pager;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -34,6 +35,11 @@ import static java.util.Collections.unmodifiableSortedMap;
   @Override public SortedMap<String, Pager.SortOrder> fields()
   {
     return fields;
+  }
+
+  @Override public <T> List<T> sort(List<T> items, Class<T> type)
+  {
+    return items;
   }
 
   public static Builder build(String fieldName, Pager.SortOrder so)

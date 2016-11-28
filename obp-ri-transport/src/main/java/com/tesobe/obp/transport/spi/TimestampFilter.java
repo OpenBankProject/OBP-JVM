@@ -41,7 +41,6 @@ import java.time.ZonedDateTime;
   {
     return latest;
   }
-
   static final long serialVersionUID = 42L;
   public final String fieldName;
   public final ZonedDateTime earliest;

@@ -34,9 +34,9 @@ public class DecoderNov2016 extends DecoderSep2016
     super(v);
   }
 
-  @Override public Optional<Request> request(String request)
+  @Override public Optional<Request> request(String requestId, String request)
   {
-    return Optional.of(new Request0(request));
+    return Optional.of(new Request0(requestId, request));
   }
 
   private <T extends Id> List<T> add(JSONArray data, Class<T> type,
@@ -161,9 +161,9 @@ public class DecoderNov2016 extends DecoderSep2016
 
   public class Request0 extends RequestDecoder
   {
-    public Request0(String request)
+    public Request0(String requestId, String request)
     {
-      super(request);
+      super(requestId, request);
     }
 
   }

@@ -36,22 +36,24 @@ import static com.tesobe.obp.transport.Pager.SortOrder.ascending;
 import static com.tesobe.obp.transport.Pager.SortOrder.descending;
 import static com.tesobe.obp.util.MethodMatcher.optionallyReturns;
 import static com.tesobe.obp.util.MethodMatcher.returns;
-import static com.tesobe.obp.util.Utils.UTC;
+import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.core.AnyOf.anyOf;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
+/**
+ * Works together with {@link MockResponder} on the south.
+ * Uses async local transport.
+ */
 public class ConnectorNov2016Test
 {
   @Before public void defaultConnector()
   {
-    Transport.Factory factory = Transport
-      .factory(Transport.Version.Nov2016, Transport.Encoding.json)
+    Transport.Factory factory = Transport.factory(Transport.Version.Nov2016, Transport.Encoding.json)
       .map(Function.identity())
       .orElseThrow(IllegalArgumentException::new);
-    Receiver receiver = new ReceiverNov2016(new MockResponder(),
-      factory.codecs());
+    Receiver receiver = new ReceiverNov2016(new MockResponder(), factory.codecs());
     final BlockingQueue<String> in = new SynchronousQueue<>();
     final BlockingQueue<Message> out = new SynchronousQueue<>();
     final Sender sender = request ->
@@ -223,35 +225,56 @@ public class ConnectorNov2016Test
     String userId = "user-x";
     List<Transaction> owned;
 
-    // Jan 1st, 1999 00:00 - Jan 1st, 2000 00:00
+    // Jan 1st, 1999 00:00 - Jan 10th, 2000 00:00
     ZonedDateTime earliest = ZonedDateTime.of(1999, 1, 1, 0, 0, 0, 0, UTC);
-    ZonedDateTime latest = ZonedDateTime.of(2000, 1, 1, 0, 0, 0, 0, UTC);
+    ZonedDateTime latest = ZonedDateTime.of(1999, 1, 10, 0, 0, 0, 0, UTC);
 
-    Pager.Filter filter = new TimestampFilter("completedDate",
-      earliest, latest);
-    Pager.Sorter sorter = DefaultSorter.build("completedDate", descending)
-      .add("counterpartyId", ascending)
+    Pager.Filter filter = new TimestampFilter("postedDate", earliest, latest);
+    Pager.Sorter sorter = DefaultSorter.build("completedDate", ascending)
+      .add("counterpartyId", descending)
       .toSorter();
-    Pager pager = connector.pager(3, 0, filter, sorter);
+    int pageSize = 3;
+    Pager pager = connector.pager(pageSize, 0, filter, sorter);
+
+    owned = connector.getTransactions(pager, bankId, accountId, userId);
+
+    assertThat("pager.hasMorePages", pager.hasMorePages(), is(true));
+    assertThat("owned.size", owned.size(), is(pageSize));
+
+    assertThat("owned.get(0)", owned.get(0).id(), is("transactionId-2"));
+    assertThat("owned.get(1)", owned.get(1).id(), is("transactionId-1"));
+    assertThat("owned.get(2)", owned.get(2).id(), is("transactionId-0"));
+
+    pager.nextPage();
+
+    owned = connector.getTransactions(pager, bankId, accountId, userId);
+
+    assertThat("pager.hasMorePages", pager.hasMorePages(), is(true));
+    assertThat("owned.size", owned.size(), is(pageSize));
+
+    assertThat("owned.get(0)", owned.get(0).id(), is("transactionId-5"));
+    assertThat("owned.get(1)", owned.get(1).id(), is("transactionId-4"));
+    assertThat("owned.get(2)", owned.get(2).id(), is("transactionId-3"));
+
+    pager.nextPage();
 
     owned = connector.getTransactions(pager, bankId, accountId, userId);
 
     assertThat("pager.hasMorePages", pager.hasMorePages(), is(true));
     assertThat("owned.size", owned.size(), is(3));
 
-    assertThat("owned.get(0)", owned.get(0).id(), is("transactionId-0"));
-    assertThat("owned.get(1)", owned.get(1).id(), is("transactionId-1"));
-    assertThat("owned.get(2)", owned.get(2).id(), is("transactionId-2"));
+    assertThat("owned.get(0)", owned.get(0).id(), is("transactionId-8"));
+    assertThat("owned.get(1)", owned.get(1).id(), is("transactionId-7"));
+    assertThat("owned.get(2)", owned.get(2).id(), is("transactionId-6"));
 
     pager.nextPage();
 
     owned = connector.getTransactions(pager, bankId, accountId, userId);
 
-    assertThat("pager.hasMorePages", pager.hasMorePages(), is(false));
-    assertThat("owned.size", owned.size(), is(2));
+    assertThat("pager.hasMorePages", pager.hasMorePages(), is(true));
+    assertThat("owned.size", owned.size(), is(1));
 
-    assertThat("owned.get(0)", owned.get(0).id(), is("transactionId-3"));
-    assertThat("owned.get(1)", owned.get(1).id(), is("transactionId-4"));
+    assertThat("owned.get(0)", owned.get(0).id(), is("transactionId-9"));
   }
 
   @Test public void getUser() throws Exception
@@ -313,8 +336,7 @@ public class ConnectorNov2016Test
     String type = "type-x";
     String userId = "user-x";
 
-    Optional<String> tid = connector.createTransaction(accountId, amount,
-      bankId, completed, counterpartyId, counterpartyName, currency,
+    Optional<String> tid = connector.createTransaction(accountId, amount, bankId, completed, counterpartyId, counterpartyName, currency,
       description, newBalanceAmount, newBalanceCurrency, posted, transactionId,
       type, userId);
 

@@ -61,15 +61,28 @@ public class ImplGen
   public static <T> T generate(Class<T> anInterface, int counter,
     String override, Object returnValue)
   {
+    return generate(anInterface, counter, override, returnValue, null, null);
+  }
+
+  public static <T> T generate(Class<T> anInterface, int counter,
+    String override1, Object returnValue1, String override2,
+    Object returnValue2)
+  {
     return anInterface.cast(
       newProxyInstance(anInterface.getClassLoader(), new Class[]{anInterface},
         (proxy, method, args) ->
         {
-          if(method.getName().equals(override))
+          if(method.getName().equals(override1))
           {
             Class<?> type = method.getReturnType();
 
-            return type.cast(returnValue);
+            return type.cast(returnValue1);
+          }
+          else if(method.getName().equals(override2))
+          {
+            Class<?> type = method.getReturnType();
+
+            return type.cast(returnValue2);
           }
           else
           {

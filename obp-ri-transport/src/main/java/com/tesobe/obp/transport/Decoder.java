@@ -23,7 +23,7 @@ public interface Decoder
 
   Transport.Version version();
 
-  Optional<Request> request(String request);
+  Optional<Request> request(String requestId, String request);
 
   Optional<Account> account(String response);
 
@@ -76,6 +76,8 @@ public interface Decoder
     Parameters parameters();
 
     Fields fields();
+
+    String requestId();
   }
 
   interface Fields
@@ -117,7 +119,10 @@ public interface Decoder
 
     Optional<String> state();
 
-    <T> Optional<com.tesobe.obp.transport.Pager.Filter<T>> filter(T type);
+    Optional<String> filterType();
+
+    <T> Optional<com.tesobe.obp.transport.Pager.Filter<T>> filter(String name,
+      Class<T> type);
 
     Optional<com.tesobe.obp.transport.Pager.Sorter> sorter();
   }
@@ -131,6 +136,8 @@ public interface Decoder
     Optional<String> transactionId();
 
     Optional<String> userId();
+
+    String requestId();
   }
 
   interface Response<T>

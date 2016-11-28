@@ -51,12 +51,12 @@ import java.io.Serializable;
 
   @Override public Filter<?> filter()
   {
-    return filter;
+    return more ? null : filter;
   }
 
   @Override public Sorter sorter()
   {
-    return sorter;
+    return more ? null : sorter;
   }
 
   synchronized void more(String aState, boolean aFlag)
@@ -69,6 +69,7 @@ import java.io.Serializable;
   {
     return state;
   }
+
   static final long serialVersionUID = 42L;
   public final Filter<?> filter;
   public final Sorter sorter;

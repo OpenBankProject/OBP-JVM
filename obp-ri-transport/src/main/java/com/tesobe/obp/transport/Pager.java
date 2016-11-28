@@ -6,6 +6,7 @@
  */
 package com.tesobe.obp.transport;
 
+import java.util.List;
 import java.util.SortedMap;
 
 public interface Pager
@@ -51,5 +52,7 @@ public interface Pager
      * @return maps a field name to how it is sorted
      */
     SortedMap<String, SortOrder> fields();
+
+    <T> List<T> sort(List<T> items, Class<T> type);
   }
 }

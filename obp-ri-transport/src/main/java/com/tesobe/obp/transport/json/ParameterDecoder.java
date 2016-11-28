@@ -16,8 +16,9 @@ import java.util.Optional;
  */
 class ParameterDecoder implements Decoder.Parameters
 {
-  ParameterDecoder(JSONObject request)
+  ParameterDecoder(String requestId, JSONObject request)
   {
+    id = requestId;
     json = request;
   }
 
@@ -41,5 +42,11 @@ class ParameterDecoder implements Decoder.Parameters
     return Optional.ofNullable(json.optString("userId", null));
   }
 
+  @Override public String requestId()
+  {
+    return id;
+  }
+
+  final String id;
   final JSONObject json;
 }

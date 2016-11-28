@@ -7,10 +7,22 @@
 package com.tesobe.obp.transport.json;
 
 import com.tesobe.obp.transport.Decoder;
+import com.tesobe.obp.transport.Pager.SortOrder;
+import com.tesobe.obp.transport.Pager.Sorter;
+import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.Transport;
+import com.tesobe.obp.transport.spi.TransactionSorter;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import static com.tesobe.obp.transport.Pager.DEFAULT_OFFSET;
 import static com.tesobe.obp.transport.Pager.DEFAULT_SIZE;
@@ -20,8 +32,9 @@ import static com.tesobe.obp.transport.Pager.DEFAULT_SIZE;
  */
 abstract class RequestDecoder implements Decoder.Request
 {
-  protected RequestDecoder(String request)
+  protected RequestDecoder(String requestId, String request)
   {
+    this.requestId = requestId;
     this.request = request;
 
     json = new JSONObject(request);
@@ -146,7 +159,7 @@ abstract class RequestDecoder implements Decoder.Request
 
   @Override public Decoder.Parameters parameters()
   {
-    return new ParameterDecoder(json);
+    return new ParameterDecoder(requestId, json);
   }
 
   @Override public Decoder.Fields fields()
@@ -156,11 +169,17 @@ abstract class RequestDecoder implements Decoder.Request
     return fields != null ? new FieldDecoder(fields) : FieldDecoder.empty();
   }
 
+  @Override public String requestId()
+  {
+    return requestId;
+  }
+
   @Override public Decoder.Pager pager()
   {
     return new Pager();
   }
 
+  protected final String requestId;
   private final String request;
 
   protected JSONObject json;
@@ -179,20 +198,129 @@ abstract class RequestDecoder implements Decoder.Request
       return Optional.ofNullable(json.optString("state", null));
     }
 
+    @Override public Optional<String> filterType()
+    {
+      JSONObject filter = json.optJSONObject("filter");
+
+      return filter == null
+             ? Optional.empty()
+             : Optional.ofNullable(filter.optString("type", null));
+    }
+
     @Override public int size()
     {
       return json.optInt("size", DEFAULT_SIZE);
     }
 
-    @Override
-    public <T> Optional<com.tesobe.obp.transport.Pager.Filter<T>> filter(T type)
+    @Override @SuppressWarnings("unchecked")
+    public <T> Optional<com.tesobe.obp.transport.Pager.Filter<T>> filter(
+      String name, Class<T> type)
     {
-      throw new RuntimeException();
+      final JSONObject filter = json.optJSONObject("filter");
+      final String kind = filter != null
+                          ? filter.optString("type", null)
+                          : null;
+
+      if(ZonedDateTime.class.isAssignableFrom(type) && "timestamp".equals(kind))
+      {
+        return Optional.of(new com.tesobe.obp.transport.Pager.Filter<T>()
+        {
+          @Override public String fieldName()
+          {
+            return filter.optString("name", null);
+          }
+
+          @Override public Class<T> type()
+          {
+            return (Class<T>)ZonedDateTime.class;
+          }
+
+          @Override public T lowerBound()
+          {
+            String low = filter.optString("low", null);
+
+            return (T)Json.zonedDateTimeFromJson(low);
+          }
+
+          @Override public T higherBound()
+          {
+            String high = filter.optString("high", null);
+
+            return (T)Json.zonedDateTimeFromJson(high);
+          }
+        });
+      }
+      else
+      {
+        return Optional.empty();
+      }
     }
 
-    @Override public Optional<com.tesobe.obp.transport.Pager.Sorter> sorter()
+    @Override public Optional<Sorter> sorter()
     {
-      throw new RuntimeException();
+      final JSONArray sort = json.optJSONArray("sort");
+
+      if(sort != null)
+      {
+        final List<String> fields = new ArrayList<>();
+        final List<SortOrder> orders = new ArrayList<>();
+
+        for(Object entry : sort)
+        {
+          if(entry instanceof JSONObject)
+          {
+            JSONObject item = JSONObject.class.cast(entry);
+            Iterator<String> keys = item.keys();
+
+            if(keys.hasNext())
+            {
+              String key = keys.next();
+              SortOrder value = item.optEnum(SortOrder.class, key, null);
+
+              if(value != null)
+              {
+                fields.add(key);
+                orders.add(value);
+              }
+            }
+          }
+        }
+
+        return Optional.of(new Sorter()
+        {
+          @Override public SortedMap<String, SortOrder> fields()
+          {
+            TreeMap<String, SortOrder> map = new TreeMap<>(
+              Comparator.comparingInt(fields::indexOf));
+
+            for(int i = 0; i < Math.min(fields.size(), orders.size()); ++i)
+            {
+              map.put(fields.get(i), orders.get(i));
+            }
+
+            return map;
+          }
+
+          @SuppressWarnings("unchecked") @Override
+          public <T> List<T> sort(List<T> items, Class<T> type)
+          {
+            if(items != null && type != null)
+            {
+              if(Transaction.class.equals(type))
+              {
+                items.sort(
+                  (Comparator<T>)TransactionSorter.make(fields, orders));
+              }
+            }
+
+            return items;
+          }
+        });
+      }
+      else
+      {
+        return Optional.empty();
+      }
     }
   }
 }
