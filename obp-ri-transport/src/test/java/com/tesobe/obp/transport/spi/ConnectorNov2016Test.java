@@ -10,8 +10,11 @@ package com.tesobe.obp.transport.spi;
 import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Connector;
+import com.tesobe.obp.transport.Decoder;
+import com.tesobe.obp.transport.Encoder;
 import com.tesobe.obp.transport.Message;
 import com.tesobe.obp.transport.Pager;
+import com.tesobe.obp.transport.Responder;
 import com.tesobe.obp.transport.Sender;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.Transport;
@@ -22,6 +25,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
@@ -37,10 +41,12 @@ import static com.tesobe.obp.transport.Pager.SortOrder.descending;
 import static com.tesobe.obp.util.MethodMatcher.optionallyReturns;
 import static com.tesobe.obp.util.MethodMatcher.returns;
 import static java.time.ZoneOffset.UTC;
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.core.AnyOf.anyOf;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Works together with {@link MockResponder} on the south.
@@ -48,12 +54,14 @@ import static org.junit.Assert.assertThat;
  */
 public class ConnectorNov2016Test
 {
-  @Before public void defaultConnector()
+  @Before public void connector()
   {
-    Transport.Factory factory = Transport.factory(Transport.Version.Nov2016, Transport.Encoding.json)
+    Transport.Factory factory = Transport.factory(Transport.Version.Nov2016,
+      Transport.Encoding.json)
       .map(Function.identity())
       .orElseThrow(IllegalArgumentException::new);
-    Receiver receiver = new ReceiverNov2016(new MockResponder(), factory.codecs());
+    Receiver receiver = new ReceiverNov2016(new MockResponder(),
+      factory.codecs());
     final BlockingQueue<String> in = new SynchronousQueue<>();
     final BlockingQueue<Message> out = new SynchronousQueue<>();
     final Sender sender = request ->
@@ -83,6 +91,57 @@ public class ConnectorNov2016Test
   @After public void shutdown()
   {
     service.shutdown();
+  }
+
+  /**
+   * Check the default factory using a full round trip.
+   */
+  @Test public void defaultFactory()
+  {
+    Transport.Factory factory = Transport.defaultFactory();
+    Responder south = new DefaultResponder()
+    {
+      @Override
+      public String getBanks(Decoder.Pager p, Decoder.Parameters ps, Encoder e)
+      {
+        return e.banks(Collections.singletonList(new Bank()
+        {
+          @Override public String id()
+          {
+            return "bank-x";
+          }
+
+          @Override public String logo()
+          {
+            return "logo-x";
+          }
+
+          @Override public String name()
+          {
+            return "name-x";
+          }
+
+          @Override public String url()
+          {
+            return "url-x";
+          }
+        }));
+      }
+    };
+    Receiver receiver = new ReceiverNov2016(south, factory.codecs());
+    Sender sender = receiver::respond;
+    Connector connector = factory.connector(sender);
+
+    try
+    {
+      Iterable<Bank> banks = connector.getBanks();
+
+      assertTrue(banks.iterator().hasNext());
+    }
+    catch(InterruptedException e)
+    {
+      fail(e.getMessage());
+    }
   }
 
   @Test public void getAccount() throws Exception
@@ -157,15 +216,19 @@ public class ConnectorNov2016Test
 
     Iterable<? extends Bank> anonymous;
     Iterable<? extends Bank> owned;
+    Iterable<? extends Bank> unexpected;
 
     final AtomicInteger anonymousCount = new AtomicInteger(0);
     final AtomicInteger ownedCount = new AtomicInteger(0);
+    final AtomicInteger unexpectedCount = new AtomicInteger(0);
 
     anonymous = connector.getBanks();
     owned = connector.getBanks(userId);
+    unexpected = connector.getBanks(null);
 
     assertThat(anonymous, notNullValue());
     assertThat(owned, notNullValue());
+    assertThat(unexpected, notNullValue());
 
     anonymous.forEach(bank ->
     {
@@ -181,8 +244,16 @@ public class ConnectorNov2016Test
       assertThat(bank.id(), anyOf(is("bankId-0"), is("bankId-1")));
     });
 
+    unexpected.forEach(bank ->
+    {
+      unexpectedCount.incrementAndGet();
+
+      assertThat(bank.id(), anyOf(is("bankId-0"), is("bankId-1")));
+    });
+
     assertThat("Number of anonymous banks", anonymousCount.get(), is(2));
     assertThat("Number of owned banks", ownedCount.get(), is(2));
+    assertThat("Number of unexpected banks", unexpectedCount.get(), is(2));
   }
 
   @Test public void getTransaction() throws Exception
@@ -331,7 +402,8 @@ public class ConnectorNov2016Test
     String type = "type-x";
     String userId = "user-x";
 
-    Optional<String> tid = connector.createTransaction(accountId, amount, bankId, completed, counterpartyId, counterpartyName, currency,
+    Optional<String> tid = connector.createTransaction(accountId, amount,
+      bankId, completed, counterpartyId, counterpartyName, currency,
       description, newBalanceAmount, newBalanceCurrency, posted, transactionId,
       type, userId);
 

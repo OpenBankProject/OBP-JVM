@@ -8,17 +8,18 @@ package com.tesobe.obp.demo;
 
 import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Connector;
+import com.tesobe.obp.transport.Decoder;
+import com.tesobe.obp.transport.Responder;
 import com.tesobe.obp.transport.Sender;
 import com.tesobe.obp.transport.Transport;
-import com.tesobe.obp.transport.spi.Decoder;
-import com.tesobe.obp.transport.spi.DefaultReceiver;
-import com.tesobe.obp.transport.spi.Encoder;
+import com.tesobe.obp.transport.spi.DefaultResponder;
 import com.tesobe.obp.transport.spi.Receiver;
+import com.tesobe.obp.transport.spi.ReceiverNov2016;
 
 import java.util.Optional;
 
 /**
- * Set up north and south and request a bankOld by id.
+ * Set up north and south and request a bank by id.
  * Enable trace log level for <tt>com.tesobe.obp.transport</tt> to see what
  * happens behind the scenes.
  */
@@ -27,58 +28,71 @@ public class SuperSimpleDemo
   public static void main(String[] commandLine) throws InterruptedException
   {
     Transport.Factory factory = Transport.defaultFactory();
-    Receiver south = new South(factory.codecs());
-    Sender north = south::respond; // super simple transport layer
-    Connector connector = factory.connector(north);
-    String bankId = "my-bankOld";
-    Optional<Bank> bank = connector.getBank(bankId); // <- this is it
+    Responder south = new South();
+    Receiver receiver = new ReceiverNov2016(south, factory.codecs());
+    Sender sender = receiver::respond; // super simple transport layer
+    Connector connector = factory.connector(sender);
+    North north = new North(connector);
+    String bankId = "my-bank";
 
-    System.out.println();
-    System.out.print("connector.getBank(\"");
-    System.out.print(bankId);
-    System.out.print("\") \u2192 ");
-    System.out.println(bank);
+    north.getBank(bankId);
   }
 
-  static class South extends DefaultReceiver
+  static class North
   {
-    public South(Codecs cs)
+    North(Connector c)
     {
-      super(cs);
+      connector = c;
     }
 
-    @Override protected String getBank(Decoder.Request r, Encoder e)
+    void getBank(String bankId)
     {
-      if(r.bankId().isPresent())
+      try
       {
-        return e.bank(new Bank()
+        Optional<Bank> bank = connector.getBank(bankId); // <- this is it
+
+        System.out.println();
+        System.out.print("connector.getBank(\"");
+        System.out.print(bankId);
+        System.out.print("\") \u2192 ");
+        System.out.println(bank);
+      }
+      catch(InterruptedException e)
+      {
+        e.printStackTrace();
+      }
+    }
+
+    private final Connector connector;
+  }
+
+  static class South extends DefaultResponder
+  {
+    @Override
+    public Optional<Bank> getBank(Decoder.Pager p, Decoder.Parameters ps)
+    {
+      return ps.bankId().map(bankId -> new Bank()
+      {
+        @Override public String id()
         {
-          @SuppressWarnings("OptionalGetWithoutIsPresent") @Override
-          public String id()
-          {
-            return r.bankId().get();
-          }
+          return bankId;
+        }
 
-          @Override public String name()
-          {
-            return "My Bank";
-          }
+        @Override public String logo()
+        {
+          return "logo-x";
+        }
 
-          @Override public String logo()
-          {
-            return "https://example.org/my-bankOld/logo.png";
-          }
+        @Override public String name()
+        {
+          return "name-x";
+        }
 
-          @Override public String url()
-          {
-            return "https://example.org/my-bankOld/";
-          }
-        });
-      }
-      else
-      {
-        return e.bank(null);
-      }
+        @Override public String url()
+        {
+          return "url-x";
+        }
+      });
     }
   }
 }

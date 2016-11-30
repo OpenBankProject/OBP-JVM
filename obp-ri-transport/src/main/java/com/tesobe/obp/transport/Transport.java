@@ -49,7 +49,7 @@ import static com.tesobe.obp.transport.Transport.Version.Nov2016;
   public static Factory defaultFactory(Metrics m)
   {
     //noinspection OptionalGetWithoutIsPresent
-    return factory(Version.Sep2016, Encoding.json).get();
+    return factory(Version.Nov2016, Encoding.json).get();
   }
 
 

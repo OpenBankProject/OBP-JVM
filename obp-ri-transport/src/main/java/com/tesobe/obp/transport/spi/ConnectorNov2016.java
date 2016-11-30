@@ -41,6 +41,26 @@ import static com.tesobe.obp.transport.Transport.Target.banks;
 {
   public ConnectorNov2016(Transport.Version v, Encoder e, Decoder d, Sender s)
   {
+    if(e == null)
+    {
+      throw new IllegalArgumentException("Encoder required!");
+    }
+
+    if(d == null)
+    {
+      throw new IllegalArgumentException("Decoder required!");
+    }
+
+    if(s == null)
+    {
+      throw new IllegalArgumentException("Sender required!");
+    }
+
+    if(v == null)
+    {
+      throw new IllegalArgumentException("Version required!");
+    }
+
     decoder = d;
     encoder = e;
     network = new Network(v, e, d, s); // todo mk param

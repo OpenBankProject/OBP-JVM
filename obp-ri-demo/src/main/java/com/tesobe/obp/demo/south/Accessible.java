@@ -6,12 +6,10 @@
  */
 package com.tesobe.obp.demo.south;
 
-import java.util.List;
-
 /**
  * Users that have access.
  */
 public interface Accessible
 {
-  List<DemoUser> customers();
+//  List<DemoUser> customers();
 }
