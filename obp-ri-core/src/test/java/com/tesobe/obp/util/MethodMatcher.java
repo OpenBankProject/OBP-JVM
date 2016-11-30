@@ -17,6 +17,7 @@ import java.util.Optional;
 
 /**
  * Match against the return value of a method call.
+ * Todo rm when hamcrest supports optionals.
  */
 @SuppressWarnings("WeakerAccess") public final class MethodMatcher
 {

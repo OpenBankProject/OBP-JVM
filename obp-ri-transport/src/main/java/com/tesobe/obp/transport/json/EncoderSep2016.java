@@ -340,6 +340,7 @@ import static java.util.Objects.nonNull;
     {
       if(p != null)
       {
+        put("count", p.count());
         putIfNotZero("offset", p.offset());
 
         if(p.size() != Pager.DEFAULT_SIZE)

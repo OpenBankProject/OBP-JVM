@@ -25,7 +25,7 @@ import java.util.function.Function;
 import static java.util.Objects.nonNull;
 
 /**
- * todo document
+ * @since 2016.11
  */
 public class DecoderNov2016 extends DecoderSep2016
 {
@@ -59,6 +59,7 @@ public class DecoderNov2016 extends DecoderSep2016
   public <T extends Id> Response<T> get(Class<T> type, String response)
   {
     List<T> result = Collections.emptyList();
+    int count = 0;
     boolean more = false;
     String state = null;
 
@@ -69,6 +70,7 @@ public class DecoderNov2016 extends DecoderSep2016
         JSONObject wrapper = new JSONObject(response);
         JSONArray data = wrapper.optJSONArray("data");
 
+        count = wrapper.optInt("count", 0);
         more = "more".equals(wrapper.optString("pager"));
         state = wrapper.optString("state", null);
 
@@ -104,7 +106,7 @@ public class DecoderNov2016 extends DecoderSep2016
       }
     }
 
-    return new ValidResponse<T>(more, result, state);
+    return new ValidResponse<T>(count, more, result, state);
   }
 
   @Override public Iterable<Bank> bank(String response)
@@ -128,12 +130,18 @@ public class DecoderNov2016 extends DecoderSep2016
     {
       return null;
     }
+
+    @Override public int count()
+    {
+      return 0;
+    }
   }
 
   protected class ValidResponse<T> implements Response<T>
   {
-    public ValidResponse(boolean more, List<T> result, String state)
+    public ValidResponse(int count, boolean more, List<T> result, String state)
     {
+      this.count = count;
       this.more = more;
       this.result = result;
       this.state = state;
@@ -154,6 +162,12 @@ public class DecoderNov2016 extends DecoderSep2016
       return state;
     }
 
+    @Override public int count()
+    {
+      return count;
+    }
+
+    final int count;
     final boolean more;
     final List<T> result;
     final String state;

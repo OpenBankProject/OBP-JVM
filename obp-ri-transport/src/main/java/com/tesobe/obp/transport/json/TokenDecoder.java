@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import java.util.Optional;
 
 /**
- *
+ * @since 2016.11
  */
 class TokenDecoder implements Token
 {

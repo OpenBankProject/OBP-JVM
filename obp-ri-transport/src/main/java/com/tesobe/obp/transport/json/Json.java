@@ -14,6 +14,9 @@ import java.time.format.DateTimeFormatter;
 
 import static java.util.Objects.nonNull;
 
+/**
+ * @since 2016.9
+ */
 @SuppressWarnings("WeakerAccess") final class Json
 {
   /**

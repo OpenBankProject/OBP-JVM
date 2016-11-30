@@ -1,7 +1,8 @@
 /*
  * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be
+ * found in the LICENSE file.
  *
  */
 
@@ -14,6 +15,8 @@ import org.json.JSONObject;
  * Reads a JSON account.
  * Unexpected fields will be ignored, missing fields default to {@code null}.
  * The constructor trusts that the JSON is not null.
+ *
+ * @since 2016.11
  */
 class AccountDecoder implements Account
 {

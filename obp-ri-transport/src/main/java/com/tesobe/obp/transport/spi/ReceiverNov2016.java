@@ -72,7 +72,7 @@ import java.util.function.Supplier;
       }
       case banks:
       {
-        return get(r, responder::getBanks, e::banks);
+        return responder.getBanks(r.pager(), r.parameters(), e);
       }
       case transaction:
       {
@@ -89,7 +89,7 @@ import java.util.function.Supplier;
       }
       case users:
       {
-        return get(r, responder::getUsers, e::users);
+        return responder.getUsers(r.pager(), r.parameters(), e);
       }
     }
 

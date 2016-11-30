@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import java.util.Optional;
 
 /**
- * todo document
+ * @since 2016.11
  */
 class FieldDecoder implements Decoder.Fields
 {

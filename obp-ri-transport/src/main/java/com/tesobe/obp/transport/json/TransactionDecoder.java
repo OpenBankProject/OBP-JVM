@@ -19,6 +19,8 @@ import static com.tesobe.obp.transport.json.Json.zonedDateTimeFromJson;
  * Reads a JSON transaction.
  * Unexpected fields will be ignored, missing fields default to {@code null}.
  * The constructor trusts that the JSON is not null.
+ *
+ * @since 2016.9
  */
 @SuppressWarnings("WeakerAccess") class TransactionDecoder
   implements Transaction

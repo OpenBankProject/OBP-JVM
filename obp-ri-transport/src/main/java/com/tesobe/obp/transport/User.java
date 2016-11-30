@@ -12,13 +12,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 /**
- * Matches KafkaMappedConnector's KafkaInboundUser.
- * <pre>
- * case class KafkaInboundUser(
- *   email : String,
- *   password : String,
- *   display_name : String)
- * </pre>
+ * @since 2016.11
  */
 public interface User extends Id
 {

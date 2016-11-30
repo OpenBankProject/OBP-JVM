@@ -7,9 +7,11 @@
 
 package com.tesobe.obp.transport;
 
-import java.util.List;
 import java.util.Optional;
 
+/**
+ * @since 2016.11
+ */
 public interface Responder
 {
   Optional<Account> getAccount(Decoder.Pager p, Decoder.Parameters ps);
@@ -18,7 +20,7 @@ public interface Responder
 
   Optional<Bank> getBank(Decoder.Pager p, Decoder.Parameters ps);
 
-  List<Bank> getBanks(Decoder.Pager p, Decoder.Parameters ps);
+  String getBanks(Decoder.Pager p, Decoder.Parameters ps, Encoder e);
 
   Optional<Transaction> getTransaction(Decoder.Pager p, Decoder.Parameters ps);
 
@@ -26,7 +28,7 @@ public interface Responder
 
   Optional<User> getUser(Decoder.Pager p, Decoder.Parameters ps);
 
-  List<User> getUsers(Decoder.Pager pager, Decoder.Parameters ps);
+  String getUsers(Decoder.Pager pager, Decoder.Parameters ps, Encoder e);
 
   Token createTransaction(Decoder.Fields fs);
 }

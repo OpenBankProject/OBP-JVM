@@ -18,6 +18,7 @@ import static java.util.Collections.unmodifiableSortedMap;
 
 /**
  * @see Pager.Sorter
+ * @since @since 2016.11
  */
 @SuppressWarnings("WeakerAccess") public class DefaultSorter
   implements Pager.Sorter, Serializable

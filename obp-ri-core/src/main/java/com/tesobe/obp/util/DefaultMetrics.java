@@ -9,6 +9,9 @@ package com.tesobe.obp.util;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+/**
+ * @since 2016.11
+ */
 public class DefaultMetrics implements Metrics
 {
   @Override public void ended(UUID id, ZonedDateTime t)

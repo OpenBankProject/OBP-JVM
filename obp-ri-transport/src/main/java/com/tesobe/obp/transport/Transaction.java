@@ -14,6 +14,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 /**
+ * @since 2016.11
  */
 public interface Transaction extends Id
 {

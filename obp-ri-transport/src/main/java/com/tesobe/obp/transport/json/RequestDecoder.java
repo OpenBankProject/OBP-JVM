@@ -28,7 +28,7 @@ import static com.tesobe.obp.transport.Pager.DEFAULT_OFFSET;
 import static com.tesobe.obp.transport.Pager.DEFAULT_SIZE;
 
 /**
- * todo document
+ * @since 2016.11
  */
 abstract class RequestDecoder implements Decoder.Request
 {
@@ -188,6 +188,11 @@ abstract class RequestDecoder implements Decoder.Request
 
   class Pager implements Decoder.Pager
   {
+    @Override public int count()
+    {
+      return json.optInt("count", 0);
+    }
+
     @Override public int offset()
     {
       return json.optInt("offset", DEFAULT_OFFSET);

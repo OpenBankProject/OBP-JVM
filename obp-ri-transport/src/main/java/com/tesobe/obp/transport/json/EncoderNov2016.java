@@ -26,7 +26,7 @@ import java.util.Map;
 import static java.util.Objects.nonNull;
 
 /**
- * todo document
+ * @since 2016.11
  */
 public class EncoderNov2016 extends EncoderSep2016 implements Encoder
 {
@@ -53,7 +53,8 @@ public class EncoderNov2016 extends EncoderSep2016 implements Encoder
   }
 
   @Override
-  public String accounts(List<? extends Account> as, boolean more, String state)
+  public String accounts(List<? extends Account> as, int count, boolean more,
+    String state)
   {
     JSONArray data = null;
 
@@ -68,7 +69,8 @@ public class EncoderNov2016 extends EncoderSep2016 implements Encoder
       }
     }
 
-    return response(Transport.Target.accounts, more, state, data).toString();
+    return response(Transport.Target.accounts, count, more, state,
+      data).toString();
   }
 
   @Override public String bank(Bank b)
@@ -89,7 +91,8 @@ public class EncoderNov2016 extends EncoderSep2016 implements Encoder
   }
 
   @Override
-  public String banks(List<? extends Bank> bs, boolean more, String state)
+  public String banks(List<? extends Bank> bs, int count, boolean more,
+    String state)
   {
     JSONArray data = null;
 
@@ -103,7 +106,8 @@ public class EncoderNov2016 extends EncoderSep2016 implements Encoder
       }
     }
 
-    return response(Transport.Target.banks, more, state, data).toString();
+    return response(Transport.Target.banks, count, more, state,
+      data).toString();
   }
 
   @Override
@@ -175,8 +179,8 @@ public class EncoderNov2016 extends EncoderSep2016 implements Encoder
   }
 
   @Override
-  public String transactions(List<? extends Transaction> ts, boolean more,
-    String state)
+  public String transactions(List<? extends Transaction> ts, int count,
+    boolean more, String state)
   {
     JSONArray data = null;
 
@@ -190,7 +194,7 @@ public class EncoderNov2016 extends EncoderSep2016 implements Encoder
       }
     }
 
-    return response(Transport.Target.transactions, more, state,
+    return response(Transport.Target.transactions, count, more, state,
       data).toString();
   }
 
@@ -212,7 +216,8 @@ public class EncoderNov2016 extends EncoderSep2016 implements Encoder
   }
 
   @Override
-  public String users(List<? extends User> users, boolean more, String state)
+  public String users(List<? extends User> users, int count, boolean more,
+    String state)
   {
     JSONArray data = null;
 
@@ -226,10 +231,12 @@ public class EncoderNov2016 extends EncoderSep2016 implements Encoder
       }
     }
 
-    return response(Transport.Target.users, more, state, data).toString();
+    return response(Transport.Target.users, count, more, state,
+      data).toString();
   }
 
-  protected JSONObject response(Transport.Target target, boolean more,
+  protected JSONObject response(Transport.Target target, int count,
+    boolean more,
     String state, JSONArray data)
   {
     JSONObject response = new JSONObject();
@@ -238,6 +245,8 @@ public class EncoderNov2016 extends EncoderSep2016 implements Encoder
     {
       response.put("target", target);
     }
+
+    response.put("count", count); // even if zero
 
     if(more)
     {

@@ -1,7 +1,8 @@
 /*
  * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be
+ * found in the LICENSE file.
  *
  */
 package com.tesobe.obp.transport.spi;
@@ -16,6 +17,7 @@ import com.tesobe.obp.transport.User;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +31,10 @@ import static java.util.Collections.synchronizedMap;
 import static org.junit.Assert.assertThat;
 
 /**
- * todo document
+ * Example implementation of a south.
+ * Paging, filtering, and sorting only implemented for transactions
+ *
+ * @since 2016.11
  */
 public class MockResponder extends DefaultResponder
 {
@@ -59,8 +64,8 @@ public class MockResponder extends DefaultResponder
         }
       }
 
-      return e.accounts(accounts, false);
-    }).orElseGet(() -> e.accounts(emptyList(), false));
+      return e.accounts(accounts);
+    }).orElseGet(() -> e.accounts(emptyList()));
   }
 
   @Override
@@ -69,7 +74,7 @@ public class MockResponder extends DefaultResponder
     return ps.bankId().map(id -> generate(Bank.class, 1, "bankId", id));
   }
 
-  @Override public List<Bank> getBanks(Decoder.Pager p, Decoder.Parameters ps)
+  @Override public String getBanks(Decoder.Pager p, Decoder.Parameters ps, Encoder e)
   {
     List<Bank> banks = new ArrayList<>();
 
@@ -85,7 +90,7 @@ public class MockResponder extends DefaultResponder
       }
     }
 
-    return banks;
+    return e.banks(banks);
   }
 
   @Override public Optional<Transaction> getTransaction(Decoder.Pager p,
@@ -108,53 +113,78 @@ public class MockResponder extends DefaultResponder
   @Override public String getTransactions(Decoder.Pager p,
     Decoder.Parameters ps, Encoder e)
   {
+    int count = p.count();
+    String state = p.state().map(s -> s).orElse(null);
     List<Transaction> transactions = p.state()
       .map(cache::get)
       .orElseGet(ArrayList::new);
 
-    if(transactions.isEmpty())
+    if(state == null || count == 0)
     {
+      final List<Transaction> data = new ArrayList<>();
+
       int numTransactions = 17;
       ZonedDateTime completed = ZonedDateTime.of(1999, 1, 31, 0, 0, 0, 0, UTC);
 
       for(int i = 0; i < numTransactions; ++i)
       {
-        int dayOfMonth = Math.min(i + 1, 27); // safe month length
+        int dayOfMonth = Math.min(i, 26) + 1; // safe month length
         ZonedDateTime posted = ZonedDateTime.of(1999, 1, dayOfMonth, 0, 0, 0, 0,
           UTC);
-        transactions.add(
-          generate(Transaction.class, i, "completedDate", completed,
-            "postedDate", posted));
+
+        data.add(generate(Transaction.class, i, "completedDate", completed,
+          "postedDate", posted));
       }
 
-      cache.put(ps.requestId(), transactions);
-    }
-
-    // figure out which transactions to send an in what order
-    int offset = p.offset();
-
-    if(offset < transactions.size())
-    {
-      List<Transaction> sorted = p.sorter()
-        .map(s -> s.sort(transactions, Transaction.class))
-        .orElse(transactions);
-
-      int size = p.size();
-      int count = Math.min(size, transactions.size() - offset);
+      // todo move this to the stream api
       TimestampMatcher matcher = new TimestampMatcher(
         p.filter("timestamp", ZonedDateTime.class));
+      List<Transaction> sorted = p.sorter()
+        .map(s -> s.sort(data, Transaction.class))
+        .orElse(data);
+      List<Transaction> filtered = new ArrayList<>();
 
-      for(int i = 0; i < count; ++i)
+      for(Transaction t : sorted)
       {
-        if(matcher.matches(transaction))
+        if(matcher.matches(t))
         {
-          transactions.add(transaction);
+          filtered.add(t);
         }
+      }
+
+      state = ps.requestId(); // need a new state
+      count = 0; // restart the count
+      transactions = filtered; // new data
+
+      cache.put(state, transactions);
+
+    }
+
+    int offset = p.offset();
+
+    if(offset < transactions.size() - 1)
+    {
+      int pageSize = Math.min(p.size(), transactions.size() - offset);
+      List<Transaction> window = new ArrayList<>();
+
+      while(window.size() < pageSize)
+      {
+        window.add(transactions.get(offset++));
+      }
+
+      if(offset < transactions.size() - 1)
+      {
+        return e.transactions(window, count, true, state);
+      }
+      else
+      {
+        cache.remove(state);
+
+        return e.transactions(window, count);
       }
     }
 
-
-    return e.transactions(sorted, offset + size < 15, "happy");
+    return e.transactions(Collections.emptyList());
   }
 
   @Override
@@ -163,7 +193,7 @@ public class MockResponder extends DefaultResponder
     return ps.userId().map(id -> generate(User.class, 1, "email", id));
   }
 
-  @Override public List<User> getUsers(Decoder.Pager p, Decoder.Parameters ps)
+  @Override public String getUsers(Decoder.Pager p, Decoder.Parameters ps, Encoder e)
   {
     List<User> users = new ArrayList<>();
 
@@ -179,7 +209,7 @@ public class MockResponder extends DefaultResponder
       }
     }
 
-    return users;
+    return e.users(users);
   }
 
   @Override public Token createTransaction(Decoder.Fields fs)
@@ -210,4 +240,5 @@ public class MockResponder extends DefaultResponder
   }
 
   Map<String, List<Transaction>> cache = synchronizedMap(new HashMap<>());
+
 }

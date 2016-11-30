@@ -34,7 +34,7 @@ import static com.tesobe.obp.transport.Transport.Target.banks;
 /**
  * Compatible to end 2016 OBP-API.
  *
- * @since 2016.9
+ * @since 2016.11
  */
 @SuppressWarnings("WeakerAccess") public class ConnectorNov2016
   implements Connector

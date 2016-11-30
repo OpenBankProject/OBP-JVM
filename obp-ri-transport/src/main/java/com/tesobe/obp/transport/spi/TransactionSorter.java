@@ -14,6 +14,9 @@ import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * @since 2016.11
+ */
 @SuppressWarnings("WeakerAccess") public class TransactionSorter
   implements Comparator<Transaction>
 {

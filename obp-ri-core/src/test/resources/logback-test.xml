@@ -15,9 +15,11 @@
     </encoder>
   </appender>
 
-  <appender name="terse" class="ch.qos.logback.core.ConsoleAppender">
+  <appender name="json" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>%d{HH:mm:ss.SSS} %msg%n</pattern>
+      <pattern>
+        /*%d{HH:mm:ss.SSS} [%thread] %logger{30} %M:%L*/ , %msg%n
+      </pattern>
     </encoder>
   </appender>
 
@@ -25,7 +27,7 @@
   <logger name="com.tesobe.obp" level="trace"/>
 
   <root level="error">
-    <appender-ref ref="console"/>
+    <appender-ref ref="json"/>
   </root>
 
 </configuration>

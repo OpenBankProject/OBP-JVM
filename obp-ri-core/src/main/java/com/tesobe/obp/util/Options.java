@@ -51,7 +51,6 @@ import static java.util.Arrays.asList;
  * </pre>
  *
  * @author ub@kassapo.com
- * @since 2016.9
  */
 @SuppressWarnings("WeakerAccess") public class Options
 {

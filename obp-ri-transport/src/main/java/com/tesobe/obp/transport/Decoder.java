@@ -125,6 +125,8 @@ public interface Decoder
       Class<T> type);
 
     Optional<com.tesobe.obp.transport.Pager.Sorter> sorter();
+
+    int count();
   }
 
   interface Parameters
@@ -147,6 +149,8 @@ public interface Decoder
     boolean hasMorePages();
 
     String state();
+
+    int count();
   }
 
   interface ResponseOld

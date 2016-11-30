@@ -14,6 +14,8 @@ import org.json.JSONObject;
  * Reads a JSON bank.
  * Unexpected fields will be ignored, missing fields default to {@code null}.
  * The constructor trusts that the JSON is not null.
+ *
+ * @since 2016.11
  */
 class BankDecoder implements Bank
 {

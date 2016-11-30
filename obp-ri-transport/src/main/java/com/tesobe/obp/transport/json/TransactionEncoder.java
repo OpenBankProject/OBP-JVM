@@ -14,6 +14,8 @@ import org.json.JSONObject;
  * Writes a transaction to JSON .
  * Missing fields will be skipped.
  * The constructor trusts that the transaction is not null.
+ *
+ * @since 2016.9
  */
 @SuppressWarnings("WeakerAccess") class TransactionEncoder
 {

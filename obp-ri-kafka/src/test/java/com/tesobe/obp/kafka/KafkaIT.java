@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
  *                          |
  *      north               |          south
  * </pre>
+ * @since 2016.9
  */
 @SuppressWarnings("WeakerAccess") @Ignore public class KafkaIT
 {

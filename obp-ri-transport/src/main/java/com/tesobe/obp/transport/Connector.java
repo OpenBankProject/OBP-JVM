@@ -14,37 +14,28 @@ import java.util.Optional;
 /**
  * North side API.
  *
- * @since 2016.9
+ * @since 2016.11
  */
 @SuppressWarnings("WeakerAccess") public interface Connector
 {
   /**
-   * Anonymously get an account.
+   * Get an account that is accessible anonymously.
    *
-   * @param bankId An invalid bankOld id means an empty result.
-   * An all white space bankOld id is invalid.
-   * @param accountId An invalid account id means an empty result.
-   * An all white space account id is invalid.
-   * @return An empty result if the account is not explicitly linked to the
-   * user.
-   * If the account is public but not linked to the user, empty will be
-   * returned.
+   * @param bankId todo: id or hash or either?
+   * @param accountId todo: id or hash or either?
+   * @return {@link Optional#empty()} if not found, or not accessible
    * @throws InterruptedException Network trouble
    */
   Optional<Account> getAccount(String bankId, String accountId)
     throws InterruptedException;
 
   /**
-   * @param bankId An invalid bankOld id means an empty result.
-   * An all white space bankOld id is invalid.
-   * @param accountId An invalid account id means an empty result.
-   * An all white space account id is invalid.
-   * @param userId An invalid user id means an empty result.
-   * An all white space user id is invalid.
-   * @return An empty result if the account is not explicitly linked to the
-   * user.
-   * If the account is public but not linked to the user, empty will be
-   * returned.
+   * Get an account that is accessible by the given user.
+   *
+   * @param bankId todo: id or hash or either?
+   * @param accountId todo: id or hash or either?
+   * @param userId todo: id or hash or either?
+   * @return {@link Optional#empty()} if not found, or not accessible
    * @throws InterruptedException Network trouble
    */
   Optional<Account> getAccount(String bankId, String accountId, String userId)

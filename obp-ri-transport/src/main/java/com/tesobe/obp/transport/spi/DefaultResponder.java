@@ -1,7 +1,8 @@
 /*
  * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be
+ * found in the LICENSE file.
  *
  */
 package com.tesobe.obp.transport.spi;
@@ -16,9 +17,11 @@ import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.User;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
+/**
+ * @since 2016.11
+ */
 @SuppressWarnings("WeakerAccess") public class DefaultResponder
   implements Responder
 {
@@ -31,7 +34,7 @@ import java.util.Optional;
   @Override
   public String getAccounts(Decoder.Pager p, Decoder.Parameters ps, Encoder e)
   {
-    return e.accounts(Collections.emptyList(), false);
+    return e.accounts(Collections.emptyList());
   }
 
   @Override
@@ -40,9 +43,10 @@ import java.util.Optional;
     return Optional.empty();
   }
 
-  @Override public List<Bank> getBanks(Decoder.Pager p, Decoder.Parameters ps)
+  @Override
+  public String getBanks(Decoder.Pager p, Decoder.Parameters ps, Encoder e)
   {
-    return Collections.emptyList();
+    return e.banks(Collections.emptyList());
   }
 
   @Override public Optional<Transaction> getTransaction(Decoder.Pager p,
@@ -55,7 +59,7 @@ import java.util.Optional;
   public String getTransactions(Decoder.Pager p, Decoder.Parameters ps,
     Encoder e)
   {
-    return e.transactions(Collections.emptyList(), false);
+    return e.transactions(Collections.emptyList());
   }
 
   @Override
@@ -65,9 +69,9 @@ import java.util.Optional;
   }
 
   @Override
-  public List<User> getUsers(Decoder.Pager pager, Decoder.Parameters ps)
+  public String getUsers(Decoder.Pager pager, Decoder.Parameters ps, Encoder e)
   {
-    return Collections.emptyList();
+    return e.users(Collections.emptyList());
   }
 
   @Override public Token createTransaction(Decoder.Fields fs)

@@ -14,6 +14,8 @@ import org.json.JSONObject;
  * Writes a bank to JSON .
  * Missing fields will be skipped.
  * The constructor trusts that the bank is not null.
+ *
+ * @since 2016.11
  */
 @SuppressWarnings("WeakerAccess") class BankEncoder
 {

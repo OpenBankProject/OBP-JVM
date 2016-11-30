@@ -10,6 +10,9 @@ package com.tesobe.obp.transport.json;
 import com.tesobe.obp.transport.User;
 import org.json.JSONObject;
 
+/**
+ * @since 2016.9
+ */
 @SuppressWarnings("WeakerAccess") class UserDecoder implements User
 {
   public UserDecoder(JSONObject user)

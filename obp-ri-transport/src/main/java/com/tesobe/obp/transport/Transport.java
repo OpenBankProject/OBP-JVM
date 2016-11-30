@@ -34,7 +34,6 @@ import static com.tesobe.obp.transport.Transport.Version.Nov2016;
    *
    * @return a factory that is always available
    *
-   * @since 2016.9
    */
   public static Factory defaultFactory()
   {
@@ -46,7 +45,6 @@ import static com.tesobe.obp.transport.Transport.Version.Nov2016;
    *
    * @return a factory that is always available
    *
-   * @since 2016.9
    */
   public static Factory defaultFactory(Metrics m)
   {
@@ -169,7 +167,6 @@ import static com.tesobe.obp.transport.Transport.Version.Nov2016;
      * @return Connector
      *
      * @throws RuntimeException sender is null
-     * @since 2016.9
      */
     Connector connector(Sender s);
 

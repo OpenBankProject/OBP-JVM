@@ -10,6 +10,9 @@ import com.tesobe.obp.transport.Token;
 
 import java.util.Optional;
 
+/**
+ * @since 2016.11
+ */
 public class ErrorToken implements Token
 {
   ErrorToken(String message)

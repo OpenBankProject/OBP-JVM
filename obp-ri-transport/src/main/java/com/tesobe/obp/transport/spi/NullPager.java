@@ -12,6 +12,8 @@ import java.io.Serializable;
 
 /**
  * A pager with infinite page size, no sorting, and no filtering.
+ *
+ * @since 2016.11
  */
 class NullPager implements Pager, Serializable
 {
@@ -22,6 +24,11 @@ class NullPager implements Pager, Serializable
 
   @Override public void nextPage()
   {
+  }
+
+  @Override public int count()
+  {
+    return 0;
   }
 
   @Override public int offset()

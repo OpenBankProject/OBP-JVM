@@ -10,6 +10,8 @@ import java.util.Optional;
 
 /**
  * Result of a put.
+ *
+ * @since 2016.11
  */
 public interface Token
 {

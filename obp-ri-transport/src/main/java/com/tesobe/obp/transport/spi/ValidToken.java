@@ -11,7 +11,7 @@ import com.tesobe.obp.transport.Token;
 import java.util.Optional;
 
 /**
- * todo document
+ * @since 2016.11
  */
 public class ValidToken implements Token
 {

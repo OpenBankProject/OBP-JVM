@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
+ * @since 2016.11
  */
 @SuppressWarnings("WeakerAccess") class Network
 {
@@ -76,12 +77,10 @@ import java.util.UUID;
     String id = UUID.randomUUID().toString();
     Message message = new Message(id, request.toString());
 
-    log.trace("{}", request);
-
     String response = sender.send(message);
     Decoder.Response<T> result = decoder.get(type, response);
 
-    log.trace("\u2192 {}", response);
+    log.trace("{}, {}", request, response);
 
     return result;
   }
@@ -101,19 +100,19 @@ import java.util.UUID;
 
     log.trace("{}", request);
 
-    try
+    try // todo why try here and no try in get, above?
     {
       String response = sender.send(message);
       Optional<Token> token = decoder.token(response);
 
-      log.trace("\u2192 {}", response);
+      log.trace("{}", response);
 
       return token.map(type::cast)
         .orElseGet(() -> type.cast(new ErrorToken("Cannot decode response!")));
     }
     catch(InterruptedException e)
     {
-      log.error("\u2192 {}", id, e);
+      log.error("{} {}", id, e);
 
       return type.cast(new ErrorToken(e.getMessage()));
     }
@@ -177,7 +176,7 @@ import java.util.UUID;
       Decoder.Response<T> response = Network.this.get(this, caller, t, type,
         userId, bankId, accountId, transactionId);
 
-      pager.more(response.state(), response.hasMorePages());
+      pager.more(response.state(), response.count(), response.hasMorePages());
 
       return response;
     }

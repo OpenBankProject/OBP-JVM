@@ -11,6 +11,9 @@ import com.tesobe.obp.transport.Pager;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 
+/**
+ * @since 2016.11
+ */
 @SuppressWarnings("WeakerAccess") public class TimestampFilter
   implements Pager.Filter<ZonedDateTime>, Serializable
 {

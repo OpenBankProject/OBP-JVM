@@ -12,12 +12,15 @@ import java.io.Serializable;
 
 /**
  * Default implementation of {@link Pager}. Mutable, sigh.
+ *
+ * @since 2016.11
  */
 @SuppressWarnings("WeakerAccess") public class DefaultPager
   implements Pager, Serializable
 {
   public DefaultPager(int size, int offset, Filter<?> f, Sorter s)
   {
+    count = 0;
     this.offset = offset;
     this.size = size;
     filter = f;
@@ -36,7 +39,13 @@ import java.io.Serializable;
 
   @Override public synchronized void nextPage()
   {
+    count++;
     offset += size;
+  }
+
+  @Override public synchronized int count()
+  {
+    return count;
   }
 
   @Override public int offset()
@@ -59,8 +68,9 @@ import java.io.Serializable;
     return more ? null : sorter;
   }
 
-  synchronized void more(String aState, boolean aFlag)
+  synchronized void more(String aState, int aCount, boolean aFlag)
   {
+    count = aCount;
     more = aFlag;
     state = aState;
   }
@@ -73,6 +83,7 @@ import java.io.Serializable;
   static final long serialVersionUID = 42L;
   public final Filter<?> filter;
   public final Sorter sorter;
+  private int count;
   private int offset;
   private int size;
   private boolean more;

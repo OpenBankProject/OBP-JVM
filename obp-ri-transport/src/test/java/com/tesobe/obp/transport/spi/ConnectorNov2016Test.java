@@ -214,7 +214,9 @@ public class ConnectorNov2016Test
     anonymous = connector.getTransactions(bankId, accountId);
     owned = connector.getTransactions(bankId, accountId, userId);
 
+    assertThat(anonymous.iterator().hasNext(), is(true));
     assertThat(anonymous.iterator().next().id(), is("transactionId-0"));
+    assertThat(owned.iterator().hasNext(), is(true));
     assertThat(owned.iterator().next().id(), is("transactionId-0"));
   }
 
@@ -225,9 +227,9 @@ public class ConnectorNov2016Test
     String userId = "user-x";
     List<Transaction> owned;
 
-    // Jan 1st, 1999 00:00 - Jan 10th, 2000 00:00
+    // Jan 1st, 1999 00:00 - Jan 8th, 2000 00:00
     ZonedDateTime earliest = ZonedDateTime.of(1999, 1, 1, 0, 0, 0, 0, UTC);
-    ZonedDateTime latest = ZonedDateTime.of(1999, 1, 10, 0, 0, 0, 0, UTC);
+    ZonedDateTime latest = ZonedDateTime.of(1999, 1, 8, 0, 0, 0, 0, UTC);
 
     Pager.Filter filter = new TimestampFilter("postedDate", earliest, latest);
     Pager.Sorter sorter = DefaultSorter.build("completedDate", ascending)
@@ -238,43 +240,36 @@ public class ConnectorNov2016Test
 
     owned = connector.getTransactions(pager, bankId, accountId, userId);
 
+    assertThat("pager.count", pager.count(), is(0));
     assertThat("pager.hasMorePages", pager.hasMorePages(), is(true));
     assertThat("owned.size", owned.size(), is(pageSize));
 
-    assertThat("owned.get(0)", owned.get(0).id(), is("transactionId-2"));
-    assertThat("owned.get(1)", owned.get(1).id(), is("transactionId-1"));
-    assertThat("owned.get(2)", owned.get(2).id(), is("transactionId-0"));
+    assertThat("owned.get(0)", owned.get(0).id(), is("transactionId-7"));
+    assertThat("owned.get(1)", owned.get(1).id(), is("transactionId-6"));
+    assertThat("owned.get(2)", owned.get(2).id(), is("transactionId-5"));
 
     pager.nextPage();
 
     owned = connector.getTransactions(pager, bankId, accountId, userId);
 
+    assertThat("pager.count", pager.count(), is(1));
     assertThat("pager.hasMorePages", pager.hasMorePages(), is(true));
     assertThat("owned.size", owned.size(), is(pageSize));
 
-    assertThat("owned.get(0)", owned.get(0).id(), is("transactionId-5"));
-    assertThat("owned.get(1)", owned.get(1).id(), is("transactionId-4"));
-    assertThat("owned.get(2)", owned.get(2).id(), is("transactionId-3"));
+    assertThat("owned.get(0)", owned.get(0).id(), is("transactionId-4"));
+    assertThat("owned.get(1)", owned.get(1).id(), is("transactionId-3"));
+    assertThat("owned.get(2)", owned.get(2).id(), is("transactionId-2"));
 
     pager.nextPage();
 
     owned = connector.getTransactions(pager, bankId, accountId, userId);
 
-    assertThat("pager.hasMorePages", pager.hasMorePages(), is(true));
-    assertThat("owned.size", owned.size(), is(3));
+    assertThat("pager.count", pager.count(), is(2));
+    assertThat("pager.hasMorePages", pager.hasMorePages(), is(false));
+    assertThat("owned.size", owned.size(), is(2));
 
-    assertThat("owned.get(0)", owned.get(0).id(), is("transactionId-8"));
-    assertThat("owned.get(1)", owned.get(1).id(), is("transactionId-7"));
-    assertThat("owned.get(2)", owned.get(2).id(), is("transactionId-6"));
-
-    pager.nextPage();
-
-    owned = connector.getTransactions(pager, bankId, accountId, userId);
-
-    assertThat("pager.hasMorePages", pager.hasMorePages(), is(true));
-    assertThat("owned.size", owned.size(), is(1));
-
-    assertThat("owned.get(0)", owned.get(0).id(), is("transactionId-9"));
+    assertThat("owned.get(0)", owned.get(0).id(), is("transactionId-1"));
+    assertThat("owned.get(1)", owned.get(1).id(), is("transactionId-0"));
   }
 
   @Test public void getUser() throws Exception

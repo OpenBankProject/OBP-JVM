@@ -31,15 +31,16 @@ public interface Encoder
 
   default String accounts(List<? extends Account> as)
   {
-    return accounts(as, false);
+    return accounts(as, 0);
   }
 
-  default String accounts(List<? extends Account> as, boolean more)
+  default String accounts(List<? extends Account> as, int count)
   {
-    return accounts(as, more, null);
+    return accounts(as, count, false, null);
   }
 
-  String accounts(List<? extends Account> as, boolean more, String state);
+  String accounts(List<? extends Account> as, int count, boolean more,
+    String state);
 
   default String bank()
   {
@@ -50,15 +51,15 @@ public interface Encoder
 
   default String banks(List<? extends Bank> bs)
   {
-    return banks(bs, false);
+    return banks(bs, 0);
   }
 
-  default String banks(List<? extends Bank> bs, boolean more)
+  default String banks(List<? extends Bank> bs, int count)
   {
-    return banks(bs, more, null);
+    return banks(bs, count, false, null);
   }
 
-  String banks(List<? extends Bank> bs, boolean more, String state);
+  String banks(List<? extends Bank> bs, int count, boolean more, String state);
 
   String error(String message);
 
@@ -68,15 +69,15 @@ public interface Encoder
 
   default String transactions(List<? extends Transaction> ts)
   {
-    return transactions(ts, false);
+    return transactions(ts, 0);
   }
 
-  default String transactions(List<? extends Transaction> ts, boolean more)
+  default String transactions(List<? extends Transaction> ts, int count)
   {
-    return transactions(ts, more, null);
+    return transactions(ts, count, false, null);
   }
 
-  String transactions(List<? extends Transaction> ts, boolean more,
+  String transactions(List<? extends Transaction> ts, int count, boolean more,
     String state);
 
   String transactionId(String s);
@@ -85,15 +86,16 @@ public interface Encoder
 
   default String users(List<? extends User> users)
   {
-    return users(users, false);
+    return users(users, 0);
   }
 
-  default String users(List<? extends User> users, boolean more)
+  default String users(List<? extends User> users, int count)
   {
-    return users(users, more, null);
+    return users(users, count, false, null);
   }
 
-  String users(List<? extends User> users, boolean more, String state);
+  String users(List<? extends User> users, int count, boolean more,
+    String state);
 
   default String token()
   {

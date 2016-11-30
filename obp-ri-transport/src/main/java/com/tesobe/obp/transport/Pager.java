@@ -9,11 +9,33 @@ package com.tesobe.obp.transport;
 import java.util.List;
 import java.util.SortedMap;
 
+/**
+ * @since 2016.11
+ */
 public interface Pager
 {
+  /**
+   * When true a call to {@link #nextPage()} followed by another request
+   * will proved more data.
+   *
+   * @return more?
+   */
   boolean hasMorePages();
 
+  /**
+   * Required before requesting more data.
+   */
   void nextPage();
+
+  /**
+   * Counts the requests made against the same result set. The response returns
+   * the same number. Should the response return a different number (mostly
+   * zero) then the south side has lost the state and all further data must be
+   * discarded!
+   *
+   * @return greater than zero for subsequent requests against the same result
+   */
+  int count();
 
   int offset();
 

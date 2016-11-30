@@ -47,7 +47,7 @@ import static java.util.Objects.nonNull;
     return version;
   }
 
-  @Override public Optional<Request> request(String request)
+  @Override public Optional<Request> request(String requestId, String request)
   {
     return Optional.empty();
   }
