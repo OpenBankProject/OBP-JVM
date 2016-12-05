@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.transport.spi;
@@ -12,6 +11,8 @@ import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.User;
 
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
@@ -46,9 +47,11 @@ public interface Encoder
 
   Request getUser(String userId);
 
-  Request saveTransaction(String userId, String accountId, String currency,
-    String amount, String otherAccountId, String otherAccountCurrency,
-    String transactionType);
+  Request createTransaction(String accountId, BigDecimal amount, String bankId,
+    ZonedDateTime completedDate, String counterpartyId, String counterpartyName,
+    String currency, String description, BigDecimal newBalanceAmount,
+    String newBalanceCurrency, ZonedDateTime postedDate, String transactionId,
+    String type, String userId);
 
   String account(Account a);
 

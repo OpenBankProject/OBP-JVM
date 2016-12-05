@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 
@@ -120,15 +119,31 @@ class MockReceiver extends AbstractReceiver
   {
     log.trace("{}", r.raw());
 
-    assertThat(r.accountId(), isPresent());
-    assertThat(r.amount(), isPresent());
-    assertThat(r.currency(), isPresent());
-    assertThat(r.otherAccountId(), isPresent());
-    assertThat(r.otherAccountCurrency(), isPresent());
-    assertThat(r.transactionType(), isPresent());
-    assertThat(r.userId(), isPresent());
+    try
+    {
+      assertThat(r.accountId(), isPresent());
+      assertThat(r.amount(), isPresent());
+      assertThat(r.bankId(), isPresent());
+      assertThat(r.currency(), isPresent());
+      assertThat(r.otherId(), isPresent());
+      assertThat(r.otherName(), isPresent());
+      assertThat(r.currency(), isPresent());
+      assertThat(r.description(), isPresent());
+      assertThat(r.newAmount(), isPresent());
+      assertThat(r.newCurrency(), isPresent());
+      assertThat(r.posted(), isPresent());
+      assertThat(r.transactionId(), isPresent());
+      assertThat(r.transactionType(), isPresent());
+      assertThat(r.userId(), isPresent());
 
-    return e.transactionId("tid-x");
+      return e.transactionId("tid-x");
+    }
+    catch(Error x)
+    {
+      log.error(r.raw(), x);
+
+      return e.error(x.getMessage());
+    }
   }
 
   static final Logger log = LoggerFactory.getLogger(MockReceiver.class);

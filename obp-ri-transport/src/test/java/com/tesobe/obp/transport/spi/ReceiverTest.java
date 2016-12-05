@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 
@@ -26,7 +25,6 @@ import java.util.UUID;
 
 import static com.tesobe.obp.transport.Transport.Encoding.json;
 import static com.tesobe.obp.transport.Transport.Version.Sep2016;
-import static com.tesobe.obp.util.MethodMatcher.get;
 import static com.tesobe.obp.util.MethodMatcher.optionallyReturns;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -161,26 +159,29 @@ import static org.junit.Assert.assertThat;
     assertThat(user, optionallyReturns("email", userId));
   }
 
-  @Test public void saveTransaction() throws Exception
-  {
-    String id = UUID.randomUUID().toString();
-    String userId = "user-x";
-    String accountId = "account-x";
-    String currency = "currency-x";
-    String amount = "amount-x";
-    String otherAccountId = "account-y";
-    String otherAccountCurrency = "currency-y";
-    String transactionType = "type-x";
-    String request = new JSONObject().put("version", Sep2016)
-      .put("name", "save transaction").put("user", userId)
-      .put("account", accountId).put("currency", currency).put("amount", amount)
-      .put("otherId", otherAccountId).put("otherCurrency", otherAccountCurrency)
-      .put("transactionType", transactionType).toString();
-    String response = responder.respond(new Message(id, request));
-    Optional<String> tid = decoder.transactionId(response);
-
-    assertThat(tid, get("tid-x"));
-  }
+//  you are history, baby
+//  @Test public void saveTransaction() throws Exception
+//  {
+//    String id = UUID.randomUUID().toString();
+//    String userId = "user-x";
+//    String accountId = "account-x";
+//    String currency = "currency-x";
+//    String amount = "amount-x";
+//    String otherAccountId = "account-y";
+//    String otherAccountCurrency = "currency-y";
+//    String transactionType = "type-x";
+//    String request = new JSONObject().put("version", Sep2016)
+//      .put("name", "save transaction").put("user", userId)
+//      .put("account", accountId).put("currency", currency).put("amount",
+// amount)
+//      .put("otherId", otherAccountId).put("otherCurrency",
+// otherAccountCurrency)
+//      .put("transactionType", transactionType).toString();
+//    String response = responder.respond(new Message(id, request));
+//    Optional<String> tid = decoder.transactionId(response);
+//
+//    assertThat(tid, get("tid-x"));
+//  }
 
   private Decoder decoder;
   private Receiver responder;

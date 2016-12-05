@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.transport.spi;
@@ -12,6 +11,8 @@ import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Transaction;
 import com.tesobe.obp.transport.User;
 
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 /**
@@ -21,13 +22,13 @@ public interface Decoder
 {
   Optional<Request> request(String request);
 
-  Optional<Account> account(String response) ;
+  Optional<Account> account(String response);
 
   Iterable<Account> accounts(String response);
 
-  Optional<Bank> bank(String response) ;
+  Optional<Bank> bank(String response);
 
-  Iterable<Bank> banks(String response) ;
+  Iterable<Bank> banks(String response);
 
   Optional<String> transactionId(String response);
 
@@ -53,13 +54,23 @@ public interface Decoder
 
     Optional<String> userId();
 
-    Optional<String> amount();
+    Optional<BigDecimal> amount();
+
+    Optional<BigDecimal> newAmount();
+
+    Optional<ZonedDateTime> completed();
+
+    Optional<ZonedDateTime> posted();
 
     Optional<String> currency();
 
-    Optional<String> otherAccountId();
+    Optional<String> otherId();
 
-    Optional<String> otherAccountCurrency();
+    Optional<String> otherName();
+
+    Optional<String> description();
+
+    Optional<String> newCurrency();
 
     Optional<String> transactionType();
   }

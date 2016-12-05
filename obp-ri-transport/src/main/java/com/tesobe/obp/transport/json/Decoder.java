@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.transport.json;
@@ -18,6 +17,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
@@ -62,9 +63,26 @@ import static java.util.Objects.nonNull;
         return Optional.ofNullable(json.optString("user", null));
       }
 
-      @Override public Optional<String> amount()
+      @Override public Optional<BigDecimal> amount()
       {
-        return Optional.ofNullable(json.optString("amount", null));
+        return Optional.ofNullable(
+          json.optBigDecimal("amount", BigDecimal.ZERO));
+      }
+
+      @Override public Optional<BigDecimal> newAmount()
+      {
+        return Optional.ofNullable(
+          json.optBigDecimal("newAmount", BigDecimal.ZERO));
+      }
+
+      @Override public Optional<ZonedDateTime> completed()
+      {
+        return Optional.ofNullable(Json.fmj(json.optString("completed", null)));
+      }
+
+      @Override public Optional<ZonedDateTime> posted()
+      {
+        return Optional.ofNullable(Json.fmj(json.optString("posted", null)));
       }
 
       @Override public Optional<String> currency()
@@ -72,14 +90,24 @@ import static java.util.Objects.nonNull;
         return Optional.ofNullable(json.optString("currency", null));
       }
 
-      @Override public Optional<String> otherAccountId()
+      @Override public Optional<String> otherName()
+      {
+        return Optional.ofNullable(json.optString("otherName", null));
+      }
+
+      @Override public Optional<String> description()
+      {
+        return Optional.ofNullable(json.optString("description", null));
+      }
+
+      @Override public Optional<String> otherId()
       {
         return Optional.ofNullable(json.optString("otherId", null));
       }
 
-      @Override public Optional<String> otherAccountCurrency()
+      @Override public Optional<String> newCurrency()
       {
-        return Optional.ofNullable(json.optString("otherCurrency", null));
+        return Optional.ofNullable(json.optString("newCurrency", null));
       }
 
       @Override public Optional<String> transactionType()
@@ -98,7 +126,10 @@ import static java.util.Objects.nonNull;
       /**
        * @return empty string if absent or without value
        */
-      @Override public String version() { return version; }
+      @Override public String version()
+      {
+        return version;
+      }
 
       @Override public String raw()
       {
@@ -360,7 +391,6 @@ import static java.util.Objects.nonNull;
   {
     return getClass().getTypeName() + "-" + version;
   }
-
-  final Transport.Version version;
   static final Logger log = LoggerFactory.getLogger(Decoder.class);
+  final Transport.Version version;
 }

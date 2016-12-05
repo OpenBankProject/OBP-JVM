@@ -12,6 +12,8 @@ import com.tesobe.obp.transport.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -82,12 +84,11 @@ import java.util.UUID;
 
   @Override
   public Optional<Transaction> getTransaction(String bankId, String accountId,
-    String transactionId, String userId)
-    throws InterruptedException
+    String transactionId, String userId) throws InterruptedException
   {
     String id = UUID.randomUUID().toString();
-    String request = encoder
-      .getTransaction(bankId, accountId, transactionId, userId).toString();
+    String request = encoder.getTransaction(bankId, accountId, transactionId,
+      userId).toString();
     String response = sender.send(new Message(id, request));
 
     log.trace("{} \u2192 {}", request, response);
@@ -145,8 +146,7 @@ import java.util.UUID;
     return decoder.bank(response);
   }
 
-  @Override public Iterable<Bank> getBanks()
-    throws InterruptedException
+  @Override public Iterable<Bank> getBanks() throws InterruptedException
   {
     String id = UUID.randomUUID().toString();
     String request = encoder.getBanks().toString();
@@ -197,15 +197,18 @@ import java.util.UUID;
   }
 
   @Override
-  public Optional<String> saveTransaction(String userId, String accountId,
-    String currency, String amount, String otherAccountId,
-    String otherAccountCurrency, String transactionType)
+  public Optional<String> createTransaction(String accountId, BigDecimal amount,
+    String bankId, ZonedDateTime completedDate, String counterpartyId,
+    String counterpartyName, String currency, String description,
+    BigDecimal newBalanceAmount, String newBalanceCurrency,
+    ZonedDateTime postedDate, String transactionId, String type, String userId)
     throws InterruptedException
   {
     String id = UUID.randomUUID().toString();
-    String request = encoder
-      .saveTransaction(userId, accountId, currency, amount, otherAccountId,
-        otherAccountCurrency, transactionType).toString();
+    String request = encoder.createTransaction(accountId, amount, bankId,
+      completedDate, counterpartyId, counterpartyName, currency, description,
+      newBalanceAmount, newBalanceCurrency, postedDate, transactionId, type,
+      userId).toString();
     String response = sender.send(new Message(id, request));
 
     log.trace("{} \u2192 {}", request, response);
@@ -213,11 +216,10 @@ import java.util.UUID;
     return decoder.transactionId(response);
   }
 
+  protected static final Logger log = LoggerFactory.getLogger(
+    DefaultConnector.class);
   protected final Transport.Version version;
   protected final Decoder decoder;
   protected final Encoder encoder;
   protected final Sender sender;
-
-  protected static final Logger log = LoggerFactory
-    .getLogger(DefaultConnector.class);
 }

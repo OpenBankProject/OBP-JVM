@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.transport.json;
@@ -17,6 +16,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import static java.util.Objects.nonNull;
@@ -108,14 +109,27 @@ import static java.util.Objects.nonNull;
     return request("get user").put("user", userId);
   }
 
-  @Override public Request saveTransaction(String userId, String accountId,
-    String currency, String amount, String otherAccountId,
-    String otherAccountCurrency, String transactionType)
+  @Override
+  public Request createTransaction(String accountId, BigDecimal amount,
+    String bankId, ZonedDateTime completedDate, String counterpartyId,
+    String counterpartyName, String currency, String description,
+    BigDecimal newBalanceAmount, String newBalanceCurrency,
+    ZonedDateTime postedDate, String transactionId, String type, String userId)
   {
-    return request("save transaction").put("user", userId)
-      .put("account", accountId).put("currency", currency).put("amount", amount)
-      .put("otherId", otherAccountId).put("otherCurrency", otherAccountCurrency)
-      .put("transactionType", transactionType);
+    return request("save transaction").put("account", accountId)
+      .put("amount", amount)
+      .put("bank", bankId)
+      .put("completed", completedDate)
+      .put("otherId", counterpartyId)
+      .put("otherName", counterpartyName)
+      .put("currency", currency)
+      .put("description", description)
+      .put("newAmount", newBalanceAmount)
+      .put("newCurrency", newBalanceCurrency)
+      .put("posted", postedDate)
+      .put("transaction", transactionId)
+      .put("transactionType", type)
+      .put("user", userId);
   }
 
   protected RequestBuilder request(String name)
@@ -289,10 +303,8 @@ import static java.util.Objects.nonNull;
   {
     return getClass().getTypeName() + "-" + version;
   }
-
-  final Transport.Version version;
-
   static final Logger log = LoggerFactory.getLogger(Encoder.class);
+  final Transport.Version version;
 
   class RequestBuilder implements Request
   {
@@ -312,6 +324,23 @@ import static java.util.Objects.nonNull;
     public RequestBuilder put(String key, String value)
     {
       request.put(key, value);
+
+      return this;
+    }
+
+    public RequestBuilder put(String key, BigDecimal value)
+    {
+      request.put(key, value);
+
+      return this;
+    }
+
+    public RequestBuilder put(String key, ZonedDateTime value)
+    {
+      if(value != null)
+      {
+        request.put(key, Json.toj(value));
+      }
 
       return this;
     }

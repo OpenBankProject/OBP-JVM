@@ -1,8 +1,7 @@
 /*
- * Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
  *
- * Use of this source code is governed by a GNU AFFERO license
- * that can be found in the LICENSE file.
+ * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 
@@ -19,6 +18,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -28,6 +29,7 @@ import java.util.concurrent.SynchronousQueue;
 
 import static com.tesobe.obp.util.MethodMatcher.optionallyReturns;
 import static com.tesobe.obp.util.MethodMatcher.returns;
+import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.core.AnyOf.anyOf;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -208,19 +210,27 @@ public class DefaultConnectorTest
     assertThat(user, optionallyReturns("email", userId));
   }
 
-  @Test public void saveTransaction() throws Exception
+  @Test public void createTransaction() throws Exception
   {
-    String userId = "user-x";
     String accountId = "account-x";
+    BigDecimal amount = BigDecimal.TEN;
+    String bankId = "bank-x";
+    ZonedDateTime completed = ZonedDateTime.of(1999, 1, 2, 0, 0, 0, 0, UTC);
+    String counterpartyId = "counterpartyId-x";
+    String counterpartyName = "counterpartyName-x";
     String currency = "currency-x";
-    String amount = "amount-x";
-    String otherAccountId = "account-y";
-    String otherAccountCurrency = "currency-y";
-    String transactionType = "type-x";
+    String description = "description-x";
+    BigDecimal newBalanceAmount = BigDecimal.ZERO;
+    String newBalanceCurrency = "newBalanceCurrency";
+    ZonedDateTime posted = ZonedDateTime.of(1999, 1, 2, 0, 0, 0, 0, UTC);
+    String transactionId = "transactionId-y";
+    String type = "type-x";
+    String userId = "user-x";
 
-    Optional<String> tid = connector
-      .saveTransaction(userId, accountId, currency, amount, otherAccountId,
-        otherAccountCurrency, transactionType);
+    Optional<String> tid = connector.createTransaction(accountId, amount,
+      bankId, completed, counterpartyId, counterpartyName, currency,
+      description, newBalanceAmount, newBalanceCurrency, posted, transactionId,
+      type, userId);
 
     assertThat(tid, returns("get", "tid-x"));
   }
