@@ -13,7 +13,7 @@
   <parent>
     <artifactId>obp-ri</artifactId>
     <groupId>com.tesobe.obp</groupId>
-    <version>2016.11-RC1-SNAPSHOT</version>
+    <version>2016.11-RC3</version>
   </parent>
 
   <artifactId>obp-ri-kafka</artifactId>
@@ -43,3 +43,24 @@
   </dependencies>
 
 </project>
+
+<!--
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+      <version>2.11.8</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka_2.11</artifactId>
+      <version>${kafka.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>info.batey.kafka</groupId>
+      <artifactId>kafka-unit</artifactId>
+      <version>0.6</version>
+      <scope>test</scope>
+    </dependency>
+-->

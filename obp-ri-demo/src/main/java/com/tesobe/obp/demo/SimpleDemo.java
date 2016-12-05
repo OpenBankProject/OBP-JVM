@@ -23,7 +23,7 @@ import java.util.Optional;
  * Enable trace log level for <tt>com.tesobe.obp.transport</tt> to see what
  * happens behind the scenes.
  */
-public class SuperSimpleDemo
+public class SimpleDemo
 {
   public static void main(String[] commandLine) throws InterruptedException
   {

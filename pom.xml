@@ -13,7 +13,7 @@
 
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri</artifactId>
-  <version>2016.11-RC1-SNAPSHOT</version>
+  <version>2016.11-RC3</version>
   <packaging>pom</packaging>
   <name>The Open Bank Project Reference Implementation</name>
 
