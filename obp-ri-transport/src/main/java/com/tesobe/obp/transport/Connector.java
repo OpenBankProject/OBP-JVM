@@ -141,10 +141,24 @@ import java.util.Optional;
   Optional<User> getUser(String userId)
     throws InterruptedException;
 
-  Optional<String> createTransaction(String accountId, BigDecimal amount,
-    String bankId, ZonedDateTime completedDate, String counterpartyId,
-    String counterpartyName, String currency, String description,
-    BigDecimal newBalanceAmount, String newBalanceCurrency,
-    ZonedDateTime postedDate, String transactionId, String type, String userId)
+  Optional<String> createTransaction(String transactionId, String type,
+    BigDecimal amount, String currency, String accountId, String accountName,
+    String bankId, String counterpartyId, String counterpartyName,
+    ZonedDateTime completedDate, ZonedDateTime postedDate, String description,
+    String userId) throws InterruptedException;
+
+  Optional<String> createTransactionWithCounterparty(String transactionId,
+    String transactionRequestId, String numberOfTransactions,
+    BigDecimal controlTransactionAmountSum, String transactionType,
+    BigDecimal transactionAmount, String transactionCurrency, String accountId,
+    String accountName, String accountBankId, String accountCurrency,
+    String counterpartyId, String counterpartyName,
+    String counterpartyBankRoutingScheme, String counterpartyBankRoutingAddress,
+    String counterpartyAccountRoutingScheme,
+    String counterpartyAccountRoutingAddress, String counterpartyCurrency,
+    ZonedDateTime requestedExecutionDate, ZonedDateTime currentTimestamp,
+    String description, String userId) throws InterruptedException;
+
+  Optional<String> createTransactionWithCounterparty(TransactionDescriptor td)
     throws InterruptedException;
 }

@@ -11,7 +11,7 @@
   <parent>
     <artifactId>obp-ri</artifactId>
     <groupId>com.tesobe.obp</groupId>
-    <version>2016.9-patched</version>
+    <version>2016.9-ALPHA12-SOCGEN2</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 

@@ -9,6 +9,7 @@ package com.tesobe.obp.transport.spi;
 import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Transaction;
+import com.tesobe.obp.transport.TransactionDescriptor;
 import com.tesobe.obp.transport.User;
 
 import java.math.BigDecimal;
@@ -47,11 +48,25 @@ public interface Encoder
 
   Request getUser(String userId);
 
-  Request createTransaction(String accountId, BigDecimal amount, String bankId,
-    ZonedDateTime completedDate, String counterpartyId, String counterpartyName,
-    String currency, String description, BigDecimal newBalanceAmount,
-    String newBalanceCurrency, ZonedDateTime postedDate, String transactionId,
-    String type, String userId);
+  Request createTransaction(String transactionId, String type,
+    BigDecimal amount, String currency, String accountId, String accountName,
+    String bankId, String counterpartyId, String counterpartyName,
+    ZonedDateTime completedDate, ZonedDateTime postedDate, String description,
+    String userId);
+
+  String createTransaction(TransactionDescriptor td);
+
+  Request createTransactionWithCounterparty(String transactionId,
+    String transactionRequestId, String numberOfTransactions,
+    BigDecimal controlTransactionAmountSum, String transactionType,
+    BigDecimal transactionAmount, String transactionCurrency, String accountId,
+    String accountName, String accountBankId, String accountCurrency,
+    String counterpartyId, String counterpartyName,
+    String counterpartyBankRoutingScheme, String counterpartyBankRoutingAddress,
+    String counterpartyAccountRoutingScheme,
+    String counterpartyAccountRoutingAddress, String counterpartyCurrency,
+    ZonedDateTime requestedExecutionDate, ZonedDateTime currentTimestamp,
+    String description, String userId);
 
   String account(Account a);
 

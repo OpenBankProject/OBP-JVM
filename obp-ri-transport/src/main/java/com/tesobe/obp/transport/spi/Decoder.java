@@ -56,8 +56,6 @@ public interface Decoder
 
     Optional<BigDecimal> amount();
 
-    Optional<BigDecimal> newAmount();
-
     Optional<ZonedDateTime> completed();
 
     Optional<ZonedDateTime> posted();
@@ -69,8 +67,6 @@ public interface Decoder
     Optional<String> otherName();
 
     Optional<String> description();
-
-    Optional<String> newCurrency();
 
     Optional<String> transactionType();
   }

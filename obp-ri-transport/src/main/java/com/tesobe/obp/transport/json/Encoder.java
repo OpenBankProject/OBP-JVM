@@ -9,6 +9,7 @@ package com.tesobe.obp.transport.json;
 import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Transaction;
+import com.tesobe.obp.transport.TransactionDescriptor;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.transport.User;
 import org.json.JSONArray;
@@ -109,14 +110,14 @@ import static java.util.Objects.nonNull;
     return request("get user").put("user", userId);
   }
 
-  @Override
-  public Request createTransaction(String accountId, BigDecimal amount,
-    String bankId, ZonedDateTime completedDate, String counterpartyId,
-    String counterpartyName, String currency, String description,
-    BigDecimal newBalanceAmount, String newBalanceCurrency,
-    ZonedDateTime postedDate, String transactionId, String type, String userId)
+  @Override public Request createTransaction(String transactionId, String type,
+    BigDecimal amount, String currency, String accountId, String accountName,
+    String bankId, String counterpartyId, String counterpartyName,
+    ZonedDateTime completedDate, ZonedDateTime postedDate, String description,
+    String userId)
   {
     return request("save transaction").put("account", accountId)
+      //.put("name", accountName)
       .put("amount", amount)
       .put("bank", bankId)
       .put("completed", completedDate)
@@ -124,12 +125,47 @@ import static java.util.Objects.nonNull;
       .put("otherName", counterpartyName)
       .put("currency", currency)
       .put("description", description)
-      .put("newAmount", newBalanceAmount)
-      .put("newCurrency", newBalanceCurrency)
       .put("posted", postedDate)
       .put("transaction", transactionId)
       .put("transactionType", type)
       .put("user", userId);
+  }
+
+  @Override public String createTransaction(TransactionDescriptor td)
+  {
+    throw new RuntimeException("Not implemented yet!");
+  }
+
+  @Override
+  public Request createTransactionWithCounterparty(String transactionId,
+    String transactionRequestId, String numberOfTransactions,
+    BigDecimal controlTransactionAmountSum, String transactionType,
+    BigDecimal transactionAmount, String transactionCurrency, String accountId,
+    String accountName, String accountBankId, String accountCurrency,
+    String counterpartyId, String counterpartyName,
+    String counterpartyBankRoutingScheme, String counterpartyBankRoutingAddress,
+    String counterpartyAccountRoutingScheme,
+    String counterpartyAccountRoutingAddress, String counterpartyCurrency,
+    ZonedDateTime requestedExecutionDate, ZonedDateTime currentTimestamp,
+    String description, String userId)
+  {
+    throw new RuntimeException("Not implemented yet!");
+      /*request("save transaction with counterparty")
+      .put("account", accountId)
+      .put("name", accountName)
+      .put("amount", amount)
+      .put("bank", bankId)
+      .put("completed", completedDate)
+      .put("otherId", counterpartyId)
+      .put("otherName", counterpartyName)
+      .put("currency", currency)
+      .put("description", description)
+      .put("newAmount", new BigDecimal("0.0"))
+      .put("newCurrency", "")
+      .put("posted", postedDate)
+      .put("transaction", transactionId)
+      .put("transactionType", type)
+      .put("user", userId);*/
   }
 
   protected RequestBuilder request(String name)

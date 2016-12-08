@@ -69,12 +69,6 @@ import static java.util.Objects.nonNull;
           json.optBigDecimal("amount", BigDecimal.ZERO));
       }
 
-      @Override public Optional<BigDecimal> newAmount()
-      {
-        return Optional.ofNullable(
-          json.optBigDecimal("newAmount", BigDecimal.ZERO));
-      }
-
       @Override public Optional<ZonedDateTime> completed()
       {
         return Optional.ofNullable(Json.fmj(json.optString("completed", null)));
@@ -103,11 +97,6 @@ import static java.util.Objects.nonNull;
       @Override public Optional<String> otherId()
       {
         return Optional.ofNullable(json.optString("otherId", null));
-      }
-
-      @Override public Optional<String> newCurrency()
-      {
-        return Optional.ofNullable(json.optString("newCurrency", null));
       }
 
       @Override public Optional<String> transactionType()

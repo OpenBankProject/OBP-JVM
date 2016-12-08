@@ -12,6 +12,7 @@ import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Connector;
 import com.tesobe.obp.transport.Message;
 import com.tesobe.obp.transport.Transaction;
+import com.tesobe.obp.transport.TransactionDescriptor;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.transport.User;
 import org.junit.After;
@@ -40,8 +41,7 @@ public class DefaultConnectorTest
   @Before public void defaultConnector()
   {
     Transport.Factory factory = Transport.defaultFactory();
-    Receiver responder = new MockReceiver(factory.decoder(),
-      factory.encoder());
+    Receiver responder = new MockReceiver(factory.decoder(), factory.encoder());
     final BlockingQueue<String> in = new SynchronousQueue<>();
     final BlockingQueue<Message> out = new SynchronousQueue<>();
 
@@ -213,6 +213,7 @@ public class DefaultConnectorTest
   @Test public void createTransaction() throws Exception
   {
     String accountId = "account-x";
+    String accountName = "AccountX";
     BigDecimal amount = BigDecimal.TEN;
     String bankId = "bank-x";
     ZonedDateTime completed = ZonedDateTime.of(1999, 1, 2, 0, 0, 0, 0, UTC);
@@ -220,17 +221,135 @@ public class DefaultConnectorTest
     String counterpartyName = "counterpartyName-x";
     String currency = "currency-x";
     String description = "description-x";
-    BigDecimal newBalanceAmount = BigDecimal.ZERO;
-    String newBalanceCurrency = "newBalanceCurrency";
     ZonedDateTime posted = ZonedDateTime.of(1999, 1, 2, 0, 0, 0, 0, UTC);
-    String transactionId = "transactionId-y";
+    String transactionId = "transactionId-x";
     String type = "type-x";
     String userId = "user-x";
 
-    Optional<String> tid = connector.createTransaction(accountId, amount,
-      bankId, completed, counterpartyId, counterpartyName, currency,
-      description, newBalanceAmount, newBalanceCurrency, posted, transactionId,
-      type, userId);
+    Optional<String> tid = connector.createTransaction(transactionId, type,
+      amount, currency, accountId, accountName, bankId, counterpartyId,
+      counterpartyName, completed, posted, description, userId);
+
+    assertThat(tid, returns("get", "tid-x"));
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void createTransactionWithCounterparty() throws Exception
+  {
+    TransactionDescriptor td = new TransactionDescriptor()
+    {
+      @Override public String transactionId()
+      {
+        return "transaction-x";
+      }
+
+      @Override public String transactionRequestId()
+      {
+        return "transaction-request-x";
+      }
+
+      @Override public String numberOfTransactions()
+      {
+        return "number-0f-transactions-x";
+      }
+
+      @Override public BigDecimal controlTransactionAmountSum()
+      {
+        return BigDecimal.ZERO;
+      }
+
+      @Override public String transactionType()
+      {
+        return "transaction-type-x";
+      }
+
+      @Override public BigDecimal transactionAmount()
+      {
+        return BigDecimal.TEN;
+      }
+
+      @Override public String transactionCurrency()
+      {
+        return "transaction-currency-x";
+      }
+
+      @Override public String accountId()
+      {
+        return "account-x";
+      }
+
+      @Override public String accountName()
+      {
+        return "account-name-x";
+      }
+
+      @Override public String accountBankId()
+      {
+        return "account-bank-x";
+      }
+
+      @Override public String accountCurrency()
+      {
+        return "account-currency-x";
+      }
+
+      @Override public String counterpartyId()
+      {
+        return "counter-party-x";
+      }
+
+      @Override public String counterpartyName()
+      {
+        return "counter-party-name-x";
+      }
+
+      @Override public String counterpartyBankRoutingScheme()
+      {
+        return "counter-party-bank-routing-scheme-x";
+      }
+
+      @Override public String counterpartyBankRoutingAddress()
+      {
+        return "counter-party-bank-routing-address-x";
+      }
+
+      @Override public String counterpartyAccountRoutingScheme()
+      {
+        return "counter-party-account-routing-scheme-x";
+      }
+
+      @Override public String counterpartyAccountRoutingAddress()
+      {
+        return "counter-party-account-routing-address-x";
+      }
+
+      @Override public String counterpartyCurrency()
+      {
+        return "counter-party-currency-x";
+      }
+
+      @Override public ZonedDateTime requestedExecutionDate()
+      {
+        return ZonedDateTime.of(1999, 1, 2, 0, 0, 0, 0, UTC);
+      }
+
+      @Override public ZonedDateTime currentTimestamp()
+      {
+        return ZonedDateTime.of(1999, 1, 2, 0, 0, 0, 0, UTC);
+      }
+
+      @Override public String description()
+      {
+        return "description-x";
+      }
+
+      @Override public String userId()
+      {
+        return "user-x";
+      }
+    };
+
+    Optional<String> tid = connector.createTransactionWithCounterparty(td);
 
     assertThat(tid, returns("get", "tid-x"));
   }

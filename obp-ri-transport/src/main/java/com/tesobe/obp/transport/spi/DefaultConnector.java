@@ -7,6 +7,7 @@ import com.tesobe.obp.transport.Connector;
 import com.tesobe.obp.transport.Message;
 import com.tesobe.obp.transport.Sender;
 import com.tesobe.obp.transport.Transaction;
+import com.tesobe.obp.transport.TransactionDescriptor;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.transport.User;
 import org.slf4j.Logger;
@@ -197,24 +198,65 @@ import java.util.UUID;
   }
 
   @Override
-  public Optional<String> createTransaction(String accountId, BigDecimal amount,
-    String bankId, ZonedDateTime completedDate, String counterpartyId,
-    String counterpartyName, String currency, String description,
-    BigDecimal newBalanceAmount, String newBalanceCurrency,
-    ZonedDateTime postedDate, String transactionId, String type, String userId)
-    throws InterruptedException
+  public Optional<String> createTransaction(String transactionId, String type,
+    BigDecimal amount, String currency, String accountId, String accountName,
+    String bankId, String counterpartyId, String counterpartyName,
+    ZonedDateTime completedDate, ZonedDateTime postedDate, String description,
+    String userId) throws InterruptedException
   {
     String id = UUID.randomUUID().toString();
-    String request = encoder.createTransaction(accountId, amount, bankId,
-      completedDate, counterpartyId, counterpartyName, currency, description,
-      newBalanceAmount, newBalanceCurrency, postedDate, transactionId, type,
-      userId).toString();
+    String request = encoder.createTransaction(transactionId, type, amount,
+      currency, accountId, accountName, bankId, counterpartyId,
+      counterpartyName, completedDate, postedDate, description, userId)
+      .toString();
     String response = sender.send(new Message(id, request));
 
     log.trace("{} \u2192 {}", request, response);
 
     return decoder.transactionId(response);
   }
+
+  @Override public Optional<String> createTransactionWithCounterparty(
+    String transactionId, String transactionRequestId,
+    String numberOfTransactions, BigDecimal controlTransactionAmountSum,
+    String transactionType, BigDecimal transactionAmount,
+    String transactionCurrency, String accountId, String accountName,
+    String accountBankId, String accountCurrency, String counterpartyId,
+    String counterpartyName, String counterpartyBankRoutingScheme,
+    String counterpartyBankRoutingAddress,
+    String counterpartyAccountRoutingScheme,
+    String counterpartyAccountRoutingAddress, String counterpartyCurrency,
+    ZonedDateTime requestedExecutionDate, ZonedDateTime currentTimestamp,
+    String description, String userId) throws InterruptedException
+  {
+    String id = UUID.randomUUID().toString();
+    String request = encoder.createTransactionWithCounterparty(transactionId,
+      transactionRequestId, numberOfTransactions, controlTransactionAmountSum,
+      transactionType, transactionAmount, transactionCurrency, accountId,
+      accountName, accountBankId, accountCurrency, counterpartyId,
+      counterpartyName, counterpartyBankRoutingScheme,
+      counterpartyBankRoutingAddress, counterpartyAccountRoutingScheme,
+      counterpartyAccountRoutingAddress, counterpartyCurrency,
+      requestedExecutionDate, currentTimestamp, description, userId).toString();
+    String response = sender.send(new Message(id, request));
+
+    log.trace("{} \u2192 {}", request, response);
+
+    return decoder.transactionId(response);
+  }
+
+  @Override public Optional<String> createTransactionWithCounterparty(
+    TransactionDescriptor td) throws InterruptedException
+  {
+    String id = UUID.randomUUID().toString();
+    String request = encoder.createTransaction(td);
+    String response = sender.send(new Message(id, request));
+
+    log.trace("{} \u2192 {}", request, response);
+
+    return decoder.transactionId(response);
+  }
+
 
   protected static final Logger log = LoggerFactory.getLogger(
     DefaultConnector.class);
