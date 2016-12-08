@@ -124,10 +124,10 @@ class MockReceiver extends AbstractReceiver
       assertThat(r.accountId(), isPresent());
       assertThat(r.amount(), isPresent());
       assertThat(r.bankId(), isPresent());
+      assertThat(r.completed(), isPresent());
       assertThat(r.currency(), isPresent());
       assertThat(r.otherId(), isPresent());
       assertThat(r.otherName(), isPresent());
-      assertThat(r.currency(), isPresent());
       assertThat(r.description(), isPresent());
       assertThat(r.newAmount(), isPresent());
       assertThat(r.newCurrency(), isPresent());
