@@ -39,6 +39,8 @@ import java.util.stream.StreamSupport;
       new Props(South.class, producerProps).toMap());
 
     connector = factory.connector(transport);
+
+    transport.receive();
   }
 
   public List<Bank> getBanks() throws InterruptedException
