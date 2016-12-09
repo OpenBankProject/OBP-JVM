@@ -20,7 +20,7 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 import static java.util.Objects.nonNull;
@@ -28,7 +28,8 @@ import static java.util.Objects.nonNull;
 /**
  * @since 2016.11
  */
-public class EncoderNov2016 extends EncoderSep2016 implements Encoder
+@SuppressWarnings("WeakerAccess") public class EncoderNov2016
+  extends EncoderSep2016 implements Encoder
 {
   public EncoderNov2016(Transport.Version v)
   {
@@ -52,9 +53,8 @@ public class EncoderNov2016 extends EncoderSep2016 implements Encoder
     return result.toString();
   }
 
-  @Override
-  public String accounts(List<? extends Account> as, int count, boolean more,
-    String state)
+  @Override public String accounts(Collection<? extends Account> as, int count,
+    boolean more, String state)
   {
     JSONArray data = null;
 
@@ -91,7 +91,7 @@ public class EncoderNov2016 extends EncoderSep2016 implements Encoder
   }
 
   @Override
-  public String banks(List<? extends Bank> bs, int count, boolean more,
+  public String banks(Collection<? extends Bank> bs, int count, boolean more,
     String state)
   {
     JSONArray data = null;
@@ -179,7 +179,7 @@ public class EncoderNov2016 extends EncoderSep2016 implements Encoder
   }
 
   @Override
-  public String transactions(List<? extends Transaction> ts, int count,
+  public String transactions(Collection<? extends Transaction> ts, int count,
     boolean more, String state)
   {
     JSONArray data = null;
@@ -216,7 +216,7 @@ public class EncoderNov2016 extends EncoderSep2016 implements Encoder
   }
 
   @Override
-  public String users(List<? extends User> users, int count, boolean more,
+  public String users(Collection<? extends User> users, int count, boolean more,
     String state)
   {
     JSONArray data = null;
@@ -236,8 +236,7 @@ public class EncoderNov2016 extends EncoderSep2016 implements Encoder
   }
 
   protected JSONObject response(Transport.Target target, int count,
-    boolean more,
-    String state, JSONArray data)
+    boolean more, String state, JSONArray data)
   {
     JSONObject response = new JSONObject();
 

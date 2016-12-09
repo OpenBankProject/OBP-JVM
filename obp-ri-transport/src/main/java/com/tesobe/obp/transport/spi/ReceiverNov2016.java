@@ -42,9 +42,9 @@ import java.util.function.Supplier;
     {
       return r.target()
         .map(t -> get(r, e, t))
-        .orElse(errorEncoder.error("Target missing!"));
+        .orElseGet(() -> errorEncoder.error("Target missing!"));
     }
-    catch(Error x) // !
+    catch(Throwable x) // !
     {
       log.error(r.raw(), x);
 

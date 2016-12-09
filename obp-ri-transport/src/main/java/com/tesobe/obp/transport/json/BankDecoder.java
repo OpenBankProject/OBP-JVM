@@ -33,7 +33,7 @@ class BankDecoder implements Bank
 
   @Override public String name()
   {
-    return json.optString("short", null);
+    return json.optString("name", null);
   }
 
   @Override public String logo()

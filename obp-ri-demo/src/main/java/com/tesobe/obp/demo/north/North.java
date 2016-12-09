@@ -9,9 +9,11 @@ package com.tesobe.obp.demo.north;
 import com.tesobe.obp.demo.south.South;
 import com.tesobe.obp.kafka.SimpleNorth;
 import com.tesobe.obp.kafka.SimpleTransport;
+import com.tesobe.obp.transport.Account;
 import com.tesobe.obp.transport.Bank;
 import com.tesobe.obp.transport.Connector;
 import com.tesobe.obp.transport.Transport;
+import com.tesobe.obp.transport.User;
 import com.tesobe.obp.util.Props;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,10 +36,10 @@ import java.util.stream.StreamSupport;
     log.info("Starting TESOBE's OBP kafka north demo...");
 
     Transport.Factory factory = Transport.defaultFactory();
-    SimpleTransport transport = new SimpleNorth(consumerTopic, producerTopic,
+
+    transport = new SimpleNorth(consumerTopic, producerTopic,
       new Props(North.class, consumerProps).toMap(),
       new Props(South.class, producerProps).toMap());
-
     connector = factory.connector(transport);
 
     transport.receive();
@@ -49,6 +51,25 @@ import java.util.stream.StreamSupport;
       .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
   }
 
+  public List<User> getUsers() throws InterruptedException
+  {
+    return StreamSupport.stream(connector.getUsers().spliterator(), false)
+      .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+  }
+
+  public List<Account> getAccounts(Bank b, User u) throws InterruptedException
+  {
+    return StreamSupport.stream(
+      connector.getAccounts(b.id(), u.id()).spliterator(), false)
+      .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+  }
+
+  public void shutdown()
+  {
+    transport.shutdown();
+  }
+
   final static Logger log = LoggerFactory.getLogger(North.class);
   final Connector connector;
+  final SimpleTransport transport;
 }

@@ -191,5 +191,10 @@ import static com.tesobe.obp.transport.Transport.Version.Nov2016;
 
     decoders.put(json, ds);
     encoders.put(json, es);
+
+    for(Target t : Target.values())
+    {
+      targets.put(t.name(), t);
+    }
   }
 }
