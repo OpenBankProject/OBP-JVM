@@ -6,49 +6,39 @@
  */
 package com.tesobe.obp.demo.south;
 
+import com.tesobe.obp.kafka.SimpleSouth;
+import com.tesobe.obp.kafka.SimpleTransport;
+import com.tesobe.obp.transport.Responder;
+import com.tesobe.obp.transport.Transport;
+import com.tesobe.obp.transport.spi.LoggingReceiver;
+import com.tesobe.obp.transport.spi.Receiver;
+import com.tesobe.obp.transport.spi.ReceiverNov2016;
+import com.tesobe.obp.util.Props;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 
 /**
- * @since 2016.9
+ * @since 2016.11
  */
 @SuppressWarnings("WeakerAccess") public class South
 {
-  @SuppressWarnings("InfiniteLoopStatement")
-  public static void main(String[] commandLine)
-    throws IOException, JAXBException
+  public South(Responder responder, String consumerTopic, String consumerProps,
+    String producerTopic, String producerProps) throws IOException
   {
-    if(flags.parse(commandLine))
-    {
-      log.info("Starting TESOBE's OBP South Demo...");
-//
-//      String consumerProps = flags.valueOf(flags.consumerProps);
-//      String consumerTopic = flags.valueOf(flags.consumerTopic);
-//      String producerProps = flags.valueOf(flags.producerProps);
-//      String producerTopic = flags.valueOf(flags.producerTopic);
-//
-//      Transport.Factory factory = Transport.defaultFactory();
-//      Receiver receiver = new DemoReceiver(factory.codecs(),
-//        DemoDatabase.simple());
-//      SimpleSouth south = new SimpleSouth(consumerTopic, producerTopic,
-//        new Props(South.class, consumerProps).toMap(),
-//        new Props(South.class, producerProps).toMap(),
-//        new LoggingReceiver(receiver));
-//
-//      south.receive();
-//
-//      while(true)
-//      {
-//        log.trace("Parking main...");
-//
-//        LockSupport.park(Thread.currentThread());
-//      }
-    }
+    log.info("Starting TESOBE's OBP kafka south demo...");
+
+    Transport.Factory factory = Transport.defaultFactory();
+
+    Receiver receiver = new ReceiverNov2016(responder, factory.codecs());
+    SimpleTransport transport = new SimpleSouth(consumerTopic, producerTopic,
+      new Props(getClass(), consumerProps).toMap(),
+      new Props(getClass(), producerProps).toMap(),
+      new LoggingReceiver(receiver));
+
+    transport.receive();
   }
 
-  final static Flags flags = new Flags();
   final static Logger log = LoggerFactory.getLogger(South.class);
 }

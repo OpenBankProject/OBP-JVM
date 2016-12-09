@@ -15,12 +15,13 @@
     </encoder>
   </appender>
 
-  <appender name="log" class="ch.qos.logback.core.ConsoleAppender">
+  <appender name="log" class="ch.qos.logback.core.FileAppender">
     <encoder>
       <pattern>
         %-5level %d{HH:mm:ss.SSS} [%thread] %msg%n
       </pattern>
     </encoder>
+    <file>demo.log</file>
   </appender>
 
   <appender name="kafka" class="ch.qos.logback.core.ConsoleAppender">

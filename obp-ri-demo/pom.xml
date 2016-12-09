@@ -12,7 +12,7 @@
   <parent>
     <artifactId>obp-ri</artifactId>
     <groupId>com.tesobe.obp</groupId>
-    <version>2016.11-RC3</version>
+    <version>2016.11-RC4-SNAPSHOT</version>
   </parent>
 
   <artifactId>obp-ri-demo</artifactId>
@@ -114,7 +114,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>com.tesobe.obp.demo.KafkaDemo</mainClass>
+              <mainClass>com.tesobe.obp.demo.Demo</mainClass>
               <addClasspath>true</addClasspath>
             </manifest>
           </archive>

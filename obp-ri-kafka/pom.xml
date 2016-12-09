@@ -13,7 +13,7 @@
   <parent>
     <artifactId>obp-ri</artifactId>
     <groupId>com.tesobe.obp</groupId>
-    <version>2016.11-RC3</version>
+    <version>2016.11-RC4-SNAPSHOT</version>
   </parent>
 
   <artifactId>obp-ri-kafka</artifactId>

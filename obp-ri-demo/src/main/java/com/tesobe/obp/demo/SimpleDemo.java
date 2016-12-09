@@ -38,7 +38,7 @@ public class SimpleDemo
     north.getBank(bankId);
   }
 
-  static class North
+  private static class North
   {
     North(Connector c)
     {
@@ -66,7 +66,7 @@ public class SimpleDemo
     private final Connector connector;
   }
 
-  static class South extends DefaultResponder
+  private static class South extends DefaultResponder
   {
     @Override
     public Optional<Bank> getBank(Decoder.Pager p, Decoder.Parameters ps)
