@@ -131,7 +131,7 @@ INFO  00:11:29.150 [pool-1-thread-1] ee66fd3d-c1e3-43e3-bd7f-dfd7debcd5fe ← {"
 
 # Adding a method to the API
 
-The new method will be using the existing **get**, or **put** verbs. 
+The new method will be using the existing **get** verb. 
 What needs to done is to describe the data sent and received. To do that, define an interface in the package corresponding to the version you are supporting.
 
 #### An Example: getChallengeThreshold
@@ -186,15 +186,16 @@ Next the test case in `com.tesobe.obp.transport.spi.ConnectorNov2016Test`:
   assertThat(response.error(), notPresent());
 }
 ```
-This will **not** fail. It is a legal request. The south side just does not know what to do with it and will return an empty result. This is the exchange with the encoding used by the version *Nov2016* (from the log):
+This will **not** fail. It is a legal request. The south side just does not know what to do with it and will return an empty result. This is the exchange with the encoding used by the version **Nov2016** (from the log):
 
 ```
-TRACE 19:36:18.771 [main] c.t.o.t.spi.ConnectorNov2016 get:82 - a8255fbb-e699-4f2e-adfc-86bc1acccd25 {"accountId":"account-x","north":"getChallengeThreshold","name":"get","currency":"currency-x","id":"user-x","type":"type-x","version":"Nov2016","target":"challengeThreshold"} → {"target":"challengeThreshold"}
+TRACE 20:37:25.738 [main] c.t.o.t.spi.ConnectorNov2016 get:82 - fab8445f-7cb5-4483-b1b4-1af6e71788b6 {"accountId":"account-x","north":"getChallengeThreshold","name":"get","currency":"currency-x","type":"type-x","version":"Nov2016","userId":"user-x","target":"challengeThreshold"} → {"data":[{"amount":"amount-x","currency":"currency-x"}],"target":"challengeThreshold"}
+
 ```
 
 This is the request: 
 
-```{"accountId":"account-x","north":"getChallengeThreshold","name":"get","currency":"currency-x","id":"user-x","type":"type-x","version":"Nov2016","target":"challengeThreshold"}```
+```{"accountId":"account-x","north":"getChallengeThreshold","name":"get","currency":"currency-x","type":"type-x","version":"Nov2016","userId":"user-x","target":"challengeThreshold"}```
 
 This is the response:
 
@@ -202,7 +203,7 @@ This is the response:
 {"target":"challengeThreshold"}
 ```
 
-And `a8255fbb-e699-4f2e-adfc-86bc1acccd25 ` is the message id. When the test is extended test to check the returned data, it will fail:
+And `fab8445f-7cb5-4483-b1b4-1af6e71788b6 ` is the message id. When the test is extended to check the returned data, it will fail:
 
 ```java
     assertThat(response.error(), notPresent());
