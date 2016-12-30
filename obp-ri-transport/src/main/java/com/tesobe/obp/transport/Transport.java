@@ -30,7 +30,6 @@ import static com.tesobe.obp.transport.Transport.Version.Nov2016;
    * Uses {@link Version#Nov2016}, {@link Encoding#json}.
    *
    * @return a factory that is always available
-   *
    */
   public static Factory defaultFactory()
   {
@@ -119,7 +118,8 @@ import static com.tesobe.obp.transport.Transport.Version.Nov2016;
 
   public enum Target
   {
-    account, accounts, bank, banks, transaction, transactions, user, users
+    account, accounts, bank, banks, challengeThreshold, transaction,
+    transactions, user, users
   }
 
   public interface Factory

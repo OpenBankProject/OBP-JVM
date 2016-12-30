@@ -16,6 +16,8 @@ import com.tesobe.obp.transport.Sender;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.transport.nov2016.Account;
 import com.tesobe.obp.transport.nov2016.Bank;
+import com.tesobe.obp.transport.nov2016.ChallengeThreshold;
+import com.tesobe.obp.transport.nov2016.ChallengeThresholdReader;
 import com.tesobe.obp.transport.nov2016.Parameters;
 import com.tesobe.obp.transport.nov2016.Transaction;
 import com.tesobe.obp.transport.nov2016.User;
@@ -28,6 +30,7 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -38,6 +41,7 @@ import java.util.function.Function;
 import static com.tesobe.obp.transport.Pager.SortOrder.ascending;
 import static com.tesobe.obp.transport.Pager.SortOrder.descending;
 import static com.tesobe.obp.transport.Transport.Target.banks;
+import static com.tesobe.obp.util.MethodMatcher.isPresent;
 import static com.tesobe.obp.util.MethodMatcher.notPresent;
 import static com.tesobe.obp.util.Utils.merge;
 import static java.time.ZoneOffset.UTC;
@@ -321,6 +325,31 @@ public class ConnectorNov2016Test
     assertThat("pager.count", pager.count(), is(0));
     assertThat("pager.hasMorePages", pager.hasMorePages(), is(true));
     assertThat("owned.empty", owned.data().isEmpty(), is(true));
+  }
+
+  @Test public void getChallengeThreshold() throws Exception
+  {
+    Map<String, String> parameters = new HashMap<>();
+
+    parameters.put(ChallengeThreshold.Parameters.accountId, "account-x");
+    parameters.put(ChallengeThreshold.Parameters.userId, "user-x");
+    parameters.put(ChallengeThreshold.Parameters.type, "type-x");
+    parameters.put(ChallengeThreshold.Parameters.currency, "currency-x");
+
+    Decoder.Response response = connector.get("getChallengeThreshold",
+      Transport.Target.challengeThreshold, parameters);
+
+    assertThat(response.error(), notPresent());
+    assertThat(response.data().size(), is(1));
+
+    Optional<ChallengeThresholdReader> threshold = response.data()
+      .stream()
+      .map(ChallengeThresholdReader::new)
+      .findFirst();
+
+    assertThat(threshold, isPresent());
+    assertThat(threshold.get().amount(), is("amount-x"));
+    assertThat(threshold.get().currency(), is("currency-x"));
   }
 
   @Test public void getPagedTransactions() throws Exception

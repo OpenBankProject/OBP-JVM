@@ -10,6 +10,7 @@ import com.tesobe.obp.transport.Decoder;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.transport.nov2016.Account;
 import com.tesobe.obp.transport.nov2016.Bank;
+import com.tesobe.obp.transport.nov2016.ChallengeThreshold;
 import com.tesobe.obp.transport.nov2016.Transaction;
 import com.tesobe.obp.transport.nov2016.User;
 import org.json.JSONArray;
@@ -28,7 +29,6 @@ import java.util.stream.Stream;
 import static com.tesobe.obp.util.Utils.merge;
 import static java.lang.String.format;
 import static java.time.ZoneOffset.UTC;
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.synchronizedMap;
 import static java.util.stream.Collectors.toList;
@@ -61,6 +61,8 @@ import static org.junit.Assert.fail;
     get.put(Transport.Target.bank.toString(), Bank.FIELDS);
     get.put(Transport.Target.transaction.toString(), Transaction.FIELDS);
     get.put(Transport.Target.user.toString(), User.FIELDS);
+    get.put(Transport.Target.challengeThreshold.toString(),
+      ChallengeThreshold.FIELDS);
 
     put.put(Transport.Target.transaction.toString(), transaction);
 
@@ -77,65 +79,18 @@ import static org.junit.Assert.fail;
   }
 
   @Override
-  public List<? extends Map<String, ?>> first(String state, Decoder.Pager p,
-    Decoder.Parameters ps, Transport.Target t)
-  {
-    assert p != null;
-    assert t != null;
-
-    switch(t)
-    {
-      case account:
-        return ps.accountId()
-          .map(this::account)
-          .map(Collections::singletonList)
-          .orElseGet(Collections::emptyList);
-      case accounts:
-        return ps.bankId()
-          .map(bankId -> Stream.of("accountId-0", "accountId-1")
-            .map(this::account)
-            .map(a -> merge(a, Account.bankId, bankId))
-            .collect(toList()))
-          .orElseGet(Collections::emptyList);
-      case bank:
-        return ps.bankId()
-          .map(this::bank)
-          .map(Collections::singletonList)
-          .orElseGet(Collections::emptyList);
-      case banks:
-        return Stream.of("bankId-0", "bankId-1")
-          .map(this::bank)
-          .collect(toList());
-      case transaction:
-        return ps.accountId()
-          .flatMap(a -> ps.bankId()
-            .flatMap(
-              b -> ps.transactionId().map(tid -> transaction(a, b, tid))))
-          .map(Collections::singletonList)
-          .orElseGet(Collections::emptyList);
-      case transactions:
-        return ps.accountId()
-          .flatMap(a -> ps.bankId().map(b -> transactions(state, p, a, b)))
-          .orElseGet(Collections::emptyList);
-      case user:
-        return ps.userId()
-          .map(this::user)
-          .map(Collections::singletonList)
-          .orElseGet(Collections::emptyList);
-      case users:
-        return Stream.of("userId-0", "userId-1")
-          .map(this::user)
-          .map(a -> merge(a, User.id, a.get("email")))
-          .collect(toList());
-      default:
-        return emptyList();
-    }
-  }
-
-  @Override
   public List<? extends Map<String, ?>> next(String state, Decoder.Pager p)
   {
     return state != null ? cache.get(state) : null;
+  }
+
+  @Override protected List<? extends Map<String, ?>> account(String state,
+    Decoder.Pager p, Decoder.Parameters ps)
+  {
+    return ps.accountId()
+      .map(this::account)
+      .map(Collections::singletonList)
+      .orElseGet(Collections::emptyList);
   }
 
   protected Map<String, Object> account(String id)
@@ -143,9 +98,59 @@ import static org.junit.Assert.fail;
     return entity(Account.accountId, id);
   }
 
+  @Override protected List<? extends Map<String, ?>> accounts(String state,
+    Decoder.Pager p, Decoder.Parameters ps)
+  {
+    return ps.bankId()
+      .map(bankId -> Stream.of("accountId-0", "accountId-1")
+        .map(this::account)
+        .map(a -> merge(a, Account.bankId, bankId))
+        .collect(toList()))
+      .orElseGet(Collections::emptyList);
+  }
+
+  @Override
+  protected List<? extends Map<String, ?>> bank(String state, Decoder.Pager p,
+    Decoder.Parameters ps)
+  {
+    return ps.bankId()
+      .map(this::bank)
+      .map(Collections::singletonList)
+      .orElseGet(Collections::emptyList);
+  }
+
   protected Map<String, Object> bank(String id)
   {
     return entity(Bank.bankId, id);
+  }
+
+  @Override
+  protected List<? extends Map<String, ?>> banks(String state, Decoder.Pager p,
+    Decoder.Parameters ps)
+  {
+    return Stream.of("bankId-0", "bankId-1").map(this::bank).collect(toList());
+  }
+
+  @Override
+  protected List<? extends Map<String, ?>> challengeThreshold(String state,
+    Decoder.Pager p, Decoder.Parameters ps)
+  {
+    HashMap<String, String> response = new HashMap<>();
+
+    response.put(ChallengeThreshold.amount, "amount-x");
+    response.put(ChallengeThreshold.currency, "currency-x");
+
+    return Collections.singletonList(response);
+  }
+
+  @Override protected List<? extends Map<String, ?>> transaction(String state,
+    Decoder.Pager p, Decoder.Parameters ps)
+  {
+    return ps.accountId()
+      .flatMap(a -> ps.bankId()
+        .flatMap(b -> ps.transactionId().map(tid -> transaction(a, b, tid))))
+      .map(Collections::singletonList)
+      .orElseGet(Collections::emptyList);
   }
 
   protected Map<String, Object> transaction(String accountId, String bankId,
@@ -153,6 +158,14 @@ import static org.junit.Assert.fail;
   {
     return merge(merge(entity(Transaction.transactionId, transactionId),
       Transaction.accountId, accountId), Transaction.bankId, bankId);
+  }
+
+  @Override protected List<? extends Map<String, ?>> transactions(String state,
+    Decoder.Pager p, Decoder.Parameters ps)
+  {
+    return ps.accountId()
+      .flatMap(a -> ps.bankId().map(b -> transactions(state, p, a, b)))
+      .orElseGet(Collections::emptyList);
   }
 
   /**
@@ -203,9 +216,29 @@ import static org.junit.Assert.fail;
     return processed;
   }
 
+  @Override
+  protected List<? extends Map<String, ?>> user(String state, Decoder.Pager p,
+    Decoder.Parameters ps)
+  {
+    return ps.userId()
+      .map(this::user)
+      .map(Collections::singletonList)
+      .orElseGet(Collections::emptyList);
+  }
+
   protected Map<String, Object> user(String id)
   {
     return entity(User.email, id);
+  }
+
+  @Override
+  protected List<? extends Map<String, ?>> users(String state, Decoder.Pager p,
+    Decoder.Parameters ps)
+  {
+    return Stream.of("userId-0", "userId-1")
+      .map(this::user)
+      .map(a -> merge(a, User.id, a.get("email")))
+      .collect(toList());
   }
 
   private Map<String, Object> entity(String idName, String idValue)

@@ -15,6 +15,6 @@ public interface Parameters
   String accountId = Account.accountId;
   String bankId = Bank.bankId;
   String transactionId = Transaction.transactionId;
-  String userId = User.id;
+  String userId = "userId";
   String type = "type";
 }

@@ -45,6 +45,8 @@ import java.util.function.Predicate;
           return bank(state, p, ps);
         case banks:
           return banks(state, p, ps);
+        case challengeThreshold:
+          return challengeThreshold(state, p, ps);
         case transaction:
           return transaction(state, p, ps);
         case transactions:
@@ -103,6 +105,12 @@ import java.util.function.Predicate;
 
   protected List<? extends Map<String, ?>> banks(String state, Pager p,
     Decoder.Parameters ps)
+  {
+    return Collections.emptyList();
+  }
+
+  protected List<? extends Map<String, ?>> challengeThreshold(String state,
+    Pager p, Decoder.Parameters ps)
   {
     return Collections.emptyList();
   }
