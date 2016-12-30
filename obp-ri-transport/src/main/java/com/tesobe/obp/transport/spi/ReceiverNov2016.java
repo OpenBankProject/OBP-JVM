@@ -11,6 +11,8 @@ import com.tesobe.obp.transport.Encoder;
 import com.tesobe.obp.transport.Responder;
 import com.tesobe.obp.transport.Transport;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Locale;
@@ -176,5 +178,6 @@ import static java.lang.String.format;
     }
   }
 
+  static final Logger log = LoggerFactory.getLogger(ReceiverNov2016.class);
   final Responder responder;
 }

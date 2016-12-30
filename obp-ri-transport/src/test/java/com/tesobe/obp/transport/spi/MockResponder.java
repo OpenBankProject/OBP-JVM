@@ -135,6 +135,11 @@ import static org.junit.Assert.fail;
   protected List<? extends Map<String, ?>> challengeThreshold(String state,
     Decoder.Pager p, Decoder.Parameters ps)
   {
+    assertThat(ps.accountId().get(), is("account-x"));
+    assertThat(ps.userId().get(), is("user-x"));
+    assertThat(ps.get("type").get(), is("type-x"));
+    assertThat(ps.get("currency").get(), is("currency-x"));
+
     HashMap<String, String> response = new HashMap<>();
 
     response.put(ChallengeThreshold.amount, "amount-x");

@@ -107,6 +107,8 @@ public interface Decoder
 
     String requestId();
 
+    Optional<String> get(String name);
+
     Transport.Version version();
   }
 
