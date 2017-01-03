@@ -189,7 +189,7 @@ Next the test case in `com.tesobe.obp.transport.spi.ConnectorNov2016Test`:
 This will **not** fail. It is a legal request. The south side just does not know what to do with it and will return an empty result. This is the exchange with the encoding used by the version **Nov2016** (from the log):
 
 ```
-TRACE 20:37:25.738 [main] c.t.o.t.spi.ConnectorNov2016 get:82 - fab8445f-7cb5-4483-b1b4-1af6e71788b6 {"accountId":"account-x","north":"getChallengeThreshold","name":"get","currency":"currency-x","type":"type-x","version":"Nov2016","userId":"user-x","target":"challengeThreshold"} → {"data":[{"amount":"amount-x","currency":"currency-x"}],"target":"challengeThreshold"}
+TRACE 20:37:25.738 [main] c.t.o.t.spi.ConnectorNov2016 get:82 - fab8445f-7cb5-4483-b1b4-1af6e71788b6 {"accountId":"account-x","north":"getChallengeThreshold","name":"get","currency":"currency-x","type":"type-x","version":"Nov2016","userId":"user-x","target":"challengeThreshold"} → {"target":"challengeThreshold"}
 
 ```
 
