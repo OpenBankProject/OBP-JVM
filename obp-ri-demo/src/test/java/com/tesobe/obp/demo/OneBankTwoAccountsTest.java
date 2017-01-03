@@ -1,5 +1,5 @@
 /*
- * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2017. All rights reserved.
  *
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
@@ -13,6 +13,7 @@ import com.tesobe.obp.transport.Sender;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.transport.nov2016.Account;
 import com.tesobe.obp.transport.nov2016.Bank;
+import com.tesobe.obp.transport.nov2016.Parameters;
 import com.tesobe.obp.transport.nov2016.User;
 import com.tesobe.obp.transport.spi.Receiver;
 import com.tesobe.obp.transport.spi.ReceiverNov2016;
@@ -44,8 +45,8 @@ public class OneBankTwoAccountsTest
   {
     HashMap<String, Object> parameters = new HashMap<>();
 
-    parameters.put(Bank.bankId, Database.bank.get(Bank.bankId));
-    parameters.put(User.id, Database.anna.get(User.id));
+    parameters.put(Parameters.bankId, Database.bank.get(Bank.bankId));
+    parameters.put(Parameters.userId, Database.anna.get(User.id));
 
     Decoder.Response response = connector.get("getAccounts",
       Transport.Target.accounts, parameters);
