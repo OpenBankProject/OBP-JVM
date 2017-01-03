@@ -1,5 +1,5 @@
 /*
- * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2017. All rights reserved.
  *
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
@@ -45,7 +45,7 @@ public interface Encoder
   /**
    * South: respond with data.
    *
-   * @param data page into result set
+   * @param response page into result set
    * @param offset offset of page into result set
    * @param size page size
    * @param state internal state
@@ -55,13 +55,24 @@ public interface Encoder
    *
    * @return encoded response
    */
-  String response(List<? extends Map<String, ?>> data, int offset, int size,
-    String state, int count, boolean more, Transport.Target t);
+  String response(Response response, int offset, int size, String state,
+    int count, boolean more, Transport.Target t);
 
-  default String response(List<? extends Map<String, ?>> data,
-    Transport.Target t)
+  default String response(Response response, Transport.Target t)
   {
-    return response(data, 0, data != null ? data.size() : 0, null, 0, false, t);
+    int size = 0;
+
+    if(response != null)
+    {
+      List<? extends Map<String, ?>> data = response.data();
+
+      if(data != null)
+      {
+        size = data.size();
+      }
+    }
+
+    return response(response, 0, size, null, 0, false, t);
   }
 
   /**
@@ -108,15 +119,6 @@ public interface Encoder
    * @return encoded fetch request
    */
   Request fetch();
-
-  /**
-   * South.
-   *
-   * @param data fetched data
-   *
-   * @return encoded fetch result
-   */
-  String fetch(List<? extends Map<String, ?>> data);
 
   /**
    * Internal representation of a pending request.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2017. All rights reserved.
  *
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
@@ -11,14 +11,13 @@ import com.tesobe.obp.transport.Decoder.Pager;
 import com.tesobe.obp.transport.Pager.Filter;
 import com.tesobe.obp.transport.Pager.SortOrder;
 import com.tesobe.obp.transport.Responder;
+import com.tesobe.obp.transport.Response;
 import com.tesobe.obp.transport.Transport;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -30,7 +29,7 @@ import java.util.function.Predicate;
 @SuppressWarnings("WeakerAccess") public class DefaultResponder
   implements Responder
 {
-  @Override public List<? extends Map<String, ?>> first(String state, Pager p,
+  @Override public Response first(String state, Pager p,
     Decoder.Parameters ps, Transport.Target t)
   {
     if(t != null)
@@ -45,6 +44,8 @@ import java.util.function.Predicate;
           return bank(state, p, ps);
         case banks:
           return banks(state, p, ps);
+        case challengeThreshold:
+          return challengeThreshold(state, p, ps);
         case transaction:
           return transaction(state, p, ps);
         case transactions:
@@ -56,19 +57,18 @@ import java.util.function.Predicate;
       }
     }
 
-    return Collections.emptyList();
+    return new DefaultResponse();
   }
 
-  @Override public List<? extends Map<String, ?>> next(String state, Pager p)
+  @Override public Response next(String state, Pager p)
   {
-    return Collections.emptyList();
+    return new DefaultResponse();
   }
 
-  @Override
-  public List<? extends Map<String, Object>> put(Decoder.Parameters ps,
+  @Override public Response put(Decoder.Parameters ps,
     Map<String, ?> fields, Transport.Target t)
   {
-    return Collections.emptyList();
+    return new DefaultResponse();
   }
 
   @Override public JSONObject describe(JSONObject json)
@@ -78,57 +78,63 @@ import java.util.function.Predicate;
     return json;
   }
 
-  @Override public List<? extends Map<String, ?>> fetch()
+  @Override public Response fetch()
   {
-    return Collections.emptyList();
+    return new DefaultResponse();
   }
 
-  protected List<? extends Map<String, ?>> account(String state, Pager p,
+  protected Response account(String state, Pager p,
     Decoder.Parameters ps)
   {
-    return Collections.emptyList();
+    return new DefaultResponse();
   }
 
-  protected List<? extends Map<String, ?>> accounts(String state, Pager p,
+  protected Response accounts(String state, Pager p,
     Decoder.Parameters ps)
   {
-    return Collections.emptyList();
+    return new DefaultResponse();
   }
 
-  protected List<? extends Map<String, ?>> bank(String state, Pager p,
+  protected Response bank(String state, Pager p,
     Decoder.Parameters ps)
   {
-    return Collections.emptyList();
+    return new DefaultResponse();
   }
 
-  protected List<? extends Map<String, ?>> banks(String state, Pager p,
+  protected Response banks(String state, Pager p,
     Decoder.Parameters ps)
   {
-    return Collections.emptyList();
+    return new DefaultResponse();
   }
 
-  protected List<? extends Map<String, ?>> transaction(String state, Pager p,
-    Decoder.Parameters ps)
+  protected Response challengeThreshold(String state,
+    Pager p, Decoder.Parameters ps)
   {
-    return Collections.emptyList();
+    return new DefaultResponse();
   }
 
-  protected List<? extends Map<String, ?>> transactions(String state, Pager p,
+  protected Response transaction(String state, Pager p,
     Decoder.Parameters ps)
   {
-    return Collections.emptyList();
+    return new DefaultResponse();
   }
 
-  protected List<? extends Map<String, ?>> user(String state, Pager p,
+  protected Response transactions(String state, Pager p,
     Decoder.Parameters ps)
   {
-    return Collections.emptyList();
+    return new DefaultResponse();
   }
 
-  protected List<? extends Map<String, ?>> users(String state, Pager p,
+  protected Response user(String state, Pager p,
     Decoder.Parameters ps)
   {
-    return Collections.emptyList();
+    return new DefaultResponse();
+  }
+
+  protected Response users(String state, Pager p,
+    Decoder.Parameters ps)
+  {
+    return new DefaultResponse();
   }
 
   protected Predicate<Map<String, Object>> filter(Pager p)

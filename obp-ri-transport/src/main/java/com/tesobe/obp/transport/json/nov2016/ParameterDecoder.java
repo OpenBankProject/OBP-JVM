@@ -27,27 +27,32 @@ public class ParameterDecoder implements Parameters, Decoder.Parameters
 
   @Override public Optional<String> accountId()
   {
-    return Optional.ofNullable(json.optString(accountId, null));
+    return get(accountId);
   }
 
   @Override public Optional<String> bankId()
   {
-    return Optional.ofNullable(json.optString(bankId, null));
+    return get(bankId);
   }
 
   @Override public Optional<String> transactionId()
   {
-    return Optional.ofNullable(json.optString(transactionId, null));
+    return get(transactionId);
   }
 
   @Override public Optional<String> userId()
   {
-    return Optional.ofNullable(json.optString(userId, null));
+    return get(userId);
   }
 
   @Override public Optional<String> type()
   {
-    return Optional.ofNullable(json.optString(type, null));
+    return get(type);
+  }
+
+  @Override public Optional<String> get(String name)
+  {
+    return Optional.ofNullable(json.optString(name, null));
   }
 
   @Override public String requestId()

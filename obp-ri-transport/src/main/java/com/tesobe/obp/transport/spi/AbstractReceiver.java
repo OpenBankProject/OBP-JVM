@@ -135,7 +135,6 @@ import static java.util.Objects.nonNull;
   protected abstract String describe(Decoder.Request request, Encoder encoder);
 
   protected abstract String fetch(Decoder.Request request, Encoder encoder);
-
   static final Map<Transport.Version, Map<String, BiFunction<Decoder.Request,
     Encoder, String>>>
     versions = new HashMap<>();

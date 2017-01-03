@@ -10,7 +10,7 @@ Add dependencies
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-transport</artifactId>
-  <version>2016.11-RC4-SNAPSHOT</version>
+  <version>2016.11-RC5-SNAPSHOT</version>
 </dependency>
 ```
 If you use Kafka, also add
@@ -19,7 +19,7 @@ If you use Kafka, also add
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-kafka</artifactId>
-  <version>2016.11-RC4-SNAPSHOT</version>
+  <version>2016.11-RC5-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -29,7 +29,7 @@ For testing, also add
 <dependency>
   <groupId>com.tesobe.obp</groupId>
   <artifactId>obp-ri-transport</artifactId>
-  <version>2016.11-RC4-SNAPSHOT</version>
+  <version>2016.11-RC5-SNAPSHOT</version>
   <type>test-jar</type>
   <scope>test</scope>
 </dependency>
@@ -129,6 +129,194 @@ INFO  00:11:29.150 [pool-1-thread-1] ee66fd3d-c1e3-43e3-bd7f-dfd7debcd5fe → {"
 INFO  00:11:29.150 [pool-1-thread-1] ee66fd3d-c1e3-43e3-bd7f-dfd7debcd5fe ← {"count":0,"target":"accounts"}
 ```
 
+# Adding a method to the API
 
+The new method will be using the existing **get** verb. 
+What needs to done is to describe the data sent and received. To do that, define an interface in the package corresponding to the version you are supporting.
 
+#### An Example: getChallengeThreshold
+
+```scala
+def getChallengeThreshold(userId: String, accountId: String, transactionRequestType: String, currency: String):(BigDecimal, String)
+```
+
+A method is needed that returns the amount and currency, as three letter ISO code. As the current version is *Nov2016*, define an interface in the package `com.tesobe.obp.transport.nov2016`:
+
+```java
+public interface ChallengeThreshold
+{
+  String amount();
+
+  String currency();
+
+  interface Parameters
+  {
+    String accountId = com.tesobe.obp.transport.nov2016.Parameters.accountId;
+    String userId = com.tesobe.obp.transport.nov2016.Parameters.userId;
+    String type = "type";
+    String currency = "currency";
+  }
+}
+```
+The interface `ChallengeThreshold` specifies the fields that are returned, the subinterface `Parameters` specifies
+the *names* of fields that are sent. A target must be added:
+
+```java
+  public enum Target
+  {
+    account, accounts, bank, banks, challengeThreshold, transaction,
+    transactions, user, users
+  }
+```
+
+Next the test case in `com.tesobe.obp.transport.spi.ConnectorNov2016Test`:
+
+```java
+@Test public void getChallengeThreshold() throws Exception
+{
+  Map<String, String> parameters = new HashMap<>();
+
+  parameters.put(ChallengeThreshold.Parameters.accountId, "account-x");
+  parameters.put(ChallengeThreshold.Parameters.userId, "user-x");
+  parameters.put(ChallengeThreshold.Parameters.type, "type-x");
+  parameters.put(ChallengeThreshold.Parameters.currency, "currency-x");
+
+  Decoder.Response response = connector.get("getChallengeThreshold", Transport.Target.challengeThreshold, parameters);
+
+  assertThat(response.error(), notPresent());
+}
+```
+This will **not** fail. It is a legal request. The south side just does not know what to do with it and will return an empty result. This is the exchange with the encoding used by the version **Nov2016** (from the log):
+
+```
+TRACE 20:37:25.738 [main] c.t.o.t.spi.ConnectorNov2016 get:82 - fab8445f-7cb5-4483-b1b4-1af6e71788b6 {"accountId":"account-x","north":"getChallengeThreshold","name":"get","currency":"currency-x","type":"type-x","version":"Nov2016","userId":"user-x","target":"challengeThreshold"} → {"data":[{"amount":"amount-x","currency":"currency-x"}],"target":"challengeThreshold"}
+
+```
+
+This is the request: 
+
+```{"accountId":"account-x","north":"getChallengeThreshold","name":"get","currency":"currency-x","type":"type-x","version":"Nov2016","userId":"user-x","target":"challengeThreshold"}```
+
+This is the response:
+
+```
+{"target":"challengeThreshold"}
+```
+
+And `fab8445f-7cb5-4483-b1b4-1af6e71788b6 ` is the message id. When the test is extended to check the returned data, it will fail:
+
+```java
+    assertThat(response.error(), notPresent());
+    assertThat(response.data().size(), is(1));
+    assertThat(response.data().get(0).text(ChallengeThreshold.amount), is("amount-x"));
+    assertThat(response.data().get(0).text(ChallengeThreshold.currency), is("currency-x"));
+```
+We expect one record in the result with two text fields. 
+Some boilder-plate needs to be added to the interface to be able to use the field names in the result:
+
+```java
+public interface ChallengeThreshold
+{
+  String amount();
+
+  String currency();
+
+  default List<String> fields()
+  {
+    return FIELDS;
+  }
+
+  String amount = "amount";
+  String currency = "currency";
+
+  List<String> FIELDS = asList(amount, currency);
+
+  interface Parameters
+  {
+    String accountId = com.tesobe.obp.transport.nov2016.Parameters.accountId;
+    String userId = com.tesobe.obp.transport.nov2016.Parameters.userId;
+    String type = "type";
+    String currency = "currency";
+  }
+}
+```
+
+The values will be supplied by the mock responder, once the method is implemented on the south.
+
+To make things easy for the user, define a reader for the data.
+
+```java
+public class ChallengeThresholdReader implements ChallengeThreshold
+{
+  public ChallengeThresholdReader(Data bank)
+  {
+    data = bank;
+  }
+
+  @Override public String amount()
+  {
+    return data.text(amount);
+  }
+
+  @Override public String currency()
+  {
+    return data.text(currency);
+  }
+
+  protected final Data data;
+}
+```
+And the test can be re-written as:
+
+```java
+    assertThat(response.error(), notPresent());
+    assertThat(response.data().size(), is(1));
+
+    Optional<ChallengeThresholdReader> threshold = response.data()
+      .stream()
+      .map(ChallengeThresholdReader::new)
+      .findFirst();
+
+    assertThat(threshold, isPresent());
+    assertThat(threshold.get().amount(), is("amount-x"));
+    assertThat(threshold.get().currency(), is("currency-x"));
+```
+
+In Scala the result could be retrieved with:
+
+```scala
+response.data().map(data => new ChallengeThresholdReader(data)).headOption match {
+  case Some(threshold) => ...
+  case None => ...
+}
+```
+
+Now the South. 
+The `com.tesobe.obp.transport.spi.DefaultResponder` needs a new case for the new `Target` that was defined above.
+
+```java
+  case challengeThreshold:
+    return challengeThreshold(state, p, ps);
+```
+
+And a new method in MockResponder to handle it.
+
+```java
+  @Override
+  protected List<? extends Map<String, ?>> challengeThreshold(String state,
+    Decoder.Pager p, Decoder.Parameters ps)
+  {
+    HashMap<String, String> response = new HashMap<>();
+
+    response.put(ChallengeThreshold.amount, "amount-x");
+    response.put(ChallengeThreshold.currency, "currency-x");
+
+    return Collections.singletonList(response);
+  }
+```
+
+Now the test now longer fails.
+
+Finally, the new method needs to added to the supported methods in the **describe** call.
+See `com.tesobe.obp.transport.spi.MockResponder#describe`.
 

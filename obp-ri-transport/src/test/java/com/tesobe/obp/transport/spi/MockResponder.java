@@ -1,5 +1,5 @@
 /*
- * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2017. All rights reserved.
  *
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
@@ -7,9 +7,11 @@
 package com.tesobe.obp.transport.spi;
 
 import com.tesobe.obp.transport.Decoder;
+import com.tesobe.obp.transport.Response;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.transport.nov2016.Account;
 import com.tesobe.obp.transport.nov2016.Bank;
+import com.tesobe.obp.transport.nov2016.ChallengeThreshold;
 import com.tesobe.obp.transport.nov2016.Transaction;
 import com.tesobe.obp.transport.nov2016.User;
 import org.json.JSONArray;
@@ -28,8 +30,6 @@ import java.util.stream.Stream;
 import static com.tesobe.obp.util.Utils.merge;
 import static java.lang.String.format;
 import static java.time.ZoneOffset.UTC;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static java.util.Collections.synchronizedMap;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.core.Is.is;
@@ -61,6 +61,8 @@ import static org.junit.Assert.fail;
     get.put(Transport.Target.bank.toString(), Bank.FIELDS);
     get.put(Transport.Target.transaction.toString(), Transaction.FIELDS);
     get.put(Transport.Target.user.toString(), User.FIELDS);
+    get.put(Transport.Target.challengeThreshold.toString(),
+      ChallengeThreshold.FIELDS);
 
     put.put(Transport.Target.transaction.toString(), transaction);
 
@@ -76,66 +78,24 @@ import static org.junit.Assert.fail;
     return json;
   }
 
-  @Override
-  public List<? extends Map<String, ?>> first(String state, Decoder.Pager p,
-    Decoder.Parameters ps, Transport.Target t)
+  @Override public Response next(String state, Decoder.Pager p)
   {
-    assert p != null;
-    assert t != null;
+    List<? extends Map<String, ?>> data = state != null
+                                          ? cache.get(state)
+                                          : null;
 
-    switch(t)
-    {
-      case account:
-        return ps.accountId()
-          .map(this::account)
-          .map(Collections::singletonList)
-          .orElseGet(Collections::emptyList);
-      case accounts:
-        return ps.bankId()
-          .map(bankId -> Stream.of("accountId-0", "accountId-1")
-            .map(this::account)
-            .map(a -> merge(a, Account.bankId, bankId))
-            .collect(toList()))
-          .orElseGet(Collections::emptyList);
-      case bank:
-        return ps.bankId()
-          .map(this::bank)
-          .map(Collections::singletonList)
-          .orElseGet(Collections::emptyList);
-      case banks:
-        return Stream.of("bankId-0", "bankId-1")
-          .map(this::bank)
-          .collect(toList());
-      case transaction:
-        return ps.accountId()
-          .flatMap(a -> ps.bankId()
-            .flatMap(
-              b -> ps.transactionId().map(tid -> transaction(a, b, tid))))
-          .map(Collections::singletonList)
-          .orElseGet(Collections::emptyList);
-      case transactions:
-        return ps.accountId()
-          .flatMap(a -> ps.bankId().map(b -> transactions(state, p, a, b)))
-          .orElseGet(Collections::emptyList);
-      case user:
-        return ps.userId()
-          .map(this::user)
-          .map(Collections::singletonList)
-          .orElseGet(Collections::emptyList);
-      case users:
-        return Stream.of("userId-0", "userId-1")
-          .map(this::user)
-          .map(a -> merge(a, User.id, a.get("email")))
-          .collect(toList());
-      default:
-        return emptyList();
-    }
+    return new DefaultResponse(data);
   }
 
-  @Override
-  public List<? extends Map<String, ?>> next(String state, Decoder.Pager p)
+  @Override protected Response account(String state, Decoder.Pager p,
+    Decoder.Parameters ps)
   {
-    return state != null ? cache.get(state) : null;
+    List<Map<String, Object>> data = ps.accountId()
+      .map(this::account)
+      .map(Collections::singletonList)
+      .orElseGet(Collections::emptyList);
+
+    return new DefaultResponse(data);
   }
 
   protected Map<String, Object> account(String id)
@@ -143,9 +103,71 @@ import static org.junit.Assert.fail;
     return entity(Account.accountId, id);
   }
 
+  @Override protected Response accounts(String state, Decoder.Pager p,
+    Decoder.Parameters ps)
+  {
+    List<Map<String, Object>> data = ps.bankId()
+      .map(bankId -> Stream.of("accountId-0", "accountId-1")
+        .map(this::account)
+        .map(a -> merge(a, Account.bankId, bankId))
+        .collect(toList()))
+      .orElseGet(Collections::emptyList);
+
+    return new DefaultResponse(data);
+  }
+
+  @Override
+  protected Response bank(String state, Decoder.Pager p, Decoder.Parameters ps)
+  {
+    List<Map<String, Object>> data = ps.bankId()
+      .map(this::bank)
+      .map(Collections::singletonList)
+      .orElseGet(Collections::emptyList);
+
+    return new DefaultResponse(data);
+  }
+
   protected Map<String, Object> bank(String id)
   {
     return entity(Bank.bankId, id);
+  }
+
+  @Override
+  protected Response banks(String state, Decoder.Pager p, Decoder.Parameters ps)
+  {
+    List<Map<String, Object>> data = Stream.of("bankId-0", "bankId-1")
+      .map(this::bank)
+      .collect(toList());
+
+    return new DefaultResponse(data);
+  }
+
+  @Override protected Response challengeThreshold(String state, Decoder.Pager p,
+    Decoder.Parameters ps)
+  {
+    assertThat(ps.accountId().get(), is("account-x"));
+    assertThat(ps.userId().get(), is("user-x"));
+    assertThat(ps.get("type").get(), is("type-x"));
+    assertThat(ps.get("currency").get(), is("currency-x"));
+
+    HashMap<String, String> data = new HashMap<>();
+
+    data.put(ChallengeThreshold.amount, "amount-x");
+    data.put(ChallengeThreshold.currency, "currency-x");
+
+    return new DefaultResponse(data);
+  }
+
+  @Override protected Response transaction(String state, Decoder.Pager p,
+    Decoder.Parameters ps)
+  {
+    List<Map<String, Object>> data = ps.accountId()
+      .flatMap(a -> ps.bankId()
+        .flatMap(b -> ps.transactionId().map(tid -> transaction(a, b, tid))))
+      .map(Collections::singletonList)
+      .orElseGet(Collections::emptyList);
+
+    return new DefaultResponse(data);
   }
 
   protected Map<String, Object> transaction(String accountId, String bankId,
@@ -153,6 +175,16 @@ import static org.junit.Assert.fail;
   {
     return merge(merge(entity(Transaction.transactionId, transactionId),
       Transaction.accountId, accountId), Transaction.bankId, bankId);
+  }
+
+  @Override protected Response transactions(String state, Decoder.Pager p,
+    Decoder.Parameters ps)
+  {
+    List<Map<String, Object>> data = ps.accountId()
+      .flatMap(a -> ps.bankId().map(b -> transactions(state, p, a, b)))
+      .orElseGet(Collections::emptyList);
+
+    return new DefaultResponse(data);
   }
 
   /**
@@ -203,9 +235,31 @@ import static org.junit.Assert.fail;
     return processed;
   }
 
+  @Override
+  protected Response user(String state, Decoder.Pager p, Decoder.Parameters ps)
+  {
+    List<Map<String, Object>> data = ps.userId()
+      .map(this::user)
+      .map(Collections::singletonList)
+      .orElseGet(Collections::emptyList);
+
+    return new DefaultResponse(data);
+  }
+
   protected Map<String, Object> user(String id)
   {
     return entity(User.email, id);
+  }
+
+  @Override
+  protected Response users(String state, Decoder.Pager p, Decoder.Parameters ps)
+  {
+    List<Map<String, Object>> data = Stream.of("userId-0", "userId-1")
+      .map(this::user)
+      .map(a -> merge(a, User.id, a.get("email")))
+      .collect(toList());
+
+    return new DefaultResponse(data);
   }
 
   private Map<String, Object> entity(String idName, String idValue)
@@ -213,8 +267,8 @@ import static org.junit.Assert.fail;
     return merge(new HashMap<>(), idName, idValue);
   }
 
-  public List<Map<String, Object>> put(Decoder.Parameters ps,
-    Map<String, ?> fields, Transport.Target t)
+  public Response put(Decoder.Parameters ps, Map<String, ?> fields,
+    Transport.Target t)
   {
     ps.type().map(type ->
     {
@@ -244,13 +298,13 @@ import static org.junit.Assert.fail;
     assertThat(fields.get(Transaction.type), is("type-x"));
     assertThat(fields.get(Transaction.userId), is("user-x"));
 
-    return singletonList(
+    return new DefaultResponse(
       entity("transactionId", Objects.toString(fields.get("transactionId"))));
   }
 
-  @Override public List<? extends Map<String, ?>> fetch()
+  @Override public Response fetch()
   {
-    return singletonList(merge(new HashMap<>(), "transaction-x", "ACPT"));
+    return new DefaultResponse(merge(new HashMap<>(), "transaction-x", "ACPT"));
   }
 
   Map<String, List<Map<String, Object>>> cache = synchronizedMap(

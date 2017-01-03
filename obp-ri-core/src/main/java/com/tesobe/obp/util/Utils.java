@@ -7,6 +7,7 @@
 package com.tesobe.obp.util;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -14,6 +15,11 @@ import java.util.stream.Stream;
 
 public class Utils
 {
+  public static <K, V> Map<K, V> merge(K key, V value)
+  {
+    return merge(new HashMap<K, V>(), key, value);
+  }
+
   public static <K, V> Map<K, V> merge(Map<K, V> map, K key, V value)
   {
     map.put(key, value);

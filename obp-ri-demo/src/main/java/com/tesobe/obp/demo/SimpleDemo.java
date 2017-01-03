@@ -1,5 +1,5 @@
 /*
- * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2017. All rights reserved.
  *
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
@@ -9,10 +9,12 @@ package com.tesobe.obp.demo;
 import com.tesobe.obp.transport.Connector;
 import com.tesobe.obp.transport.Decoder;
 import com.tesobe.obp.transport.Responder;
+import com.tesobe.obp.transport.Response;
 import com.tesobe.obp.transport.Sender;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.transport.nov2016.Bank;
 import com.tesobe.obp.transport.spi.DefaultResponder;
+import com.tesobe.obp.transport.spi.DefaultResponse;
 import com.tesobe.obp.transport.spi.Receiver;
 import com.tesobe.obp.transport.spi.ReceiverNov2016;
 import com.tesobe.obp.util.Utils;
@@ -86,14 +88,15 @@ public class SimpleDemo
 
   private static class South extends DefaultResponder
   {
-    @Override
-    public List<Map<String, Object>> first(String state, Decoder.Pager p,
+    @Override public Response first(String state, Decoder.Pager p,
       Decoder.Parameters ps, Transport.Target t)
     {
-      return ps.bankId()
+      List<Map<String, Object>> data = ps.bankId()
         .map(id -> Utils.merge(new HashMap<>(), Bank.bankId, (Object)id))
         .map(Collections::singletonList)
         .orElseGet(Collections::emptyList);
+
+      return new DefaultResponse(data);
     }
   }
 }
