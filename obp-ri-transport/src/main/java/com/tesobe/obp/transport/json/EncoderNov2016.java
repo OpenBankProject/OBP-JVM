@@ -1,5 +1,5 @@
 /*
- * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2017. All rights reserved.
  *
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
@@ -8,6 +8,7 @@ package com.tesobe.obp.transport.json;
 
 import com.tesobe.obp.transport.Encoder;
 import com.tesobe.obp.transport.Pager;
+import com.tesobe.obp.transport.Response;
 import com.tesobe.obp.transport.Transport;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -54,33 +55,40 @@ import static java.util.Objects.nonNull;
     return request("describe");
   }
 
-  @Override
-  public String response(List<? extends Map<String, ?>> data, int offset,
+  @Override public String response(Response response, int offset,
     int size, String state, int count, boolean more, Transport.Target t)
   {
     JSONArray json = null;
+    Map<String, ?> meta = null;
 
-    if(nonNull(data) && !data.isEmpty())
+    if(nonNull(response))
     {
-      int length = Math.min(data.size(), offset + size);
+      List<? extends Map<String, ?>> data = response.data();
 
-      if(length > 0)
+      if(nonNull(data) && !data.isEmpty())
       {
-        json = new JSONArray();
+        int length = Math.min(data.size(), offset + size);
 
-        for(int i = offset; i < length; ++i)
+        if(length > 0)
         {
-          Map<String, ?> item = data.get(i);
+          json = new JSONArray();
 
-          if(item != null)
+          for(int i = offset; i < length; ++i)
           {
-            json.put(item);
+            Map<String, ?> item = data.get(i);
+
+            if(item != null)
+            {
+              json.put(item);
+            }
           }
         }
       }
+
+      meta = response.meta();
     }
 
-    return response(t, count, more, state, json).toString();
+    return response(t, count, more, state, json, meta).toString();
   }
 
   protected RequestBuilder request(String name)
@@ -89,7 +97,7 @@ import static java.util.Objects.nonNull;
   }
 
   protected JSONObject response(Transport.Target target, int count,
-    boolean more, String state, JSONArray data)
+    boolean more, String state, JSONArray data, Map<String, ?> meta)
   {
     JSONObject response = new JSONObject();
 
@@ -118,12 +126,17 @@ import static java.util.Objects.nonNull;
       response.put("data", data);
     }
 
+    if(meta != null)
+    {
+      put(response, meta);
+    }
+
     return response;
   }
 
   @Override public String empty(String state, int count, Transport.Target t)
   {
-    return response(t, count, false, state, null).toString();
+    return response(t, count, false, state, null, null).toString();
   }
 
   @Override public String error(String message)
@@ -151,9 +164,34 @@ import static java.util.Objects.nonNull;
     return request("fetch");
   }
 
-  @Override public String fetch(List<? extends Map<String, ?>> data)
+  static void put(JSONObject sink, Map<String, ?> values)
   {
-    return response(data, null);
+    if(values != null)
+    {
+      for(String key : values.keySet())
+      {
+        if(key != null)
+        {
+          Object value = values.get(key);
+
+          if(value != null) // only put known types
+          {
+            if(value instanceof String)
+            {
+              sink.put(key, value);
+            }
+            else if(value instanceof BigDecimal)
+            {
+              sink.put(key, value);
+            }
+            else if(value instanceof ZonedDateTime)
+            {
+              sink.put(key, Json.toJson((ZonedDateTime)value));
+            }
+          }
+        }
+      }
+    }
   }
 
   protected static final Logger log = LoggerFactory.getLogger(
@@ -301,7 +339,7 @@ import static java.util.Objects.nonNull;
 
     public RequestBuilder putParameters(Map<String, ?> ps)
     {
-      put(request, ps);
+      EncoderNov2016.put(request, ps);
 
       return this;
     }
@@ -317,11 +355,12 @@ import static java.util.Objects.nonNull;
           JSONObject fs = new JSONObject();
 
           put("fields", fs);
-          put(fs, fields);
+
+          EncoderNov2016.put(fs, fields);
         }
         else if(sink instanceof JSONObject)
         {
-          put((JSONObject)sink, fields);
+          EncoderNov2016.put((JSONObject)sink, fields);
         }
         else
         {
@@ -330,36 +369,6 @@ import static java.util.Objects.nonNull;
       }
 
       return this;
-    }
-
-    protected void put(JSONObject sink, Map<String, ?> values)
-    {
-      if(values != null)
-      {
-        for(String key : values.keySet())
-        {
-          if(key != null)
-          {
-            Object value = values.get(key);
-
-            if(value != null) // only put known types
-            {
-              if(value instanceof String)
-              {
-                sink.put(key, value);
-              }
-              else if(value instanceof BigDecimal)
-              {
-                sink.put(key, value);
-              }
-              else if(value instanceof ZonedDateTime)
-              {
-                sink.put(key, Json.toJson((ZonedDateTime)value));
-              }
-            }
-          }
-        }
-      }
     }
 
     final String name;

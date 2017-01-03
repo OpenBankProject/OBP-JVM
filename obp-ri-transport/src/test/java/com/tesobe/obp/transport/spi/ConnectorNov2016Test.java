@@ -1,5 +1,5 @@
 /*
- * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2017. All rights reserved.
  *
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
@@ -12,6 +12,7 @@ import com.tesobe.obp.transport.Decoder;
 import com.tesobe.obp.transport.Message;
 import com.tesobe.obp.transport.Pager;
 import com.tesobe.obp.transport.Responder;
+import com.tesobe.obp.transport.Response;
 import com.tesobe.obp.transport.Sender;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.transport.nov2016.Account;
@@ -28,7 +29,6 @@ import org.junit.Test;
 
 import java.time.ZonedDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
@@ -45,7 +45,6 @@ import static com.tesobe.obp.util.MethodMatcher.isPresent;
 import static com.tesobe.obp.util.MethodMatcher.notPresent;
 import static com.tesobe.obp.util.Utils.merge;
 import static java.time.ZoneOffset.UTC;
-import static java.util.Collections.singletonList;
 import static java.util.stream.IntStream.range;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.core.Is.is;
@@ -106,11 +105,11 @@ public class ConnectorNov2016Test
     Transport.Factory factory = Transport.defaultFactory();
     Responder south = new DefaultResponder()
     {
-      @Override
-      public List<? extends Map<String, ?>> first(String state, Decoder.Pager p,
+      @Override public Response first(String state, Decoder.Pager p,
         Decoder.Parameters ps, Transport.Target t)
       {
-        return singletonList(merge(new HashMap<>(), Bank.bankId, "bank-x"));
+        return new DefaultResponse(
+          merge(new HashMap<>(), Bank.bankId, "bank-x"));
       }
     };
     Receiver receiver = new ReceiverNov2016(south, factory.codecs());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2017. All rights reserved.
  *
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
@@ -9,7 +9,6 @@ package com.tesobe.obp.transport;
 
 import org.json.JSONObject;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,8 +26,8 @@ public interface Responder
    *
    * @return result
    */
-  List<? extends Map<String, ?>> first(String state, Decoder.Pager p,
-    Decoder.Parameters ps, Transport.Target t);
+  Response first(String state, Decoder.Pager p, Decoder.Parameters ps,
+    Transport.Target t);
 
   /**
    * Get following pages.
@@ -38,7 +37,7 @@ public interface Responder
    *
    * @return result
    */
-  List<? extends Map<String, ?>> next(String state, Decoder.Pager p);
+  Response next(String state, Decoder.Pager p);
 
   /**
    * Put.
@@ -49,8 +48,8 @@ public interface Responder
    *
    * @return result
    */
-  List<? extends Map<String, Object>> put(Decoder.Parameters ps,
-    Map<String, ?> fields, Transport.Target t);
+  Response put(Decoder.Parameters ps, Map<String, ?> fields,
+    Transport.Target t);
 
   /**
    * Describe available versions, targets, fields.
@@ -66,5 +65,5 @@ public interface Responder
    *
    * @return map of transaction id -> result
    */
-  List<? extends Map<String, ?>> fetch();
+  Response fetch();
 }
