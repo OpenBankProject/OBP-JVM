@@ -1,5 +1,5 @@
 /*
- * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2017. All rights reserved.
  *
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
@@ -116,4 +116,9 @@ import java.util.Map;
    * @return a pager
    */
   Pager pager(int pageSize, int offset, Pager.Filter f, Pager.Sorter s);
+
+  /**
+   * @return the underlying transport
+   */
+  Sender sender();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2017. All rights reserved.
  *
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
@@ -9,6 +9,7 @@ package com.tesobe.obp.kafka;
 import com.tesobe.obp.transport.Message;
 import com.tesobe.obp.transport.spi.Receiver;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -17,6 +18,12 @@ import java.util.Map;
 @SuppressWarnings("WeakerAccess") public class SimpleSouth
   extends SimpleTransport
 {
+  public SimpleSouth(Configuration c, Receiver r) throws IOException
+  {
+    super(c);
+
+    receiver = r;
+  }
   public SimpleSouth(String consumerTopic, String producerTopic, Receiver r)
   {
     super(consumerTopic, producerTopic);
@@ -25,7 +32,7 @@ import java.util.Map;
   }
 
   public SimpleSouth(String consumerTopic, String producerTopic,
-    Map<String, Object> consumerProps, Map<String, Object> producerProps,
+    Map<String, ?> consumerProps, Map<String, ?> producerProps,
     Receiver r)
   {
     super(consumerTopic, producerTopic, consumerProps, producerProps);

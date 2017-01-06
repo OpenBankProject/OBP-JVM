@@ -1,5 +1,5 @@
 /*
- * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2017. All rights reserved.
  *
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
@@ -8,6 +8,8 @@ package com.tesobe.obp.demo;
 
 import com.tesobe.obp.demo.north.North;
 import com.tesobe.obp.demo.south.South;
+import com.tesobe.obp.kafka.Configuration;
+import com.tesobe.obp.kafka.SimpleConfiguration;
 import com.tesobe.obp.transport.Responder;
 import com.tesobe.obp.transport.nov2016.Account;
 import com.tesobe.obp.transport.nov2016.Bank;
@@ -43,6 +45,13 @@ import static java.util.Locale.US;
     }
   }
 
+  /**
+   * Testing.
+   */
+  Demo()
+  {
+  }
+
   protected void south(Flags flags)
     throws IOException, ClassNotFoundException, IllegalAccessException,
     InstantiationException
@@ -67,7 +76,7 @@ import static java.util.Locale.US;
     }
 
     System.out.println("Starting TESOBE's OBP kafka south demo...");
-    System.out.println("Check the log files 'demo.log' and 'south.log'");
+    System.out.println("Please check the log files 'demo.log' and 'south.log'");
 
     South south = new South(responder, consumerTopic, consumerProps,
       producerTopic, producerProps);
@@ -91,24 +100,32 @@ import static java.util.Locale.US;
       producerTopic = "Request";
     }
 
-    System.out.println("Starting TESOBE's OBP kafka north demo...");
-    System.out.println("Check the log files 'demo.log' and 'south.log'");
-    System.out.println("working...");
+    Configuration c = new SimpleConfiguration(consumerTopic, producerTopic,
+      consumerProps, producerProps);
+    North north = new North(c);
 
-    North north = new com.tesobe.obp.demo.north.North(consumerTopic,
-      producerTopic, consumerProps, producerProps);
+    run(north);
+
+    north.shutdown();
+  }
+
+  public void run(North north) throws Exception
+  {
+    System.out.println("Starting TESOBE's OBP kafka north demo...");
+    System.out.println("Please check the log files 'demo.log' and 'south.log'");
+    System.out.println();
+    System.out.println("working...");
+    System.out.println();
 
     List<Bank> banks = north.getBanks();
 
     System.out.format(US, "The banks (%d)\n", banks.size());
-    banks.forEach(
-      b -> System.out.format(US, "  %s %s\n", b.bankId(), b.name()));
+    banks.forEach(b -> System.out.format(US, "  %s %s\n", b.bankId(), b.name()));
 
     List<User> users = north.getUsers();
 
     System.out.format(US, "The users (%d)\n", users.size());
-    users.forEach(
-      u -> System.out.format(US, "  %s %s\n", u.id(), u.displayName()));
+    users.forEach(u -> System.out.format(US, "  %s %s\n", u.id(), u.displayName()));
 
     for(User u : users)
     {
@@ -116,17 +133,15 @@ import static java.util.Locale.US;
       {
         List<Account> accounts = north.getAccounts(b, u);
 
-        System.out.format(US, "%s's accounts at %s (%d)\n", u.displayName(),
-          b.name(), accounts.size());
+        System.out.format(US, "%s's accounts at %s (%d)\n", u.displayName(), b.name(), accounts.size());
         accounts.forEach(
-          a -> System.out.format(US, "  %s %s %s\n", a.id(), a.bankId(),
-            a.userId()));
+          a -> System.out.format(US, "  id: %s, balance: %s %s, owner: %s\n",
+            a.id(), a.balanceCurrency(), a.balanceAmount(), a.userId()));
       }
     }
 
+    System.out.println();
     System.out.println("done.");
-
-    north.shutdown();
   }
 
   public static void main(String[] commandLine) throws Exception

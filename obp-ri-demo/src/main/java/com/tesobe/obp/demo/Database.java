@@ -1,5 +1,5 @@
 /*
- * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2017. All rights reserved.
  *
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
@@ -66,8 +66,8 @@ import static java.util.stream.Collectors.toList;
     "berta@example.com");
   public static Map<String, Object> chin = new U("c", "金色", "chin@example.com");
   public static A anna1 = new A(anna, "FO-A1", "1", "42", bank, "RUB");
-  public static A berta1 = new A(berta, "FO-B1", "2", "42", bank, "EUR");
-  public static A berta2 = new A(berta, "FO-B2", "3", "42", bank, "USD");
+  public static A berta1 = new A(berta, "FO-B1", "2", "7", bank, "EUR");
+  public static A berta2 = new A(berta, "FO-B2", "3", "109", bank, "USD");
 
   public static Set<A> accounts = new HashSet<>(asList(anna1, berta1, berta2));
   public static Set<Map<String, Object>> banks = new HashSet<>(singleton(bank));
@@ -83,6 +83,8 @@ import static java.util.stream.Collectors.toList;
       put(Account.number, number);
       put(Account.balanceAmount, balanceAmount);
       put(Account.balanceCurrency, balanceCurrency);
+      put(Account.bankId, bank.get(Bank.bankId));
+      put(Account.userId, user.get(User.id));
       put("user", user);
       put("bank", bank);
     }

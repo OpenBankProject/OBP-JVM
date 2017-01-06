@@ -1,5 +1,5 @@
 /*
- * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2017. All rights reserved.
  *
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +55,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
    * @param producerProps override selected kafka config keys
    */
   public SimpleTransport(String consumerTopic, String producerTopic,
-    Map<String, Object> consumerProps, Map<String, Object> producerProps)
+    Map<String, ?> consumerProps, Map<String, ?> producerProps)
   {
     this.consumerTopic = consumerTopic;
     this.producerTopic = producerTopic;
@@ -78,6 +79,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
     consumer = new KafkaConsumer<>(cp);
     producer = new KafkaProducer<>(pp);
+  }
+
+  public SimpleTransport(Configuration c) throws IOException
+  {
+    this(c.consumerTopic(), c.producerTopic(), c.consumerProps(),
+      c.producerProps());
   }
 
   @Override public String send(Message request) throws InterruptedException

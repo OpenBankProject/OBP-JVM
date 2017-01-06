@@ -1,16 +1,17 @@
 /*
- * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2017. All rights reserved.
  *
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
  */
 package com.tesobe.obp.demo.north;
 
-import com.tesobe.obp.demo.south.South;
+import com.tesobe.obp.kafka.Configuration;
+import com.tesobe.obp.kafka.SimpleConfiguration;
 import com.tesobe.obp.kafka.SimpleNorth;
-import com.tesobe.obp.kafka.SimpleTransport;
 import com.tesobe.obp.transport.Connector;
 import com.tesobe.obp.transport.Decoder;
+import com.tesobe.obp.transport.Sender;
 import com.tesobe.obp.transport.Transport;
 import com.tesobe.obp.transport.nov2016.Account;
 import com.tesobe.obp.transport.nov2016.AccountReader;
@@ -18,7 +19,6 @@ import com.tesobe.obp.transport.nov2016.Bank;
 import com.tesobe.obp.transport.nov2016.BankReader;
 import com.tesobe.obp.transport.nov2016.User;
 import com.tesobe.obp.transport.nov2016.UserReader;
-import com.tesobe.obp.util.Props;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +30,6 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 /**
- * A simple REST server that uses the kafka transport to send messages.
- *
  * @since 2016.9
  */
 @SuppressWarnings("WeakerAccess") public class North
@@ -39,14 +37,21 @@ import static java.util.stream.Collectors.toList;
   public North(String consumerTopic, String producerTopic, String consumerProps,
     String producerProps) throws IOException
   {
+    this(new SimpleConfiguration(consumerTopic, producerTopic, consumerProps,
+      producerProps));
+  }
+
+  public North(Configuration c) throws IOException
+  {
+    this(Transport.defaultFactory().connector(new SimpleNorth(c)));
+  }
+
+  public North(Connector c)
+  {
     log.info("Starting TESOBE's OBP kafka north demo...");
 
-    Transport.Factory factory = Transport.defaultFactory();
-
-    transport = new SimpleNorth(consumerTopic, producerTopic,
-      new Props(North.class, consumerProps).toMap(),
-      new Props(South.class, producerProps).toMap());
-    connector = factory.connector(transport);
+    connector = c;
+    transport = c.sender();
 
     transport.receive();
   }
@@ -120,5 +125,5 @@ import static java.util.stream.Collectors.toList;
 
   final static Logger log = LoggerFactory.getLogger(North.class);
   final Connector connector;
-  final SimpleTransport transport;
+  final Sender transport;
 }
