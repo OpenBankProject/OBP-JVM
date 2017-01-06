@@ -17,6 +17,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -29,7 +30,7 @@ import java.util.concurrent.SynchronousQueue;
  */
 public class DemoTest
 {
-  @Before public void setup()
+  @Before public void setup() throws IOException
   {
     Transport.Factory factory = Transport.defaultFactory();
     Responder responder = new OneBankTwoAccounts();

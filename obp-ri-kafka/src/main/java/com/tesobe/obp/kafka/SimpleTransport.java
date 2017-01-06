@@ -34,32 +34,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @SuppressWarnings("WeakerAccess") public class SimpleTransport implements Sender
 {
   /**
-   * Use default properties for consumer and producer.
-   *
-   * @param consumerTopic required
-   * @param producerTopic required
-   */
-  public SimpleTransport(String consumerTopic, String producerTopic)
-  {
-    this(consumerTopic, producerTopic, Collections.emptyMap(),
-      Collections.emptyMap());
-  }
-
-  /**
    * Use default properties for consumer and producer for those keys that are
    * not provided as argument.
    *
-   * @param consumerTopic required
-   * @param producerTopic required
-   * @param consumerProps override selected kafka config keys
-   * @param producerProps override selected kafka config keys
+   * @param c Configuration required
    */
-  public SimpleTransport(String consumerTopic, String producerTopic,
-    Map<String, ?> consumerProps, Map<String, ?> producerProps)
+  public SimpleTransport(Configuration c) throws IOException
   {
-    this.consumerTopic = consumerTopic;
-    this.producerTopic = producerTopic;
+    this.consumerTopic = c.consumerTopic();
+    this.producerTopic = c.producerTopic();
 
+    Map<String, ?> consumerProps = c.consumerProps();
+    Map<String, ?> producerProps = c.consumerProps();
     HashMap<String, Object> cp = new HashMap<>();
     HashMap<String, Object> pp = new HashMap<>();
 
@@ -79,12 +65,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
     consumer = new KafkaConsumer<>(cp);
     producer = new KafkaProducer<>(pp);
-  }
-
-  public SimpleTransport(Configuration c) throws IOException
-  {
-    this(c.consumerTopic(), c.producerTopic(), c.consumerProps(),
-      c.producerProps());
   }
 
   @Override public String send(Message request) throws InterruptedException

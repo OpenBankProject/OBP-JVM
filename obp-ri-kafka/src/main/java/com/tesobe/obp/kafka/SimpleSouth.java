@@ -10,7 +10,6 @@ import com.tesobe.obp.transport.Message;
 import com.tesobe.obp.transport.spi.Receiver;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * @since 2016.9
@@ -21,21 +20,6 @@ import java.util.Map;
   public SimpleSouth(Configuration c, Receiver r) throws IOException
   {
     super(c);
-
-    receiver = r;
-  }
-  public SimpleSouth(String consumerTopic, String producerTopic, Receiver r)
-  {
-    super(consumerTopic, producerTopic);
-
-    receiver = r;
-  }
-
-  public SimpleSouth(String consumerTopic, String producerTopic,
-    Map<String, ?> consumerProps, Map<String, ?> producerProps,
-    Receiver r)
-  {
-    super(consumerTopic, producerTopic, consumerProps, producerProps);
 
     receiver = r;
   }

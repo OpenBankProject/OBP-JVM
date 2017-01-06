@@ -34,26 +34,29 @@ import static java.util.stream.Collectors.toList;
  */
 @SuppressWarnings("WeakerAccess") public class North
 {
-  public North(String consumerTopic, String producerTopic, String consumerProps,
-    String producerProps) throws IOException
-  {
-    this(new SimpleConfiguration(consumerProps, consumerTopic, producerProps,
-      producerTopic));
-  }
-
-  public North(Configuration c) throws IOException
-  {
-    this(Transport.defaultFactory().connector(new SimpleNorth(c)));
-  }
-
-  public North(Connector c)
+  public North(String consumerProps, String consumerTopic, String producerProps,
+    String producerTopic) throws IOException
   {
     log.info("Starting TESOBE's OBP kafka north demo...");
 
-    connector = c;
-    transport = c.sender();
+    Configuration cfg = new SimpleConfiguration(this, consumerProps,
+      consumerTopic, producerProps, producerTopic);
+
+    connector = Transport.defaultFactory().connector(new SimpleNorth(cfg));
+    transport = connector.sender();
 
     transport.receive();
+  }
+
+  /**
+   * Alternative transport.
+   *
+   * @param c connector
+   */
+  public North(Connector c)
+  {
+    connector = c;
+    transport = c.sender();
   }
 
   public List<Bank> getBanks() throws Exception

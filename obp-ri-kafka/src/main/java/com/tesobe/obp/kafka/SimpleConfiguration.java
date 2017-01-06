@@ -13,38 +13,40 @@ import java.util.Map;
 
 public class SimpleConfiguration implements Configuration
 {
-  public SimpleConfiguration(String consumerProps, String consumerTopic,
-    String producerProps, String producerTopic)
+  public SimpleConfiguration(Object root, String consumerProps,
+    String consumerTopic, String producerProps, String producerTopic)
   {
+    this.root = root;
     this.consumerProps = consumerProps;
     this.consumerTopic = consumerTopic;
     this.producerProps = producerProps;
     this.producerTopic = producerTopic;
   }
 
-  public String consumerTopic()
+  @Override public String consumerTopic()
   {
     return consumerTopic;
   }
 
-  public String producerTopic()
+  @Override public String producerTopic()
   {
     return producerTopic;
   }
 
-  public Map<String, ?> consumerProps() throws IOException
+  @Override public Map<String, ?> consumerProps() throws IOException
   {
-    return new Props(getClass(), consumerProps).toMap();
+    return new Props(root.getClass(), consumerProps).toMap();
   }
 
 
-  public Map<String, ?> producerProps() throws IOException
+  @Override public Map<String, ?> producerProps() throws IOException
   {
-    return new Props(getClass(), producerProps).toMap();
+    return new Props(root.getClass(), producerProps).toMap();
   }
 
   public final String consumerProps;
   public final String consumerTopic;
   public final String producerProps;
   public final String producerTopic;
+  private final Object root;
 }

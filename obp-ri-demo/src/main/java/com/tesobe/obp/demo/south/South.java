@@ -28,18 +28,15 @@ import java.io.IOException;
   public South(Responder r, String consumerTopic, String consumerProps,
     String producerTopic, String producerProps) throws IOException
   {
-    this(r, new SimpleConfiguration(consumerProps, consumerTopic, producerProps,
-      producerTopic));
-  }
-
-  public South(Responder r, Configuration c) throws IOException
-  {
     log.info("Starting TESOBE's OBP kafka south demo...");
+
+
+    Configuration cfg = new SimpleConfiguration(this, consumerProps,
+      consumerTopic, producerProps, producerTopic);
 
     Transport.Factory factory = Transport.defaultFactory();
     Receiver receiver = new ReceiverNov2016(r, factory.codecs());
-    SimpleTransport transport = new SimpleSouth(c.consumerTopic(),
-      c.producerTopic(), c.consumerProps(), c.producerProps(),
+    SimpleTransport transport = new SimpleSouth(cfg,
       new LoggingReceiver(receiver));
 
     transport.receive();

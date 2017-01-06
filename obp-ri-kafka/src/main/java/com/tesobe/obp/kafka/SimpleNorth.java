@@ -7,7 +7,6 @@
 package com.tesobe.obp.kafka;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * @since 2016.9
@@ -18,17 +17,6 @@ import java.util.Map;
   public SimpleNorth(Configuration c) throws IOException
   {
     super(c);
-  }
-
-  public SimpleNorth(String consumerTopic, String producerTopic)
-  {
-    super(consumerTopic, producerTopic);
-  }
-
-  public SimpleNorth(String consumerTopic, String producerTopic,
-    Map<String, Object> consumerProps, Map<String, Object> producerProps)
-  {
-    super(consumerTopic, producerTopic, consumerProps, producerProps);
   }
 
   @Override protected String topicToSendTo()

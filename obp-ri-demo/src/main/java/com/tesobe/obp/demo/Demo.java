@@ -8,8 +8,6 @@ package com.tesobe.obp.demo;
 
 import com.tesobe.obp.demo.north.North;
 import com.tesobe.obp.demo.south.South;
-import com.tesobe.obp.kafka.Configuration;
-import com.tesobe.obp.kafka.SimpleConfiguration;
 import com.tesobe.obp.transport.Responder;
 import com.tesobe.obp.transport.nov2016.Account;
 import com.tesobe.obp.transport.nov2016.Bank;
@@ -100,9 +98,8 @@ import static java.util.Locale.US;
       producerTopic = "Request";
     }
 
-    Configuration c = new SimpleConfiguration(consumerProps, consumerTopic,
+    North north = new North(consumerProps, consumerTopic,
       producerProps, producerTopic);
-    North north = new North(c);
 
     run(north);
 
