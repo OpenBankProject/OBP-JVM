@@ -1,5 +1,5 @@
 /*
- * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2017. All rights reserved.
  *
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
@@ -18,6 +18,7 @@ import java.util.Optional;
 
 import static com.tesobe.obp.transport.Transport.Encoding.json;
 import static com.tesobe.obp.transport.Transport.Version.Nov2016;
+import static java.util.function.Function.identity;
 
 /**
  * Transport manages the different versions of the transport api.
@@ -119,7 +120,51 @@ import static com.tesobe.obp.transport.Transport.Version.Nov2016;
   public enum Target
   {
     account, accounts, bank, banks, challengeThreshold, transaction,
-    transactions, user, users
+    transactions, user, users;
+
+    /**
+     * Use the ids to create an unique key for cache lookups.
+     *
+     * @param ps source of the ids
+     * @param separator inserted between ids in key
+     *
+     * @return null when unable to create an unique key
+     */
+    public String toKey(Decoder.Parameters ps, String separator)
+    {
+      switch(this)
+      {
+        case account:
+          return ps.bankId()
+            .flatMap(b -> ps.accountId().map(a -> b + separator + a))
+            .orElse(null);
+        case accounts:
+        case bank:
+          return ps.bankId().map(identity()).orElse(null);
+        case banks:
+          return "banks";
+        case challengeThreshold:
+          return ps.accountId()
+            .flatMap(a -> ps.userId().map(u -> a + separator + u))
+            .orElse(null);
+        case transaction:
+          return ps.bankId()
+            .flatMap(b -> ps.accountId()
+              .flatMap(a -> ps.transactionId()
+                .map(t -> b + separator + a + separator + t)))
+            .orElse(null);
+        case transactions:
+          return ps.bankId()
+            .flatMap(b -> ps.accountId().map(a -> b + separator + a))
+            .orElse(null);
+        case user:
+          return ps.userId().map(identity()).orElse(null);
+        case users:
+          return "users";
+      }
+
+      return null;
+    }
   }
 
   public interface Factory

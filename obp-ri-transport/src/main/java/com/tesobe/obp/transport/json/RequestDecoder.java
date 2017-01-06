@@ -1,5 +1,5 @@
 /*
- * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2017. All rights reserved.
  *
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
@@ -42,7 +42,7 @@ class RequestDecoder implements Decoder.Request
     this.requestId = requestId;
     this.request = request;
 
-    json = new JSONObject(request);
+    json = request != null ? new JSONObject(request) : new JSONObject();
     name = json.optString("name", "");
     version = json.optString("version", "");
   }

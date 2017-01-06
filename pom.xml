@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+  ~ Copyright (c) TESOBE Ltd.  2017. All rights reserved.
   ~
   ~ Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
   ~
@@ -98,7 +98,7 @@
     <timestamp>${maven.build.timestamp}</timestamp>
     <gpg.executable>gpg2</gpg.executable>
 
-    <hamcrest-core.version>1.3</hamcrest-core.version>
+    <hamcrest.version>1.3</hamcrest.version>
     <jersey.version>2.23</jersey.version>
     <jopt-simple.version>5.0.3</jopt-simple.version>
     <json.version>20160810</json.version>
@@ -142,9 +142,15 @@
         <version>1.10</version>
       </dependency>
       <dependency>
+        <groupId>com.github.npathai</groupId>
+        <artifactId>hamcrest-optional</artifactId>
+        <version>1.0</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>org.hamcrest</groupId>
-        <artifactId>hamcrest-core</artifactId>
-        <version>${hamcrest-core.version}</version>
+        <artifactId>hamcrest-all</artifactId>
+        <version>${hamcrest.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -192,6 +198,16 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.npathai</groupId>
+      <artifactId>hamcrest-optional</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

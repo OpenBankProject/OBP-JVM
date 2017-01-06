@@ -155,7 +155,7 @@ import static org.junit.Assert.fail;
     data.put(ChallengeThreshold.amount, "amount-x");
     data.put(ChallengeThreshold.currency, "currency-x");
 
-    return new DefaultResponse(data);
+    return DefaultResponse.fromData(data);
   }
 
   @Override protected Response transaction(String state, Decoder.Pager p,
@@ -298,13 +298,14 @@ import static org.junit.Assert.fail;
     assertThat(fields.get(Transaction.type), is("type-x"));
     assertThat(fields.get(Transaction.userId), is("user-x"));
 
-    return new DefaultResponse(
+    return DefaultResponse.fromData(
       entity("transactionId", Objects.toString(fields.get("transactionId"))));
   }
 
   @Override public Response fetch()
   {
-    return new DefaultResponse(merge(new HashMap<>(), "transaction-x", "ACPT"));
+    return DefaultResponse.fromData(
+      merge(new HashMap<>(), "transaction-x", "ACPT"));
   }
 
   Map<String, List<Map<String, Object>>> cache = synchronizedMap(

@@ -38,16 +38,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
 import java.util.function.Function;
 
+import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresent;
 import static com.tesobe.obp.transport.Pager.SortOrder.ascending;
 import static com.tesobe.obp.transport.Pager.SortOrder.descending;
 import static com.tesobe.obp.transport.Transport.Target.banks;
-import static com.tesobe.obp.util.MethodMatcher.isPresent;
-import static com.tesobe.obp.util.MethodMatcher.notPresent;
 import static com.tesobe.obp.util.Utils.merge;
 import static java.time.ZoneOffset.UTC;
 import static java.util.stream.IntStream.range;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -108,7 +108,7 @@ public class ConnectorNov2016Test
       @Override public Response first(String state, Decoder.Pager p,
         Decoder.Parameters ps, Transport.Target t)
       {
-        return new DefaultResponse(
+        return DefaultResponse.fromData(
           merge(new HashMap<>(), Bank.bankId, "bank-x"));
       }
     };
@@ -142,7 +142,7 @@ public class ConnectorNov2016Test
     Decoder.Response anonymous = connector.get("getAccount",
       Transport.Target.account, parameters);
 
-    assertThat(anonymous.error(), notPresent());
+    assertThat(anonymous.error(), not(isPresent()));
     assertThat(anonymous.count(), is(0));
     assertFalse(anonymous.data().isEmpty());
     assertThat(anonymous.data().get(0).text(Account.accountId),
@@ -153,7 +153,7 @@ public class ConnectorNov2016Test
     Decoder.Response owned = connector.get("getAccount",
       Transport.Target.account, parameters);
 
-    assertThat(owned.error(), notPresent());
+    assertThat(owned.error(), not(isPresent()));
     assertThat(owned.count(), is(0));
     assertFalse(owned.data().isEmpty());
     assertThat(owned.data().get(0).text(Account.accountId), is("account-x"));
@@ -168,7 +168,7 @@ public class ConnectorNov2016Test
     Decoder.Response anonymous = connector.get("getAccounts",
       Transport.Target.accounts, parameters);
 
-    assertThat(anonymous.error(), notPresent());
+    assertThat(anonymous.error(), not(isPresent()));
     assertThat(anonymous.count(), is(0));
     assertThat(anonymous.data().size(), is(2));
     assertThat(anonymous.data().get(0).text(Account.accountId),
@@ -181,7 +181,7 @@ public class ConnectorNov2016Test
     Decoder.Response owned = connector.get("getAccounts",
       Transport.Target.accounts, parameters);
 
-    assertThat(owned.error(), notPresent());
+    assertThat(owned.error(), not(isPresent()));
     assertThat(owned.count(), is(0));
     assertFalse(owned.data().isEmpty());
     assertThat(owned.data().size(), is(2));
@@ -198,7 +198,7 @@ public class ConnectorNov2016Test
     Decoder.Response anonymous = connector.get("getBank", Transport.Target.bank,
       parameters);
 
-    assertThat(anonymous.error(), notPresent());
+    assertThat(anonymous.error(), not(isPresent()));
     assertThat(anonymous.count(), is(0));
     assertFalse(anonymous.data().isEmpty());
     assertThat(anonymous.data().get(0).text(Bank.bankId), is("bank-x"));
@@ -208,7 +208,7 @@ public class ConnectorNov2016Test
     Decoder.Response owned = connector.get("getBank", Transport.Target.bank,
       parameters);
 
-    assertThat(owned.error(), notPresent());
+    assertThat(owned.error(), not(isPresent()));
     assertThat(owned.count(), is(0));
     assertFalse(owned.data().isEmpty());
     assertThat(owned.data().get(0).text(Bank.bankId), is("bank-x"));
@@ -220,7 +220,7 @@ public class ConnectorNov2016Test
 
     Decoder.Response anonymous = connector.get("getBanks", banks, parameters);
 
-    assertThat(anonymous.error(), notPresent());
+    assertThat(anonymous.error(), not(isPresent()));
     assertThat(anonymous.count(), is(0));
     assertThat(anonymous.data().size(), is(2));
     assertThat(anonymous.data().get(0).text(Bank.bankId), is("bankId-0"));
@@ -230,7 +230,7 @@ public class ConnectorNov2016Test
 
     Decoder.Response owned = connector.get("getBanks", banks, parameters);
 
-    assertThat(owned.error(), notPresent());
+    assertThat(owned.error(), not(isPresent()));
     assertThat(owned.count(), is(0));
     assertFalse(owned.data().isEmpty());
     assertThat(owned.data().size(), is(2));
@@ -249,7 +249,7 @@ public class ConnectorNov2016Test
     Decoder.Response anonymous = connector.get("getTransaction",
       Transport.Target.transaction, parameters);
 
-    assertThat(anonymous.error(), notPresent());
+    assertThat(anonymous.error(), not(isPresent()));
     assertThat(anonymous.count(), is(0));
     assertThat(anonymous.data().size(), is(1));
     assertThat(anonymous.data().get(0).text(Transaction.transactionId),
@@ -260,7 +260,7 @@ public class ConnectorNov2016Test
     Decoder.Response owned = connector.get("getTransaction",
       Transport.Target.transaction, parameters);
 
-    assertThat(owned.error(), notPresent());
+    assertThat(owned.error(), not(isPresent()));
     assertThat(owned.count(), is(0));
     assertThat(owned.data().size(), is(1));
     assertThat(owned.data().get(0).text(Transaction.transactionId),
@@ -280,7 +280,7 @@ public class ConnectorNov2016Test
     Decoder.Response anonymous = connector.get("getTransactions",
       Transport.Target.transactions, parameters);
 
-    assertThat(anonymous.error(), notPresent());
+    assertThat(anonymous.error(), not(isPresent()));
     assertThat(anonymous.count(), is(0));
     assertThat(anonymous.data().size(), is(17));
 
@@ -296,7 +296,7 @@ public class ConnectorNov2016Test
     Decoder.Response owned = connector.get("getTransactions",
       Transport.Target.transactions, parameters);
 
-    assertThat(owned.error(), notPresent());
+    assertThat(owned.error(), not(isPresent()));
     assertThat(owned.count(), is(0));
     assertFalse(owned.data().isEmpty());
     assertThat(owned.data().size(), is(17));
@@ -326,7 +326,8 @@ public class ConnectorNov2016Test
     assertThat("owned.empty", owned.data().isEmpty(), is(true));
   }
 
-  @Test public void getChallengeThreshold() throws Exception
+  @SuppressWarnings("OptionalGetWithoutIsPresent") @Test
+  public void getChallengeThreshold() throws Exception
   {
     Map<String, String> parameters = new HashMap<>();
 
@@ -338,7 +339,7 @@ public class ConnectorNov2016Test
     Decoder.Response response = connector.get("getChallengeThreshold",
       Transport.Target.challengeThreshold, parameters);
 
-    assertThat(response.error(), notPresent());
+    assertThat(response.error(), not(isPresent()));
     assertThat(response.data().size(), is(1));
 
     Optional<ChallengeThresholdReader> threshold = response.data()
@@ -432,14 +433,14 @@ public class ConnectorNov2016Test
     Decoder.Response anonymous = connector.get("getUser", Transport.Target.user,
       null);
 
-    assertThat(anonymous.error(), notPresent());
+    assertThat(anonymous.error(), not(isPresent()));
     assertThat(anonymous.count(), is(0));
     assertTrue(anonymous.data().isEmpty()); // no data without userId
 
     Decoder.Response owned = connector.get("getUser", Transport.Target.user,
       parameters);
 
-    assertThat(owned.error(), notPresent());
+    assertThat(owned.error(), not(isPresent()));
     assertThat(owned.count(), is(0));
     assertFalse(owned.data().isEmpty());
     assertThat(owned.data().get(0).text(User.email), is(userId));
@@ -452,7 +453,7 @@ public class ConnectorNov2016Test
     Decoder.Response anonymous = connector.get("getUsers",
       Transport.Target.users, parameters);
 
-    assertThat(anonymous.error(), notPresent());
+    assertThat(anonymous.error(), not(isPresent()));
     assertThat(anonymous.count(), is(0));
     assertFalse(anonymous.data().isEmpty());
 
@@ -461,7 +462,7 @@ public class ConnectorNov2016Test
     Decoder.Response owned = connector.get("getUsers", Transport.Target.users,
       parameters);
 
-    assertThat(owned.error(), notPresent());
+    assertThat(owned.error(), not(isPresent()));
     assertThat(owned.count(), is(0));
     assertFalse(owned.data().isEmpty());
     assertThat(owned.data().size(), is(2));

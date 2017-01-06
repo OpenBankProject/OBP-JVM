@@ -1,5 +1,5 @@
 /*
- * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2017. All rights reserved.
  *
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 
 public class Utils
 {
-  public static <K, V> Map<K, V> merge(K key, V value)
+  public static <K, V> Map<K, V> asMap(K key, V value)
   {
     return merge(new HashMap<K, V>(), key, value);
   }

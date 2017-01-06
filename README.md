@@ -303,7 +303,7 @@ And a new method in MockResponder to handle it.
 
 ```java
   @Override
-  protected List<? extends Map<String, ?>> challengeThreshold(String state,
+  protected Response challengeThreshold(String state,
     Decoder.Pager p, Decoder.Parameters ps)
   {
     HashMap<String, String> response = new HashMap<>();

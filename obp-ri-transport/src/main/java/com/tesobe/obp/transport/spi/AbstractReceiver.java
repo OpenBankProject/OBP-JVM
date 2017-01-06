@@ -1,5 +1,5 @@
 /*
- * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2017. All rights reserved.
  *
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
@@ -85,7 +85,20 @@ import static java.util.Objects.nonNull;
    */
   protected String respond(Decoder.Request request)
   {
-    Transport.Version version = Transport.Version.valueOf(request.version());
+    Transport.Version version;
+
+    try
+    {
+      version = Transport.Version.valueOf(request.version());
+    }
+    catch(Exception e)
+    {
+      log.warn("Unknown version '{}' substituting {}!", request.version(),
+        decoder.version());
+
+      version = decoder.version();
+    }
+
     Pair<Encoder, Decoder> pair = codecs.get(version);
 
     return version == decoder.version()
@@ -135,6 +148,7 @@ import static java.util.Objects.nonNull;
   protected abstract String describe(Decoder.Request request, Encoder encoder);
 
   protected abstract String fetch(Decoder.Request request, Encoder encoder);
+
   static final Map<Transport.Version, Map<String, BiFunction<Decoder.Request,
     Encoder, String>>>
     versions = new HashMap<>();
