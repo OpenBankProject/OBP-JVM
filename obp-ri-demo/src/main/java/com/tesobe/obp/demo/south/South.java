@@ -28,8 +28,8 @@ import java.io.IOException;
   public South(Responder r, String consumerTopic, String consumerProps,
     String producerTopic, String producerProps) throws IOException
   {
-    this(r, new SimpleConfiguration(consumerTopic, producerTopic, consumerProps,
-      producerProps));
+    this(r, new SimpleConfiguration(consumerProps, consumerTopic, producerProps,
+      producerTopic));
   }
 
   public South(Responder r, Configuration c) throws IOException

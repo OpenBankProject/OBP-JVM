@@ -37,8 +37,8 @@ import static java.util.stream.Collectors.toList;
   public North(String consumerTopic, String producerTopic, String consumerProps,
     String producerProps) throws IOException
   {
-    this(new SimpleConfiguration(consumerTopic, producerTopic, consumerProps,
-      producerProps));
+    this(new SimpleConfiguration(consumerProps, consumerTopic, producerProps,
+      producerTopic));
   }
 
   public North(Configuration c) throws IOException

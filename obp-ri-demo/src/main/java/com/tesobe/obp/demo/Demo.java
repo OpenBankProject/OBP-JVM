@@ -100,8 +100,8 @@ import static java.util.Locale.US;
       producerTopic = "Request";
     }
 
-    Configuration c = new SimpleConfiguration(consumerTopic, producerTopic,
-      consumerProps, producerProps);
+    Configuration c = new SimpleConfiguration(consumerProps, consumerTopic,
+      producerProps, producerTopic);
     North north = new North(c);
 
     run(north);
@@ -120,12 +120,14 @@ import static java.util.Locale.US;
     List<Bank> banks = north.getBanks();
 
     System.out.format(US, "The banks (%d)\n", banks.size());
-    banks.forEach(b -> System.out.format(US, "  %s %s\n", b.bankId(), b.name()));
+    banks.forEach(
+      b -> System.out.format(US, "  %s %s\n", b.bankId(), b.name()));
 
     List<User> users = north.getUsers();
 
     System.out.format(US, "The users (%d)\n", users.size());
-    users.forEach(u -> System.out.format(US, "  %s %s\n", u.id(), u.displayName()));
+    users.forEach(
+      u -> System.out.format(US, "  %s %s\n", u.id(), u.displayName()));
 
     for(User u : users)
     {
@@ -133,7 +135,8 @@ import static java.util.Locale.US;
       {
         List<Account> accounts = north.getAccounts(b, u);
 
-        System.out.format(US, "%s's accounts at %s (%d)\n", u.displayName(), b.name(), accounts.size());
+        System.out.format(US, "%s's accounts at %s (%d)\n", u.displayName(),
+          b.name(), accounts.size());
         accounts.forEach(
           a -> System.out.format(US, "  id: %s, balance: %s %s, owner: %s\n",
             a.id(), a.balanceCurrency(), a.balanceAmount(), a.userId()));
