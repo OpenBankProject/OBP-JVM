@@ -132,41 +132,53 @@ import static java.util.function.Function.identity;
      */
     public String toKey(Decoder.Parameters ps, String s)
     {
+      String key;
+
       switch(this)
       {
         case account:
-          return ps.bankId()
+          key = ps.bankId()
             .flatMap(b -> ps.accountId()
               .flatMap(a -> ps.userId().map(u -> u + s + b + s + a)))
             .orElse(null);
+          break;
         case accounts:
         case bank:
-          return ps.bankId()
+          key = ps.bankId()
             .flatMap(b -> ps.userId().map(u -> u + s + b))
             .orElse(null);
+          break;
         case banks:
-          return "banks";
+          key = "banks";
+          break;
         case challengeThreshold:
-          return ps.accountId().flatMap(a -> ps.userId().map(u -> u + s + a))
+          key = ps.accountId().flatMap(a -> ps.userId().map(u -> u + s + a))
             .orElse(null);
+          break;
         case transaction:
-          return ps.bankId()
+          key = ps.bankId()
             .flatMap(b -> ps.accountId()
               .flatMap(a -> ps.transactionId()
                 .flatMap(t -> ps.userId().map(u -> u + s + b + s + a + s + t))))
             .orElse(null);
+          break;
         case transactions:
-          return ps.bankId()
+          key = ps.bankId()
             .flatMap(b -> ps.accountId()
               .flatMap(a -> ps.userId().map(u -> u + s + b + s + a)))
             .orElse(null);
+          break;
         case user:
-          return ps.userId().map(identity()).orElse(null);
+          key = ps.userId().map(identity()).orElse(null);
+          break;
         case users:
-          return "users";
+          key = "users";
+          break;
+        default:
+          key = null;
       }
 
-      return null;
+      return key == null ? null : this.toString() + s + key;
     }
   }
 
