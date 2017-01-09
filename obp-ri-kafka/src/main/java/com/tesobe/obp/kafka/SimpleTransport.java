@@ -45,7 +45,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
     this.producerTopic = c.producerTopic();
 
     Map<String, ?> consumerProps = c.consumerProps();
-    Map<String, ?> producerProps = c.consumerProps();
+    Map<String, ?> producerProps = c.producerProps();
     HashMap<String, Object> cp = new HashMap<>();
     HashMap<String, Object> pp = new HashMap<>();
 
