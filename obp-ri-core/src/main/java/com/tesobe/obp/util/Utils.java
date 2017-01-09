@@ -27,6 +27,14 @@ public class Utils
     return map;
   }
 
+//  public static <K, V> void put(javax.cache.Cache<K, V> c, K key, V value)
+//  {
+//    if(key != null && value != null)
+//    {
+//      c.put(key, value);
+//    }
+//  }
+
   /**
    * Invoke zero parameter method name.
    *
@@ -49,6 +57,11 @@ public class Utils
     {
       return null;
     }
+  }
+
+  public static String toString(Object s)
+  {
+    return s == null ? null : s.toString();
   }
 
   /**

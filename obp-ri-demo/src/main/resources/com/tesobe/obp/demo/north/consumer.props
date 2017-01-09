@@ -1,15 +1,14 @@
 #
-# Copyright (c) TESOBE Ltd. 2016. All rights reserved.
+# Copyright (c) TESOBE Ltd.  2017. All rights reserved.
 #
-# Use of this source code is governed by a GNU AFFERO license
-# that can be found in the LICENSE file.
+# Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
 #
 #
 
 # Taken verbatim from https://github.com/mapr-demos/kafka-sample-programs.git.
 
 bootstrap.servers=localhost:9092
-group.id=obp-rest
+group.id=obp-socgen
 enable.auto.commit=true
 key.deserializer=org.apache.kafka.common.serialization.StringDeserializer
 value.deserializer=org.apache.kafka.common.serialization.StringDeserializer

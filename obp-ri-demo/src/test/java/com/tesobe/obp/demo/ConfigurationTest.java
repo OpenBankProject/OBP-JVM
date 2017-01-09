@@ -41,5 +41,7 @@ public class ConfigurationTest
     assertThat(cfg.producerTopic(), is("pt"));
     assertThat(cfg.consumerProps(), notNullValue());
     assertThat(cfg.producerProps(), notNullValue());
+    assertThat(cfg.consumerProps().get("group.id"), is("obp-socgen"));
+    assertThat(cfg.producerProps().get("acks"), is("all"));
   }
 }

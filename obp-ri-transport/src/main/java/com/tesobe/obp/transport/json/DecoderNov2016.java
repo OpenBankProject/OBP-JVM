@@ -1,5 +1,5 @@
 /*
- * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2017. All rights reserved.
  *
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
@@ -62,7 +62,8 @@ public class DecoderNov2016 implements Decoder
 
           if(s == null || s != t)
           {
-            return new ErrorResponse("Targets do not match!");
+            return new ErrorResponse(String.format(Locale.US,
+              "Targets do not match: request %s response %s", s, t));
           }
         }
 
