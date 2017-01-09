@@ -1,5 +1,5 @@
 /*
- * Copyright (c) TESOBE Ltd.  2016. All rights reserved.
+ * Copyright (c) TESOBE Ltd.  2017. All rights reserved.
  *
  * Use of this source code is governed by a GNU AFFERO license that can be found in the LICENSE file.
  *
@@ -43,7 +43,7 @@ public class LoggingReceiver implements Receiver
 
     if(nonNull(request))
     {
-      log.info("{} \u2190 {}", request.id, response);
+      log.info("{} \u2192 {}", request.id, response);
     }
     else
     {

@@ -60,9 +60,13 @@ import static java.util.Objects.nonNull;
     {
       try
       {
-        return decoder.request(request.id, request.payload)
+        String response = decoder.request(request.id, request.payload)
           .map(this::respond)
           .orElseGet(() -> errorEncoder.error(request.id));
+
+        log.trace("{} \u2192 {}", request, response);
+
+        return response;
       }
       catch(Error e) // !
       {

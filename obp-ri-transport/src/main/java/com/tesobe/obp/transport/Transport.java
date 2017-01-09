@@ -126,36 +126,39 @@ import static java.util.function.Function.identity;
      * Use the ids to create an unique key for cache lookups.
      *
      * @param ps source of the ids
-     * @param separator inserted between ids in key
+     * @param s separator inserted between parts of key
      *
      * @return null when unable to create an unique key
      */
-    public String toKey(Decoder.Parameters ps, String separator)
+    public String toKey(Decoder.Parameters ps, String s)
     {
       switch(this)
       {
         case account:
           return ps.bankId()
-            .flatMap(b -> ps.accountId().map(a -> b + separator + a))
+            .flatMap(b -> ps.accountId()
+              .flatMap(a -> ps.userId().map(u -> u + s + b + s + a)))
             .orElse(null);
         case accounts:
         case bank:
-          return ps.bankId().map(identity()).orElse(null);
+          return ps.bankId()
+            .flatMap(b -> ps.userId().map(u -> u + s + b))
+            .orElse(null);
         case banks:
           return "banks";
         case challengeThreshold:
-          return ps.accountId()
-            .flatMap(a -> ps.userId().map(u -> a + separator + u))
+          return ps.accountId().flatMap(a -> ps.userId().map(u -> u + s + a))
             .orElse(null);
         case transaction:
           return ps.bankId()
             .flatMap(b -> ps.accountId()
               .flatMap(a -> ps.transactionId()
-                .map(t -> b + separator + a + separator + t)))
+                .flatMap(t -> ps.userId().map(u -> u + s + b + s + a + s + t))))
             .orElse(null);
         case transactions:
           return ps.bankId()
-            .flatMap(b -> ps.accountId().map(a -> b + separator + a))
+            .flatMap(b -> ps.accountId()
+              .flatMap(a -> ps.userId().map(u -> u + s + b + s + a)))
             .orElse(null);
         case user:
           return ps.userId().map(identity()).orElse(null);
